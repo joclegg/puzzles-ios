@@ -39,7 +39,7 @@ struct FiveLettersHomeView: View {
             }
             .padding(16)
         }
-        .navigationTitle("Five Letters")
+        .fiveLettersHeader("Five Letters")
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 NavigationLink {
@@ -102,7 +102,8 @@ struct FiveLettersHomeView: View {
                 id: "daily",
                 icon: "calendar",
                 detail: daily?.homeLabel,
-                highlighted: daily == .inProgress || daily == .won
+                active: daily == .inProgress,
+                done: daily == .won
             ) {
                 launch { try await openDaily(date) }
             }
@@ -111,7 +112,8 @@ struct FiveLettersHomeView: View {
                 id: "nyt_daily",
                 icon: "newspaper",
                 detail: nyt?.homeLabel,
-                highlighted: nyt == .inProgress || nyt == .won
+                active: nyt == .inProgress,
+                done: nyt == .won
             ) {
                 launch { await openNyt(date) }
             }
@@ -134,7 +136,8 @@ struct FiveLettersHomeView: View {
                     id: "practice",
                     icon: "dumbbell",
                     detail: nil,
-                    highlighted: current != nil
+                    active: current != nil,
+                    done: false
                 ) {
                     if let current {
                         open(current)
@@ -143,7 +146,7 @@ struct FiveLettersHomeView: View {
                     }
                 }
                 if current != nil {
-                    tile("New word", id: "new_practice", icon: "arrow.clockwise", detail: nil, highlighted: false) {
+                    tile("New word", id: "new_practice", icon: "arrow.clockwise", detail: nil, active: false, done: false) {
                         launch { try await startPractice() }
                     }
                 }
@@ -177,7 +180,8 @@ struct FiveLettersHomeView: View {
         id: String,
         icon: String,
         detail: String?,
-        highlighted: Bool,
+        active: Bool,
+        done: Bool,
         action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
@@ -186,21 +190,34 @@ struct FiveLettersHomeView: View {
                     .foregroundStyle(theme.accent)
                     .frame(width: 40, height: 40)
                     .background(theme.accent.opacity(0.14), in: .rect(cornerRadius: 12))
-                VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: .leading, spacing: 6) {
                     Text(label).fontWeight(.semibold)
                     if let detail {
-                        Text(detail).font(.footnote).foregroundStyle(.secondary)
+                        HStack(spacing: 6) {
+                            if active {
+                                Circle().fill(theme.accent).frame(width: 6, height: 6)
+                            }
+                            Text(detail).font(.footnote).foregroundStyle(.secondary)
+                        }
                     }
                 }
                 Spacer(minLength: 0)
+                if done {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.title3)
+                        .foregroundStyle(theme.accent)
+                } else {
+                    Image(systemName: "chevron.right")
+                        .foregroundStyle(.secondary)
+                }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
             .frame(maxWidth: .infinity, minHeight: 64)
-            .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: 16))
+            .background(Color.primary.opacity(0.05), in: .rect(cornerRadius: 16))
             .overlay {
                 RoundedRectangle(cornerRadius: 16)
-                    .stroke(highlighted ? theme.accent : theme.accent.opacity(0.2), lineWidth: highlighted ? 2 : 1)
+                    .stroke(active || done ? theme.accent.opacity(0.5) : Color.primary.opacity(0.12))
             }
         }
         .buttonStyle(.plain)

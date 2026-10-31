@@ -52,6 +52,21 @@ struct FiveLettersTheme: DynamicProperty {
     }
 }
 
+extension View {
+    func fiveLettersHeader(_ title: String) -> some View {
+        navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Text(title)
+                        .font(.title2.bold())
+                        .lineLimit(1)
+                        .fixedSize()
+                }
+                .sharedBackgroundVisibility(.hidden)
+            }
+    }
+}
+
 extension Color {
     fileprivate init(hex: UInt32) {
         self.init(
