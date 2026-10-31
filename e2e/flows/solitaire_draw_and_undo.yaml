@@ -1,0 +1,19 @@
+appId: com.joclegg.puzzles
+name: Drawing from the stock shows a card in the waste, and undo puts it back
+tags:
+  - fast
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "simple"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "stock"
+- assertVisible:
+    id: "card_3C"
+- tapOn:
+    id: "undo"
+- assertNotVisible:
+    id: "card_3C"

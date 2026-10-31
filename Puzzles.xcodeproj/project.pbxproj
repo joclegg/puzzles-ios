@@ -1,0 +1,230 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {};
+	objectVersion = 77;
+	objects = {
+		A10000000000000000000001 /* Project */ = {
+			isa = PBXProject;
+			buildConfigurationList = A10000000000000000000002;
+			compatibilityVersion = "Xcode 16.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (en, Base);
+			mainGroup = A10000000000000000000003;
+			packageReferences = (A10000000000000000000004);
+			productRefGroup = A10000000000000000000005;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (A10000000000000000000006);
+		};
+		A10000000000000000000003 = {
+			isa = PBXGroup;
+			children = (A10000000000000000000007, A10000000000000000000005);
+			sourceTree = "<group>";
+		};
+		A10000000000000000000005 /* Products */ = {
+			isa = PBXGroup;
+			children = (A10000000000000000000008);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A10000000000000000000007 /* App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = App;
+			sourceTree = "<group>";
+		};
+		A10000000000000000000008 /* Puzzles.app */ = {
+			isa = PBXFileReference;
+			explicitFileType = wrapper.application;
+			includeInIndex = 0;
+			path = Puzzles.app;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A10000000000000000000004 = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = .;
+		};
+		A10000000000000000000009 = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FiveLettersEngine;
+		};
+		A1000000000000000000000A = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PuzzlesCore;
+		};
+		A1000000000000000000000B = {
+			isa = PBXBuildFile;
+			productRef = A10000000000000000000009;
+		};
+		A1000000000000000000000C = {
+			isa = PBXBuildFile;
+			productRef = A1000000000000000000000A;
+		};
+		A10000000000000000000020 = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SudokuEngine;
+		};
+		A10000000000000000000021 = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SolitaireEngine;
+		};
+		A10000000000000000000022 = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TwoToneEngine;
+		};
+		A10000000000000000000023 = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SightlinesEngine;
+		};
+		A10000000000000000000024 = {
+			isa = XCSwiftPackageProductDependency;
+			productName = KakuroEngine;
+		};
+		A10000000000000000000025 = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SlideOutEngine;
+		};
+		A10000000000000000000026 = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WordWheelEngine;
+		};
+		A10000000000000000000040 = {
+			isa = PBXBuildFile;
+			productRef = A10000000000000000000020;
+		};
+		A10000000000000000000041 = {
+			isa = PBXBuildFile;
+			productRef = A10000000000000000000021;
+		};
+		A10000000000000000000042 = {
+			isa = PBXBuildFile;
+			productRef = A10000000000000000000022;
+		};
+		A10000000000000000000043 = {
+			isa = PBXBuildFile;
+			productRef = A10000000000000000000023;
+		};
+		A10000000000000000000044 = {
+			isa = PBXBuildFile;
+			productRef = A10000000000000000000024;
+		};
+		A10000000000000000000045 = {
+			isa = PBXBuildFile;
+			productRef = A10000000000000000000025;
+		};
+		A10000000000000000000046 = {
+			isa = PBXBuildFile;
+			productRef = A10000000000000000000026;
+		};
+		A10000000000000000000060 = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PuzzlesSync;
+		};
+		A10000000000000000000061 = {
+			isa = PBXBuildFile;
+			productRef = A10000000000000000000060;
+		};
+		A1000000000000000000000D = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (A10000000000000000000061, A1000000000000000000000B, A1000000000000000000000C, A10000000000000000000040, A10000000000000000000041, A10000000000000000000042, A10000000000000000000043, A10000000000000000000044, A10000000000000000000045, A10000000000000000000046);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1000000000000000000000E = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = ();
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1000000000000000000000F = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = ();
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10000000000000000000006 /* PuzzlesApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A10000000000000000000010;
+			buildPhases = (A1000000000000000000000E, A1000000000000000000000D, A1000000000000000000000F);
+			buildRules = ();
+			dependencies = ();
+			fileSystemSynchronizedGroups = (A10000000000000000000007);
+			name = PuzzlesApp;
+			packageProductDependencies = (A10000000000000000000060, A10000000000000000000009, A1000000000000000000000A, A10000000000000000000020, A10000000000000000000021, A10000000000000000000022, A10000000000000000000023, A10000000000000000000024, A10000000000000000000025, A10000000000000000000026);
+			productName = Puzzles;
+			productReference = A10000000000000000000008;
+			productType = "com.apple.product-type.application";
+		};
+		A10000000000000000000002 = {
+			isa = XCConfigurationList;
+			buildConfigurations = (A10000000000000000000011, A10000000000000000000012);
+			defaultConfigurationName = Release;
+		};
+		A10000000000000000000010 = {
+			isa = XCConfigurationList;
+			buildConfigurations = (A10000000000000000000013, A10000000000000000000014);
+			defaultConfigurationName = Release;
+		};
+		A10000000000000000000011 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		A10000000000000000000012 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		A10000000000000000000013 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Puzzles-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Puzzles;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 0.1.0;
+				CURRENT_PROJECT_VERSION = 1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.joclegg.puzzles;
+				PRODUCT_NAME = Puzzles;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		A10000000000000000000014 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Puzzles-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Puzzles;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 0.1.0;
+				CURRENT_PROJECT_VERSION = 1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.joclegg.puzzles;
+				PRODUCT_NAME = Puzzles;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+	};
+	rootObject = A10000000000000000000001;
+}

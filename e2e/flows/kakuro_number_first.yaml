@@ -1,0 +1,30 @@
+appId: com.joclegg.puzzles
+name: Kakuro - with Number first on, picking a digit then a cell fills it
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "game_kakuro"
+    timeout: 120000
+- tapOn:
+    id: "game_kakuro"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "settings"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "setting_digit_first"
+- launchApp:
+    arguments:
+      fixture: "kakuro_one_left"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "digit_4"
+- tapOn:
+    id: "cell_r3c3"
+- assertVisible:
+    id: "solved_dialog"

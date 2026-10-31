@@ -1,0 +1,20 @@
+appId: com.joclegg.puzzles
+name: Sightlines - start a 6 x 6 puzzle
+tags:
+  - fast
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "game_sightlines"
+    timeout: 120000
+- tapOn:
+    id: "game_sightlines"
+- tapOn:
+    id: "size_6"
+- assertVisible:
+    id: "dot_r6c6"
+- assertVisible:
+    id: "game_title"
+    text: "6 x 6"

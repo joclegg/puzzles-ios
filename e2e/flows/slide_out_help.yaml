@@ -1,0 +1,29 @@
+appId: com.joclegg.puzzles
+name: Slide Out - the rules open and the walkthrough steps through
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "slide_out_two_moves"
+- extendedWaitUntil:
+    visible:
+      id: "move_count"
+    timeout: 120000
+- tapOn:
+    id: "rules"
+- tapOn:
+    id: "walkthrough_start"
+- assertVisible:
+    id: "walkthrough_text"
+    text: "Drag a block.*"
+- tapOn:
+    id: "walkthrough_next"
+- tapOn:
+    id: "walkthrough_next"
+- assertVisible:
+    id: "walkthrough_text"
+    text: "Restart.*"
+- tapOn:
+    id: "walkthrough_close"
+- assertNotVisible:
+    id: "walkthrough"

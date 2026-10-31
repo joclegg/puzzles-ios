@@ -1,0 +1,83 @@
+appId: com.joclegg.puzzles
+name: Mistake checking - show wrong, block clashes and off
+tags:
+  - fast
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "classic_easy"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "cell_r1c3"
+- tapOn:
+    id: "digit_9"
+- assertVisible:
+    id: "mistakes"
+    text: "Mistakes: 1"
+- launchApp:
+    clearState: true
+- waitForAnimationToEnd:
+    timeout: 1500
+- scrollUntilVisible:
+    element:
+      id: "game_sudoku"
+    centerElement: true
+- tapOn:
+    id: "game_sudoku"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "settings"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "setting_mistakes_block_clashes"
+- launchApp:
+    arguments:
+      fixture: "classic_easy"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "cell_r1c3"
+- tapOn:
+    id: "digit_5"
+- assertNotVisible:
+    id: "cell_r1c3"
+    text: "5"
+- assertVisible:
+    id: "mistakes"
+    text: "Mistakes: 1"
+- launchApp:
+    stopApp: true
+- waitForAnimationToEnd:
+    timeout: 1500
+- scrollUntilVisible:
+    element:
+      id: "game_sudoku"
+    centerElement: true
+- tapOn:
+    id: "game_sudoku"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "settings"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "setting_mistakes_off"
+- launchApp:
+    arguments:
+      fixture: "classic_easy"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "cell_r1c3"
+- tapOn:
+    id: "digit_9"
+- assertVisible:
+    id: "cell_r1c3"
+    text: "9"
+- assertNotVisible:
+    id: "mistakes"

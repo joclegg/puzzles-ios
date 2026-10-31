@@ -1,0 +1,20 @@
+appId: com.joclegg.puzzles
+name: Tapping a card moves it, and the card underneath turns over
+tags:
+  - fast
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "simple"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "card_AH"
+- assertVisible:
+    id: "card_5C"
+- tapOn:
+    id: "card_QH"
+- assertVisible:
+    id: "move_count"
+    text: "Moves 2"

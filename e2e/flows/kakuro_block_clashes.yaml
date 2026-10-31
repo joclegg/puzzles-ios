@@ -1,0 +1,38 @@
+appId: com.joclegg.puzzles
+name: Kakuro - with Block clashes on, a digit already in the run is refused and counted
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "game_kakuro"
+    timeout: 120000
+- tapOn:
+    id: "game_kakuro"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "settings"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "setting_mistakes_block_clashes"
+- launchApp:
+    arguments:
+      fixture: "kakuro_empty"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "cell_r2c2"
+- tapOn:
+    id: "digit_2"
+- tapOn:
+    id: "cell_r2c3"
+- tapOn:
+    id: "digit_2"
+- assertNotVisible:
+    id: "cell_r2c3"
+    text: "2"
+- assertVisible:
+    id: "mistakes"
+    text: "Mistakes 1"

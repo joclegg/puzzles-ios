@@ -1,0 +1,22 @@
+appId: com.joclegg.puzzles
+name: Sightlines - filling the last dot solves the puzzle and records a best time
+tags:
+  - fast
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "sightlines_one_left"
+- tapOn:
+    id: "dot_r1c2"
+- assertVisible:
+    id: "solved_dialog"
+- assertVisible:
+    id: "new_best"
+- tapOn:
+    id: "solved_home"
+- tapOn:
+    id: "stats"
+- assertVisible:
+    id: "size_4_solved"
+    text: "1/1"

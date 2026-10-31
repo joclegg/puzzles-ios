@@ -1,0 +1,23 @@
+appId: com.joclegg.puzzles
+name: Kakuro - Settings in the game menu opens Kakuro's settings
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "kakuro_empty"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "game_menu"
+- tapOn:
+    id: "menu_settings"
+- waitForAnimationToEnd:
+    timeout: 1500
+- assertVisible:
+    id: "setting_digit_first"
+- tapOn:
+    id: "back"
+- waitForAnimationToEnd:
+    timeout: 1500
+- assertVisible:
+    id: "game_menu"

@@ -1,0 +1,29 @@
+appId: com.joclegg.puzzles
+name: Slide Out - drag the blocker away and the red block out to solve at par
+tags:
+  - fast
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "slide_out_two_moves"
+- extendedWaitUntil:
+    visible:
+      id: "move_count"
+    timeout: 120000
+- swipe:
+    from:
+      id: "block_1"
+    direction: DOWN
+- assertVisible:
+    id: "move_count"
+    text: "Moves 1"
+- swipe:
+    from:
+      id: "block_0"
+    direction: RIGHT
+- assertVisible:
+    id: "solved_dialog"
+- assertVisible:
+    id: "solved_moves"
+    text: "2 moves, par!"

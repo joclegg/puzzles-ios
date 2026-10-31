@@ -1,0 +1,23 @@
+appId: com.joclegg.puzzles
+name: Two Tone - a hint points out a wrong tile, and undo clears it
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "two_tone_two_left"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "tile_r1c2"
+- tapOn:
+    id: "hint"
+- assertVisible:
+    id: "hint_message"
+    text: "This tile is the wrong colour."
+- tapOn:
+    id: "undo"
+- assertNotVisible:
+    id: "hint_message"
+- assertVisible:
+    id: "progress"
+    text: "0%"

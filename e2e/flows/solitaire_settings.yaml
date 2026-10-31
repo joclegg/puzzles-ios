@@ -1,0 +1,37 @@
+appId: com.joclegg.puzzles
+name: Turning off the timer in settings hides it in the game
+---
+- launchApp:
+    clearState: true
+- waitForAnimationToEnd:
+    timeout: 1500
+- scrollUntilVisible:
+    element:
+      id: "game_solitaire"
+    centerElement: true
+- tapOn:
+    id: "game_solitaire"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "settings"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "setting_show_timer"
+- tapOn:
+    id: "back"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "play"
+- extendedWaitUntil:
+    visible:
+      id: "stock"
+    timeout: 60000
+- waitForAnimationToEnd:
+    timeout: 1500
+- assertVisible:
+    id: "stock"
+- assertNotVisible:
+    id: "timer"

@@ -1,0 +1,33 @@
+appId: com.joclegg.puzzles
+name: Finishing today's daily earns a bronze medal on Home and in the calendar
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "daily_classic_one_left"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "cell_r1c3"
+- tapOn:
+    id: "digit_4"
+- assertVisible:
+    id: "solved_screen"
+- tapOn:
+    id: "solved_home"
+- extendedWaitUntil:
+    visible:
+      id: "calendar_medal_bronze"
+    timeout: 15000
+- tapOn:
+    id: "daily_calendar"
+- assertVisible: ".*bronze medal"
+- tapOn:
+    id: "daily_today"
+- waitForAnimationToEnd:
+    timeout: 1500
+- assertVisible:
+    id: "daily_choice"
+- assertVisible:
+    id: "daily_play_classic_easy"
+    text: "Classic Easy ✓"

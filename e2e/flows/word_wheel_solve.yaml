@@ -1,0 +1,40 @@
+appId: com.joclegg.puzzles
+name: Word Wheel - entering both crossword words solves the puzzle
+tags:
+  - fast
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "word_wheel_two_words"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "wheel_letter_4"
+- tapOn:
+    id: "wheel_letter_2"
+- tapOn:
+    id: "wheel_letter_3"
+- tapOn:
+    id: "wheel_letter_1"
+- tapOn:
+    id: "wheel_letter_5"
+- tapOn:
+    id: "submit_word"
+- assertVisible:
+    id: "words_left"
+    text: "1 to find"
+- tapOn:
+    id: "wheel_letter_1"
+- tapOn:
+    id: "wheel_letter_2"
+- tapOn:
+    id: "wheel_letter_3"
+- tapOn:
+    id: "wheel_letter_4"
+- tapOn:
+    id: "wheel_letter_5"
+- tapOn:
+    id: "submit_word"
+- assertVisible:
+    id: "solved_dialog"

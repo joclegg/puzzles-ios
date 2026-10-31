@@ -1,0 +1,25 @@
+appId: com.joclegg.puzzles
+name: Slide Out - undo takes a move back, and a hint is shown
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "slide_out_two_moves"
+- extendedWaitUntil:
+    visible:
+      id: "move_count"
+    timeout: 120000
+- swipe:
+    from:
+      id: "block_1"
+    direction: DOWN
+- tapOn:
+    id: "undo"
+- assertVisible:
+    id: "move_count"
+    text: "Moves 0"
+- tapOn:
+    id: "hint"
+- assertVisible:
+    id: "move_count"
+    text: "Moves 0"

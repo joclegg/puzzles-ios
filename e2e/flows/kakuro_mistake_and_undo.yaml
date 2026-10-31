@@ -1,0 +1,21 @@
+appId: com.joclegg.puzzles
+name: Kakuro - a wrong digit is shown, and undo takes it back
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "kakuro_empty"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "cell_r2c2"
+- tapOn:
+    id: "digit_9"
+- assertVisible:
+    id: "cell_r2c2"
+    text: "9"
+- tapOn:
+    id: "undo"
+- assertNotVisible:
+    id: "cell_r2c2"
+    text: "9"

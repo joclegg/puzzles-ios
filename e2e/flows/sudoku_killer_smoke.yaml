@@ -1,0 +1,51 @@
+appId: com.joclegg.puzzles
+name: Killer - wrong cage entries are flagged, then the puzzle completes
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "killer_one_cage"
+- waitForAnimationToEnd:
+    timeout: 1500
+- assertVisible:
+    id: "game_title"
+    text: "Killer · Easy"
+- assertVisible:
+    id: "digit_1"
+    enabled: false
+- assertVisible:
+    id: "digit_5"
+    enabled: true
+- assertVisible:
+    id: "digit_5_count"
+    text: "8"
+- tapOn:
+    id: "cell_r1c2"
+- tapOn:
+    id: "digit_5"
+- assertVisible:
+    id: "mistakes"
+    text: "Mistakes: 1"
+- tapOn:
+    id: "cell_r1c2"
+- tapOn:
+    id: "digit_3"
+- tapOn:
+    id: "cell_r1c1"
+- tapOn:
+    id: "digit_5"
+- assertVisible:
+    id: "solved_screen"
+- tapOn:
+    id: "solved_home"
+- extendedWaitUntil:
+    visible:
+      id: "stats"
+    timeout: 15000
+- tapOn:
+    id: "stats"
+- waitForAnimationToEnd:
+    timeout: 1500
+- assertVisible:
+    id: "best_killer_easy_solved"
+    text: "1"

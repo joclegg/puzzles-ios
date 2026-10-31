@@ -1,0 +1,49 @@
+appId: com.joclegg.puzzles
+name: Slide Out - a solve shows in stats, and history replays it then backs out to Home
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "slide_out_two_moves"
+- extendedWaitUntil:
+    visible:
+      id: "move_count"
+    timeout: 120000
+- swipe:
+    from:
+      id: "block_1"
+    direction: DOWN
+- swipe:
+    from:
+      id: "block_0"
+    direction: RIGHT
+- assertVisible:
+    id: "new_best"
+- tapOn:
+    id: "solved_home"
+- tapOn:
+    id: "stats"
+- assertVisible:
+    id: "level_beginner_solved"
+    text: "1/1"
+- assertVisible:
+    id: "level_beginner_best"
+    text: "1"
+- tapOn:
+    id: "back"
+- tapOn:
+    id: "history"
+- tapOn:
+    id: "filter_easy"
+- assertVisible: "No games yet."
+- tapOn:
+    id: "filter_beginner"
+- tapOn:
+    id: "history_item"
+- assertVisible:
+    id: "move_count"
+    text: "Moves 0"
+- tapOn:
+    id: "back"
+- assertVisible:
+    id: "level_beginner"
