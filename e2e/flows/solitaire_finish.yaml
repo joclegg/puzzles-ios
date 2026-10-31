@@ -1,0 +1,15 @@
+appId: com.joclegg.puzzles
+name: Finish plays the last face-up cards to the foundations and wins
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "one_move_to_win"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "finish"
+- extendedWaitUntil:
+    visible:
+      id: "won_dialog"
+    timeout: 15000

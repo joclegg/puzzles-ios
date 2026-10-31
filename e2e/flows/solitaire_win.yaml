@@ -1,0 +1,37 @@
+appId: com.joclegg.puzzles
+name: Putting the last card up wins, records a best time and shows in stats and history
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "one_move_to_win"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "card_KS"
+- extendedWaitUntil:
+    visible:
+      id: "won_dialog"
+    timeout: 15000
+- assertVisible:
+    id: "new_best"
+- tapOn:
+    id: "won_home"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "stats"
+- waitForAnimationToEnd:
+    timeout: 1500
+- assertVisible:
+    id: "draw_one_won"
+    text: "1"
+- tapOn:
+    id: "back"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "history"
+- waitForAnimationToEnd:
+    timeout: 1500
+- assertVisible: "Won · 1 moves"

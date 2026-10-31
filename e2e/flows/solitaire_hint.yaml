@@ -1,0 +1,14 @@
+appId: com.joclegg.puzzles
+name: A Solitaire hint suggests a move
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "simple"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "hint"
+- assertVisible:
+    id: "hint_message"
+    text: "(Move the .*|.*draw from the stock\\.)"
