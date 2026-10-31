@@ -33,6 +33,8 @@ struct LauncherView: View {
         }
     }
 
+    @State private var signingIn = false
+
     private let entries = [
         Entry(
             id: "sudoku", name: "Sudoku", detail: "Classic and killer, from 6x6 to evil", icon: AnyView(SudokuGameIcon()), light: 0x1565D8,
@@ -99,7 +101,17 @@ struct LauncherView: View {
                         .padding()
                     }
                     .navigationTitle("Puzzles")
+                    .sheet(isPresented: $signingIn) { SignInView() }
                     .toolbar {
+                        ToolbarItem(placement: .topBarLeading) {
+                            if SyncCenter.shared.signedIn {
+                                Button("Sign out") { SyncCenter.shared.signOut() }
+                                    .accessibilityIdentifier("sign_out")
+                            } else {
+                                Button("Sign in to sync") { signingIn = true }
+                                    .accessibilityIdentifier("sign_in")
+                            }
+                        }
                         ToolbarItem(placement: .topBarTrailing) {
                             NavigationLink {
                                 SettingsHubView()

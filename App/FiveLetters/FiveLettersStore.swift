@@ -1,3 +1,4 @@
+import PuzzlesSync
 import FiveLettersEngine
 import Foundation
 import Observation
@@ -14,6 +15,31 @@ final class FiveLettersGameRecord {
     var status: String
     var startedAt: Int64
     var finishedAt: Int64?
+
+    init?(sync fields: SyncFields, uuid: String, updatedAt: Int64) {
+        guard let wordId = fields.string("wordId"), let answer = fields.string("answer"),
+            let guesses = fields.json["guesses"] as? [String], let status = fields.enumValue("status"),
+            let startedAt = fields.long("startedAt")
+        else {
+            return nil
+        }
+        self.uuid = uuid
+        self.updatedAt = updatedAt
+        self.wordId = wordId
+        self.answer = answer
+        self.guesses = guesses.joined(separator: ",")
+        hardMode = fields.bool("hardMode")
+        self.status = status
+        self.startedAt = startedAt
+        finishedAt = fields.long("finishedAt")
+    }
+
+    var syncJSON: [String: Any] {
+        [
+            "id": uuid, "wordId": wordId, "answer": answer, "guesses": guesses.split(separator: ",").map(String.init),
+            "hardMode": hardMode, "status": jsonName(fromEnum: status), "startedAt": startedAt, "finishedAt": nullable(finishedAt),
+        ]
+    }
 
     init(game: SavedGame, updatedAt: Int64) {
         uuid = game.uuid
@@ -54,7 +80,7 @@ final class FiveLettersStore {
 
     private(set) var history: [SavedGame] = []
 
-    @ObservationIgnored private let context: ModelContext
+    @ObservationIgnored let context: ModelContext
     @ObservationIgnored private var loadedWords: Words?
 
     private init() {

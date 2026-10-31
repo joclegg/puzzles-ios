@@ -9,6 +9,7 @@ struct RootView: View {
     }
 
     @State private var phase = Phase.loading
+    @Environment(\.scenePhase) private var scenePhase
     @AppStorage(SettingKeys.theme) private var theme = ThemeMode.system.rawValue
 
     private var colorScheme: ColorScheme? {
@@ -43,7 +44,16 @@ struct RootView: View {
             }
         }
         .preferredColorScheme(colorScheme)
-        .task { await load() }
+        .task {
+            SyncCenter.shared.start()
+            await load()
+        }
+        .onOpenURL { SyncCenter.shared.handle(url: $0) }
+        .onChange(of: scenePhase) { _, phase in
+            if phase != .inactive {
+                SyncCenter.shared.syncNow()
+            }
+        }
     }
 
     private func load() async {

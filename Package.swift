@@ -6,6 +6,7 @@ let package = Package(
     platforms: [.iOS(.v26), .macOS(.v26)],
     products: [
         .library(name: "PuzzlesCore", targets: ["PuzzlesCore"]),
+        .library(name: "PuzzlesSync", targets: ["PuzzlesSync"]),
         .library(name: "FiveLettersEngine", targets: ["FiveLettersEngine"]),
         .library(name: "SudokuEngine", targets: ["SudokuEngine"]),
         .library(name: "SolitaireEngine", targets: ["SolitaireEngine"]),
@@ -17,6 +18,8 @@ let package = Package(
     ],
     targets: [
         .target(name: "PuzzlesCore"),
+        .target(name: "PuzzlesSync"),
+        .testTarget(name: "PuzzlesSyncTests", dependencies: ["PuzzlesSync"]),
         .target(name: "FiveLettersEngine", dependencies: ["PuzzlesCore"]),
         .testTarget(name: "PuzzlesCoreTests", dependencies: ["PuzzlesCore"]),
         .testTarget(name: "FiveLettersEngineTests", dependencies: ["FiveLettersEngine"]),

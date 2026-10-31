@@ -1,3 +1,4 @@
+import PuzzlesSync
 import Foundation
 import Observation
 import SolitaireEngine
@@ -18,6 +19,35 @@ final class SolitaireGameRecord {
     var status: String
     var startedAt: Int64
     var finishedAt: Int64?
+
+    init?(sync fields: SyncFields, id: Int64, uuid: String, updatedAt: Int64) {
+        guard let dealId = fields.string("dealId"), let drawMode = fields.enumValue("drawMode"),
+            let buildOrder = fields.enumValue("order"), let deal = fields.string("board"), let moves = fields.string("moves"),
+            let elapsedMs = fields.long("elapsedMs"), let status = fields.enumValue("status"), let startedAt = fields.long("startedAt")
+        else {
+            return nil
+        }
+        self.id = id
+        self.uuid = uuid
+        self.updatedAt = updatedAt
+        self.dealId = dealId
+        self.drawMode = drawMode
+        self.buildOrder = buildOrder
+        self.deal = deal
+        self.moves = moves
+        moveCount = fields.int("moveCount") ?? 0
+        self.elapsedMs = elapsedMs
+        self.status = status
+        self.startedAt = startedAt
+        finishedAt = fields.long("finishedAt")
+    }
+
+    var syncJSON: [String: Any] {
+        [
+            "id": uuid, "dealId": dealId, "drawMode": jsonName(fromEnum: drawMode), "order": jsonName(fromEnum: buildOrder),
+            "board": deal, "moves": moves, "moveCount": moveCount, "elapsedMs": elapsedMs, "status": jsonName(fromEnum: status), "startedAt": startedAt, "finishedAt": nullable(finishedAt),
+        ]
+    }
 
     init(game: SavedGame, updatedAt: Int64) {
         id = game.id
@@ -59,7 +89,7 @@ final class SolitaireStore {
     static let shared = SolitaireStore()
 
     private(set) var games: [SavedGame] = []
-    @ObservationIgnored private let context: ModelContext
+    @ObservationIgnored let context: ModelContext
     @ObservationIgnored private let now: () -> Int64
 
     init(now: @escaping () -> Int64 = { Int64(Date().timeIntervalSince1970 * 1000) }) {

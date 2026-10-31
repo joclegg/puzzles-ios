@@ -1,3 +1,4 @@
+import PuzzlesSync
 import Foundation
 import PuzzlesCore
 import SudokuEngine
@@ -22,6 +23,42 @@ final class SudokuGameRecord {
     var startedAt: Int64
     var finishedAt: Int64?
     var undoHistory: String
+
+    init?(sync fields: SyncFields, id: Int, uuid: String, updatedAt: Int64) {
+        guard let puzzleId = fields.string("puzzleId"), let mode = fields.enumValue("mode"), let puzzle = fields.string("puzzle"),
+            let cellValues = fields.string("values"), let notes = fields.json["notes"] as? [NSNumber],
+            let elapsedMs = fields.long("elapsedMs"), let mistakeLevel = fields.enumValue("mistakeCheck"),
+            let status = fields.enumValue("status"), let startedAt = fields.long("startedAt")
+        else {
+            return nil
+        }
+        self.id = id
+        self.uuid = uuid
+        self.updatedAt = updatedAt
+        self.puzzleId = puzzleId
+        self.mode = mode
+        difficulty = fields.enumValue("difficulty")
+        custom = fields.bool("custom")
+        self.puzzle = puzzle
+        self.cellValues = cellValues
+        self.notes = notes.map { String($0.intValue) }.joined(separator: ",")
+        self.elapsedMs = elapsedMs
+        mistakes = fields.int("mistakes") ?? 0
+        self.mistakeLevel = mistakeLevel
+        self.status = status
+        self.startedAt = startedAt
+        finishedAt = fields.long("finishedAt")
+        undoHistory = fields.string("moves") ?? ""
+    }
+
+    var syncJSON: [String: Any] {
+        [
+            "id": uuid, "puzzleId": puzzleId, "mode": jsonName(fromEnum: mode),
+            "difficulty": difficulty.map { jsonName(fromEnum: $0) as Any } ?? NSNull(), "custom": custom, "puzzle": puzzle,
+            "values": cellValues, "notes": notes.split(separator: ",").compactMap { Int($0) }, "moves": undoHistory,
+            "mistakes": mistakes, "mistakeCheck": jsonName(fromEnum: mistakeLevel), "elapsedMs": elapsedMs, "status": jsonName(fromEnum: status), "startedAt": startedAt, "finishedAt": nullable(finishedAt),
+        ]
+    }
 
     init(id: Int, game: SudokuSavedGame, now: Int64) {
         self.id = id
@@ -173,7 +210,7 @@ final class SudokuStore {
     private static let lowWatermark = 10
     private static let stockTarget = 30
 
-    private let context: ModelContext
+    let context: ModelContext
     private var bankLines: [String: [String]] = [:]
     private var toppingUp = false
     private(set) var revision = 0

@@ -1,3 +1,4 @@
+import PuzzlesSync
 import Foundation
 import KakuroEngine
 import PuzzlesCore
@@ -18,6 +19,35 @@ final class KakuroGameEntity {
     var status: String
     var startedAt: Int64
     var finishedAt: Int64?
+
+    init?(sync fields: SyncFields, id: Int64, uuid: String, updatedAt: Int64) {
+        guard let puzzleId = fields.string("puzzleId"), let size = fields.int("size"), let puzzle = fields.string("puzzle"),
+            let changes = fields.string("changes"), let elapsedMs = fields.long("elapsedMs"),
+            let status = fields.enumValue("status"), let startedAt = fields.long("startedAt")
+        else {
+            return nil
+        }
+        self.id = id
+        self.uuid = uuid
+        self.updatedAt = updatedAt
+        self.puzzleId = puzzleId
+        self.size = size
+        self.puzzle = puzzle
+        self.changes = changes
+        self.elapsedMs = elapsedMs
+        hints = fields.int("hints") ?? 0
+        mistakes = fields.int("mistakes") ?? 0
+        self.status = status
+        self.startedAt = startedAt
+        finishedAt = fields.long("finishedAt")
+    }
+
+    var syncJSON: [String: Any] {
+        [
+            "id": uuid, "puzzleId": puzzleId, "size": size, "puzzle": puzzle, "changes": changes, "hints": hints,
+            "mistakes": mistakes, "elapsedMs": elapsedMs, "status": jsonName(fromEnum: status), "startedAt": startedAt, "finishedAt": nullable(finishedAt),
+        ]
+    }
 
     init(game: SavedGame, updatedAt: Int64) {
         id = game.id
@@ -72,7 +102,7 @@ final class KakuroStore {
     static let shared = KakuroStore()
 
     private(set) var games: [SavedGame] = []
-    private let context: ModelContext
+    let context: ModelContext
 
     private init() {
         context = ModelContext(Self.makeContainer())

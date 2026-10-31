@@ -1,3 +1,4 @@
+import PuzzlesSync
 import Foundation
 import Observation
 import PuzzlesCore
@@ -19,6 +20,45 @@ final class WordWheelGameEntity {
     var status: String
     var startedAt: Int64
     var finishedAt: Int64?
+
+    init?(sync fields: SyncFields, id: Int64, uuid: String, updatedAt: Int64) {
+        guard let puzzleId = fields.string("puzzleId"), let size = fields.int("size"), let level = Level(rawValue: size),
+            let puzzle = fields.string("puzzle"), let changes = fields.string("changes"), let elapsedMs = fields.long("elapsedMs"),
+            let status = fields.enumValue("status"), let startedAt = fields.long("startedAt")
+        else {
+            return nil
+        }
+        let parts = changes.split(separator: ";", omittingEmptySubsequences: false).map { $0.split(separator: " ").map(String.init) }
+        func part(_ index: Int) -> [String] {
+            index < parts.count ? parts[index] : []
+        }
+        self.id = id
+        self.uuid = uuid
+        self.updatedAt = updatedAt
+        self.puzzleId = puzzleId
+        self.level = level.name
+        self.puzzle = puzzle
+        found = part(0).joined(separator: ",")
+        bonus = part(1).joined(separator: ",")
+        revealed = part(2).map { $0.replacingOccurrences(of: ",", with: ":") }.joined(separator: ",")
+        self.elapsedMs = elapsedMs
+        self.status = status
+        self.startedAt = startedAt
+        finishedAt = fields.long("finishedAt")
+    }
+
+    var syncJSON: [String: Any] {
+        let progress = [
+            found.split(separator: ",").joined(separator: " "),
+            bonus.split(separator: ",").joined(separator: " "),
+            revealed.split(separator: ",").map { $0.replacingOccurrences(of: ":", with: ",") }.joined(separator: " "),
+        ]
+        return [
+            "id": uuid, "puzzleId": puzzleId, "size": Level.allCases.first { $0.name == level }?.rawValue ?? 0, "puzzle": puzzle,
+            "changes": progress.joined(separator: ";"), "hints": revealed.split(separator: ",").count, "mistakes": 0,
+            "elapsedMs": elapsedMs, "status": jsonName(fromEnum: status), "startedAt": startedAt, "finishedAt": nullable(finishedAt),
+        ]
+    }
 
     init(game: SavedGame, updatedAt: Int64) {
         id = game.id
@@ -75,7 +115,7 @@ final class WordWheelRepository {
 
     private(set) var history: [SavedGame] = []
     @ObservationIgnored private var entities: [WordWheelGameEntity] = []
-    @ObservationIgnored private let context: ModelContext
+    @ObservationIgnored let context: ModelContext
 
     private init() {
         context = ModelContext(Self.makeContainer())

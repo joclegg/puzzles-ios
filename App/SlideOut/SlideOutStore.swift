@@ -1,3 +1,4 @@
+import PuzzlesSync
 import Foundation
 import PuzzlesCore
 import SlideOutEngine
@@ -18,6 +19,35 @@ final class SlideOutGameRecord {
     var status: String
     var startedAt: Int64
     var finishedAt: Int64?
+
+    init?(sync fields: SyncFields, id: Int64, uuid: String, updatedAt: Int64) {
+        guard let puzzleId = fields.string("puzzleId"), let size = fields.int("size"), let level = Level(rawValue: size),
+            let puzzle = fields.string("puzzle"), let moves = fields.string("changes"), let elapsedMs = fields.long("elapsedMs"),
+            let status = fields.enumValue("status"), let startedAt = fields.long("startedAt")
+        else {
+            return nil
+        }
+        self.id = id
+        self.uuid = uuid
+        self.updatedAt = updatedAt
+        self.puzzleId = puzzleId
+        self.level = level.name
+        self.puzzle = puzzle
+        self.moves = moves
+        moveCount = moves.split(separator: " ").count
+        self.elapsedMs = elapsedMs
+        hints = fields.int("hints") ?? 0
+        self.status = status
+        self.startedAt = startedAt
+        finishedAt = fields.long("finishedAt")
+    }
+
+    var syncJSON: [String: Any] {
+        [
+            "id": uuid, "puzzleId": puzzleId, "size": Level.allCases.first { $0.name == level }?.rawValue ?? 0, "puzzle": puzzle,
+            "changes": moves, "hints": hints, "mistakes": 0, "elapsedMs": elapsedMs, "status": jsonName(fromEnum: status), "startedAt": startedAt, "finishedAt": nullable(finishedAt),
+        ]
+    }
 
     init(id: Int64, ref: PuzzleRef, now: Int64) {
         self.id = id
@@ -62,7 +92,7 @@ final class SlideOutGameRecord {
 enum SlideOutStore {
     static let container: ModelContainer = makeContainer()
 
-    private static var context: ModelContext {
+    static var context: ModelContext {
         container.mainContext
     }
 
