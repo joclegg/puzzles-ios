@@ -361,7 +361,7 @@ struct SudokuPadView: View {
 
     private func toolKey(_ tool: SudokuPadTool) -> some View {
         Button(action: tool.action) {
-            Image(systemName: tool.symbol)
+            PuzzleIcon.image(tool.symbol)
                 .font(.title3)
                 .foregroundStyle(palette.enteredDigit)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)

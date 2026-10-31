@@ -106,7 +106,7 @@ struct TwoToneHomeView: View {
 
     private func headerButton(_ icon: String, _ label: String, _ tag: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Image(systemName: icon).frame(width: 40, height: 40)
+            PuzzleIcon.image(icon).frame(width: 40, height: 40)
         }
         .tint(.primary)
         .accessibilityLabel(label)
@@ -144,7 +144,7 @@ struct TwoToneHomeView: View {
                 Circle()
                     .fill(TwoToneColors.accent)
                     .frame(width: 48, height: 48)
-                    .overlay { Image(systemName: "play.fill").foregroundStyle(.background) }
+                    .overlay { PuzzleIcon.image("play.fill").foregroundStyle(.background) }
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Continue").font(.headline)
                     Text("\(game.title) · \(formatDuration(game.elapsedMs))")
@@ -153,7 +153,7 @@ struct TwoToneHomeView: View {
                         .lineLimit(1)
                 }
                 Spacer(minLength: 0)
-                Image(systemName: "chevron.right").foregroundStyle(.secondary)
+                PuzzleIcon.image("chevron.right").foregroundStyle(.secondary)
             }
             .padding(16)
             .frame(maxWidth: .infinity)
@@ -196,7 +196,7 @@ struct TwoToneHomeView: View {
             VStack(spacing: 4) {
                 Text(sizeLabel(size)).font(.subheadline.weight(.semibold)).lineLimit(1)
                 if done {
-                    Image(systemName: "checkmark.circle.fill").foregroundStyle(TwoToneColors.accent)
+                    PuzzleIcon.image("checkmark.circle.fill").foregroundStyle(TwoToneColors.accent)
                 } else {
                     Text("Play").font(.caption2).foregroundStyle(.secondary)
                 }

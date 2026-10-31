@@ -97,7 +97,7 @@ struct SlideOutHistoryScreen: View {
     private var empty: some View {
         let accent = SlideColors.of(scheme).accent
         return VStack(spacing: 12) {
-            Image(systemName: "clock.arrow.circlepath")
+            PuzzleIcon.image("clock.arrow.circlepath")
                 .foregroundStyle(accent)
                 .frame(width: 48, height: 48)
                 .background(accent.opacity(0.14), in: Circle())

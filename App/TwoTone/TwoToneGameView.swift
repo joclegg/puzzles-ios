@@ -171,7 +171,7 @@ struct TwoToneGameView: View {
 
     private func tool(_ icon: String, _ label: String, _ tag: String, enabled: Bool = true, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Image(systemName: icon).frame(width: 38, height: 44)
+            PuzzleIcon.image(icon).frame(width: 38, height: 44)
         }
         .tint(.primary)
         .disabled(!enabled)
@@ -193,7 +193,7 @@ struct TwoToneGameView: View {
             Button("Settings") { settingsOpen = true }
                 .accessibilityIdentifier("menu_settings")
         } label: {
-            Image(systemName: "ellipsis").frame(width: 38, height: 44)
+            PuzzleIcon.image("ellipsis").frame(width: 38, height: 44)
         }
         .tint(.primary)
         .accessibilityLabel("More")
@@ -315,7 +315,7 @@ private struct TwoToneSolvedDialog: View {
                     .fill(TwoToneColors.accent)
                     .frame(width: 64, height: 64)
                     .overlay {
-                        Image(systemName: "trophy.fill").font(.title).foregroundStyle(.background)
+                        PuzzleIcon.image("trophy.fill").font(.title).foregroundStyle(.background)
                     }
                     .scaleEffect(popped ? 1 : 0.6)
                     .accessibilityHidden(true)

@@ -20,7 +20,7 @@ struct KakuroIconButton: View {
                 action()
             }
         } label: {
-            Image(systemName: symbol)
+            PuzzleIcon.image(symbol)
                 .font(.system(size: 18))
                 .frame(width: 38, height: 44)
                 .background(on ? KakuroColors.of(scheme).selected : .clear, in: Circle())
@@ -49,7 +49,7 @@ struct KakuroBackButton: View {
 
     var body: some View {
         Button(action: action) {
-            Image(systemName: "chevron.left")
+            PuzzleIcon.image("chevron.left")
                 .font(.system(size: 18, weight: .medium))
                 .frame(width: 40, height: 44)
                 .contentShape(Rectangle())

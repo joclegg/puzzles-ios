@@ -126,7 +126,7 @@ struct WordWheelHomeView: View {
             openGame = game.id
         } label: {
             HStack(spacing: 16) {
-                Image(systemName: "play.fill")
+                PuzzleIcon.image("play.fill")
                     .foregroundStyle(Color(.systemBackground))
                     .frame(width: 48, height: 48)
                     .background(WheelColors.accent, in: Circle())
@@ -138,7 +138,7 @@ struct WordWheelHomeView: View {
                         .lineLimit(1)
                 }
                 Spacer(minLength: 0)
-                Image(systemName: "chevron.right").foregroundStyle(.secondary)
+                PuzzleIcon.image("chevron.right").foregroundStyle(.secondary)
             }
             .padding(16)
             .tile(highlighted: true, radius: 24)
@@ -195,7 +195,7 @@ struct WordWheelHomeView: View {
                     }
                 }
                 Spacer(minLength: 0)
-                Image(systemName: "chevron.right").foregroundStyle(.secondary)
+                PuzzleIcon.image("chevron.right").foregroundStyle(.secondary)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
@@ -207,7 +207,7 @@ struct WordWheelHomeView: View {
     }
 
     private var doneBadge: some View {
-        Image(systemName: "checkmark.circle.fill").foregroundStyle(WheelColors.accent)
+        PuzzleIcon.image("checkmark.circle.fill").foregroundStyle(WheelColors.accent)
     }
 
     private func section<Content: View>(
@@ -234,7 +234,7 @@ struct WordWheelHomeView: View {
         action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
-            Image(systemName: icon)
+            PuzzleIcon.image(icon)
         }
         .accessibilityLabel(label)
         .accessibilityIdentifier(tag)

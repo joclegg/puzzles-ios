@@ -111,7 +111,7 @@ struct KakuroHistoryView: View {
 
     private var emptyState: some View {
         VStack(spacing: 12) {
-            Image(systemName: "clock.arrow.circlepath")
+            PuzzleIcon.image("clock.arrow.circlepath")
                 .foregroundStyle(accent)
                 .frame(width: 48, height: 48)
                 .background(accent.opacity(0.14), in: Circle())

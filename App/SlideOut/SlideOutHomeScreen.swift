@@ -73,7 +73,7 @@ struct SlideOutHomeScreen: View {
             route = .game(game.id)
         } label: {
             HStack(spacing: 16) {
-                Image(systemName: "play.fill")
+                PuzzleIcon.image("play.fill")
                     .foregroundStyle(Color(uiColor: .systemBackground))
                     .frame(width: 48, height: 48)
                     .background(colors.accent, in: Circle())
@@ -85,7 +85,7 @@ struct SlideOutHomeScreen: View {
                         .lineLimit(1)
                 }
                 Spacer()
-                Image(systemName: "chevron.right").foregroundStyle(.secondary)
+                PuzzleIcon.image("chevron.right").foregroundStyle(.secondary)
             }
             .padding(16)
             .background(Color.primary.opacity(0.05), in: RoundedRectangle(cornerRadius: 24))
@@ -114,7 +114,7 @@ struct SlideOutHomeScreen: View {
             VStack(spacing: 4) {
                 Text(level.label).font(.subheadline).fontWeight(.semibold).lineLimit(1)
                 if done {
-                    Image(systemName: "checkmark.circle.fill").foregroundStyle(colors.accent)
+                    PuzzleIcon.image("checkmark.circle.fill").foregroundStyle(colors.accent)
                 } else {
                     Text("Play").font(.caption2).foregroundStyle(.secondary)
                 }
@@ -169,7 +169,7 @@ struct SlideOutHomeScreen: View {
                     }
                 }
                 Spacer(minLength: 0)
-                Image(systemName: "chevron.right").foregroundStyle(.secondary)
+                PuzzleIcon.image("chevron.right").foregroundStyle(.secondary)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)

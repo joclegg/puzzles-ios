@@ -41,7 +41,7 @@ struct SolitaireBackButton: View {
 
     var body: some View {
         Button(action: action) {
-            Image(systemName: "chevron.left")
+            PuzzleIcon.image("chevron.left")
                 .font(.title3)
                 .frame(width: 44, height: 44)
                 .contentShape(Rectangle())
@@ -61,7 +61,7 @@ struct SolitaireIconButton: View {
 
     var body: some View {
         Button(action: action) {
-            Image(systemName: symbol)
+            PuzzleIcon.image(symbol)
                 .frame(width: 40, height: 44)
                 .contentShape(Rectangle())
         }

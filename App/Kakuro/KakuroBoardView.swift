@@ -206,7 +206,7 @@ private struct KakuroPadToolKey: View {
                 tool.action()
             }
         } label: {
-            Image(systemName: tool.symbol)
+            PuzzleIcon.image(tool.symbol)
                 .font(.system(size: 26))
                 .frame(maxWidth: .infinity)
                 .aspectRatio(1, contentMode: .fit)

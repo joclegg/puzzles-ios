@@ -377,7 +377,7 @@ private struct KakuroSolvedDialog: View {
             Color.black.opacity(0.4).ignoresSafeArea().accessibilityHidden(true)
             VStack(spacing: 0) {
                 VStack(spacing: 8) {
-                    Image(systemName: "trophy.fill")
+                    PuzzleIcon.image("trophy.fill")
                         .font(.system(size: 28))
                         .foregroundStyle(Color(.systemBackground))
                         .frame(width: 64, height: 64)
@@ -420,7 +420,7 @@ private struct KakuroSolvedDialog: View {
                                 } label: {
                                     HStack(spacing: 6) {
                                         Text(sizeLabel(size)).font(.caption).lineLimit(1).fixedSize()
-                                        Image(systemName: "chevron.right").font(.system(size: 10)).foregroundStyle(accent)
+                                        PuzzleIcon.image("chevron.right").font(.system(size: 10)).foregroundStyle(accent)
                                     }
                                     .padding(.leading, 12)
                                     .padding(.trailing, 6)

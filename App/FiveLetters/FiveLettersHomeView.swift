@@ -186,7 +186,7 @@ struct FiveLettersHomeView: View {
     ) -> some View {
         Button(action: action) {
             HStack(spacing: 12) {
-                Image(systemName: icon)
+                PuzzleIcon.image(icon)
                     .foregroundStyle(theme.accent)
                     .frame(width: 40, height: 40)
                     .background(theme.accent.opacity(0.14), in: .rect(cornerRadius: 12))
@@ -203,11 +203,11 @@ struct FiveLettersHomeView: View {
                 }
                 Spacer(minLength: 0)
                 if done {
-                    Image(systemName: "checkmark.circle.fill")
+                    PuzzleIcon.image("checkmark.circle.fill")
                         .font(.title3)
                         .foregroundStyle(theme.accent)
                 } else {
-                    Image(systemName: "chevron.right")
+                    PuzzleIcon.image("chevron.right")
                         .foregroundStyle(.secondary)
                 }
             }
@@ -273,7 +273,7 @@ struct FiveLettersHomeView: View {
     }
 }
 
-private struct FiveLettersGameIcon: View {
+struct FiveLettersGameIcon: View {
     private let theme = FiveLettersTheme()
 
     var body: some View {

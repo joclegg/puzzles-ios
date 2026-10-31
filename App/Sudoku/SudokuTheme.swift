@@ -56,7 +56,7 @@ struct SudokuBackButton: View {
 
     var body: some View {
         Button(action: action) {
-            Image(systemName: "chevron.backward")
+            PuzzleIcon.image("chevron.backward")
                 .font(.title3)
                 .frame(width: 44, height: 44)
                 .contentShape(Rectangle())
@@ -75,7 +75,7 @@ struct SudokuIconButton: View {
 
     var body: some View {
         Button(action: action) {
-            Image(systemName: symbol)
+            PuzzleIcon.image(symbol)
                 .font(.title3)
                 .frame(width: 44, height: 44)
                 .contentShape(Rectangle())

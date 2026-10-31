@@ -28,7 +28,7 @@ private struct SightlinesTrophy: View {
             .fill(SightlinesColors.accent)
             .frame(width: 64, height: 64)
             .overlay {
-                Image(systemName: "trophy.fill").font(.title).foregroundStyle(Color(uiColor: .systemBackground))
+                PuzzleIcon.image("trophy.fill").font(.title).foregroundStyle(Color(uiColor: .systemBackground))
             }
             .scaleEffect(scale)
             .onAppear {
@@ -176,7 +176,7 @@ struct SightlinesGameView: View {
         action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
-            Image(systemName: icon).frame(width: 40, height: 40)
+            PuzzleIcon.image(icon).frame(width: 40, height: 40)
         }
         .disabled(!enabled)
         .simultaneousGesture(LongPressGesture().onEnded { _ in tooltip = description })
@@ -193,7 +193,7 @@ struct SightlinesGameView: View {
             }
             Button("Settings") { settingsOpen = true }.accessibilityIdentifier("menu_settings")
         } label: {
-            Image(systemName: "ellipsis").frame(width: 40, height: 40)
+            PuzzleIcon.image("ellipsis").frame(width: 40, height: 40)
         }
         .accessibilityLabel("More")
         .accessibilityIdentifier("game_menu")
@@ -272,7 +272,7 @@ struct SightlinesGameView: View {
                         } label: {
                             HStack(spacing: 6) {
                                 Text("Sightlines \(sizeLabel(size))").font(.caption.weight(.medium))
-                                Image(systemName: "chevron.right").font(.caption2).foregroundStyle(SightlinesColors.accent)
+                                PuzzleIcon.image("chevron.right").font(.caption2).foregroundStyle(SightlinesColors.accent)
                             }
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)

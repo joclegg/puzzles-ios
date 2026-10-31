@@ -79,7 +79,7 @@ struct SightlinesHomeView: View {
         Button {
             screen = target
         } label: {
-            Image(systemName: icon)
+            PuzzleIcon.image(icon)
         }
         .accessibilityLabel(label)
         .accessibilityIdentifier(tag)
@@ -115,7 +115,7 @@ struct SightlinesHomeView: View {
                 Circle()
                     .fill(SightlinesColors.accent)
                     .frame(width: 48, height: 48)
-                    .overlay { Image(systemName: "play.fill").foregroundStyle(Color(uiColor: .systemBackground)) }
+                    .overlay { PuzzleIcon.image("play.fill").foregroundStyle(Color(uiColor: .systemBackground)) }
                 VStack(alignment: .leading) {
                     Text("Continue").font(.headline)
                     Text("\(game.ref.title) · \(formatDuration(ms: game.elapsedMs))")
@@ -124,7 +124,7 @@ struct SightlinesHomeView: View {
                         .lineLimit(1)
                 }
                 Spacer(minLength: 0)
-                Image(systemName: "chevron.right").foregroundStyle(.secondary)
+                PuzzleIcon.image("chevron.right").foregroundStyle(.secondary)
             }
             .padding(16)
             .background(SightlinesColors.tile, in: RoundedRectangle(cornerRadius: 24))
@@ -177,7 +177,7 @@ struct SightlinesHomeView: View {
             .fill(SightlinesColors.accent)
             .frame(width: 18, height: 18)
             .overlay {
-                Image(systemName: "checkmark").font(.system(size: 10, weight: .bold)).foregroundStyle(Color(uiColor: .systemBackground))
+                PuzzleIcon.image("checkmark").font(.system(size: 10, weight: .bold)).foregroundStyle(Color(uiColor: .systemBackground))
             }
             .accessibilityLabel("Done")
     }
@@ -210,7 +210,7 @@ struct SightlinesHomeView: View {
                     }
                 }
                 Spacer(minLength: 0)
-                Image(systemName: "chevron.right").foregroundStyle(.secondary)
+                PuzzleIcon.image("chevron.right").foregroundStyle(.secondary)
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 12)

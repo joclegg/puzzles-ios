@@ -87,7 +87,7 @@ struct FiveLettersResultDialog: View {
         FiveLettersDialogCard(onDismiss: onClose) {
             VStack(spacing: 8) {
                 VStack(spacing: 12) {
-                    Image(systemName: game.isWon ? "trophy.fill" : "book.fill")
+                    PuzzleIcon.image(game.isWon ? "trophy.fill" : "book.fill")
                         .font(.title)
                         .foregroundStyle(Color(.systemBackground))
                         .frame(width: 64, height: 64)

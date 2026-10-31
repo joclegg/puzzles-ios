@@ -23,7 +23,7 @@ struct SightlinesHistoryView: View {
                     Circle()
                         .fill(SightlinesColors.accent.opacity(0.14))
                         .frame(width: 48, height: 48)
-                        .overlay { Image(systemName: "clock.arrow.circlepath").foregroundStyle(SightlinesColors.accent) }
+                        .overlay { PuzzleIcon.image("clock.arrow.circlepath").foregroundStyle(SightlinesColors.accent) }
                     Text("No games yet.").foregroundStyle(.secondary)
                 }
                 .frame(maxWidth: .infinity)

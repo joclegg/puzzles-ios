@@ -138,7 +138,7 @@ struct SightlinesColourPicker: View {
                 .frame(width: 56, height: 56)
                 .overlay {
                     if dot == .empty {
-                        Image(systemName: "xmark").foregroundStyle(Color.primary)
+                        PuzzleIcon.image("xmark").foregroundStyle(Color.primary)
                     }
                 }
                 .overlay {

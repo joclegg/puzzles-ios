@@ -58,7 +58,7 @@ struct KakuroHomeView: View {
 
     private func headerButton(_ symbol: String, _ label: String, _ tag: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Image(systemName: symbol).font(.system(size: 18)).frame(width: 40, height: 44).contentShape(Rectangle())
+            PuzzleIcon.image(symbol).font(.system(size: 18)).frame(width: 40, height: 44).contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .accessibilityLabel(label)
@@ -89,7 +89,7 @@ struct KakuroHomeView: View {
             navigator.open(latest)
         } label: {
             HStack(spacing: 16) {
-                Image(systemName: "play.fill")
+                PuzzleIcon.image("play.fill")
                     .foregroundStyle(Color(.systemBackground))
                     .frame(width: 48, height: 48)
                     .background(accent, in: Circle())
@@ -101,7 +101,7 @@ struct KakuroHomeView: View {
                         .lineLimit(1)
                 }
                 Spacer()
-                Image(systemName: "chevron.right").foregroundStyle(.secondary)
+                PuzzleIcon.image("chevron.right").foregroundStyle(.secondary)
             }
             .padding(16)
             .modifier(KakuroTileStyle(accent: accent, highlighted: true, corner: 24))
@@ -138,7 +138,7 @@ struct KakuroHomeView: View {
             VStack(spacing: 4) {
                 Text(sizeLabel(size)).font(.footnote.weight(.semibold)).lineLimit(1).minimumScaleFactor(0.7)
                 if done {
-                    Image(systemName: "checkmark")
+                    PuzzleIcon.image("checkmark")
                         .font(.system(size: 10, weight: .bold))
                         .foregroundStyle(Color(.systemBackground))
                         .frame(width: 18, height: 18)
@@ -188,7 +188,7 @@ struct KakuroHomeView: View {
                     }
                 }
                 Spacer(minLength: 0)
-                Image(systemName: "chevron.right").foregroundStyle(.secondary)
+                PuzzleIcon.image("chevron.right").foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, minHeight: 64, alignment: .leading)
             .padding(.horizontal, 16)

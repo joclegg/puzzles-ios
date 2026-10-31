@@ -156,7 +156,7 @@ private struct SlideOutGameContent: View {
             Button("Settings") { showSettings = true }
                 .accessibilityIdentifier("menu_settings")
         } label: {
-            Image(systemName: "ellipsis").frame(width: 40, height: 44)
+            PuzzleIcon.image("ellipsis").frame(width: 40, height: 44)
         }
         .accessibilityLabel("More")
         .accessibilityIdentifier("game_menu")
@@ -204,7 +204,7 @@ private struct SlideOutGameContent: View {
         ZStack {
             Color.black.opacity(0.4).ignoresSafeArea()
             VStack(spacing: 12) {
-                Image(systemName: "trophy")
+                PuzzleIcon.image("trophy")
                     .font(.title)
                     .foregroundStyle(Color(uiColor: .systemBackground))
                     .frame(width: 64, height: 64)
@@ -265,7 +265,7 @@ private struct SlideOutGameContent: View {
                             } label: {
                                 HStack(spacing: 6) {
                                     Text(level.label)
-                                    Image(systemName: "chevron.right").foregroundStyle(colors.accent)
+                                    PuzzleIcon.image("chevron.right").foregroundStyle(colors.accent)
                                 }
                             }
                             .font(.caption)

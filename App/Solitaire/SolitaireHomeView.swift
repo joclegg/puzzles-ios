@@ -127,7 +127,7 @@ struct SolitaireHomeView: View {
             HStack(spacing: 16) {
                 ZStack {
                     Circle().fill(SolitaireColors.accent).frame(width: 48, height: 48)
-                    Image(systemName: "play.fill").foregroundStyle(SolitaireColors.background)
+                    PuzzleIcon.image("play.fill").foregroundStyle(SolitaireColors.background)
                 }
                 VStack(alignment: .leading) {
                     Text("Continue").font(.headline)
@@ -137,7 +137,7 @@ struct SolitaireHomeView: View {
                         .lineLimit(1)
                 }
                 Spacer(minLength: 0)
-                Image(systemName: "chevron.right").foregroundStyle(SolitaireColors.onSurfaceVariant)
+                PuzzleIcon.image("chevron.right").foregroundStyle(SolitaireColors.onSurfaceVariant)
             }
             .padding(16)
             .background(SolitaireColors.tile, in: RoundedRectangle(cornerRadius: 24))
@@ -202,7 +202,7 @@ struct SolitaireHomeView: View {
     ) -> some View {
         Button(action: action) {
             HStack(spacing: 12) {
-                Image(systemName: symbol)
+                PuzzleIcon.image(symbol)
                     .foregroundStyle(SolitaireColors.accent)
                     .frame(width: 40, height: 40)
                     .background(SolitaireColors.accent.opacity(0.14), in: RoundedRectangle(cornerRadius: 12))
@@ -213,7 +213,7 @@ struct SolitaireHomeView: View {
                     }
                 }
                 Spacer(minLength: 0)
-                Image(systemName: done ? "checkmark.circle.fill" : "chevron.right")
+                PuzzleIcon.image(done ? "checkmark.circle.fill" : "chevron.right")
                     .foregroundStyle(done ? SolitaireColors.accent : SolitaireColors.onSurfaceVariant)
             }
             .padding(.horizontal, 16)

@@ -259,7 +259,7 @@ struct SolitaireGameView: View {
         VStack(spacing: 12) {
             ZStack {
                 Circle().fill(SolitaireColors.accent).frame(width: 64, height: 64)
-                Image(systemName: "trophy.fill")
+                PuzzleIcon.image("trophy.fill")
                     .font(.title)
                     .foregroundStyle(SolitaireColors.background)
             }

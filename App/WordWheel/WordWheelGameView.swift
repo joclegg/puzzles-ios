@@ -128,7 +128,7 @@ struct WordWheelGameView: View {
             Button("Settings") { showSettings = true }
                 .accessibilityIdentifier("menu_settings")
         } label: {
-            Image(systemName: "ellipsis")
+            PuzzleIcon.image("ellipsis")
                 .frame(width: 40, height: 40)
                 .contentShape(Rectangle())
         }
@@ -139,7 +139,7 @@ struct WordWheelGameView: View {
 
     private func tool(_ icon: String, _ label: String, _ tag: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Image(systemName: icon)
+            PuzzleIcon.image(icon)
                 .font(.title3)
                 .frame(width: 40, height: 40)
                 .contentShape(Rectangle())
@@ -198,7 +198,7 @@ struct WordWheelGameView: View {
     private var solvedDialog: some View {
         WordWheelDialogCard(tag: "solved_dialog", onDismiss: {}) {
             VStack(spacing: 8) {
-                Image(systemName: "trophy.fill")
+                PuzzleIcon.image("trophy.fill")
                     .font(.title)
                     .foregroundStyle(Color(.systemBackground))
                     .frame(width: 64, height: 64)
@@ -267,7 +267,7 @@ struct WordWheelGameView: View {
         } label: {
             HStack(spacing: 6) {
                 Text(level.label).font(.caption.weight(.medium))
-                Image(systemName: "chevron.right")
+                PuzzleIcon.image("chevron.right")
                     .font(.caption2)
                     .foregroundStyle(WheelColors.accent)
             }

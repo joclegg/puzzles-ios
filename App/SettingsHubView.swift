@@ -97,7 +97,7 @@ struct SettingsHubView: View {
                         dismiss()
                     }
                 } label: {
-                    Image(systemName: "chevron.left").font(.title3).frame(width: 44, height: 44)
+                    PuzzleIcon.image("chevron.left").font(.title3).frame(width: 44, height: 44)
                 }
                 .accessibilityLabel("Back")
                 .accessibilityIdentifier("back")

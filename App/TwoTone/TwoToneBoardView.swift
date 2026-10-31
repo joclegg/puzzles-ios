@@ -139,7 +139,7 @@ struct TwoToneColourPicker: View {
                 .frame(width: 56, height: 56)
                 .overlay {
                     if tile == .empty {
-                        Image(systemName: "xmark").foregroundStyle(.primary)
+                        PuzzleIcon.image("xmark").foregroundStyle(.primary)
                     }
                 }
                 .overlay {

@@ -140,7 +140,7 @@ struct FiveLettersKeyboard: View {
 
     private func deleteKey(width: CGFloat) -> some View {
         Button(action: onDelete) {
-            Image(systemName: "delete.left")
+            PuzzleIcon.image("delete.left")
                 .foregroundStyle(theme.keyText)
                 .frame(width: width, height: Self.keyHeight)
                 .background(theme.key, in: .rect(cornerRadius: 6))

@@ -517,7 +517,7 @@ private struct SudokuWinDialog: View {
     var body: some View {
         SudokuDialog(id: "solved_screen", bordered: true, onDismiss: navigator.home) {
             VStack(spacing: 6) {
-                Image(systemName: "trophy.fill")
+                PuzzleIcon.image("trophy.fill")
                     .font(.title)
                     .foregroundStyle(palette.background)
                     .frame(width: 64, height: 64)
@@ -566,7 +566,7 @@ private struct SudokuWinDialog: View {
                         } label: {
                             HStack(spacing: 6) {
                                 Text(mode.label).font(.subheadline)
-                                Image(systemName: "chevron.forward").font(.caption).foregroundStyle(palette.accent)
+                                PuzzleIcon.image("chevron.forward").font(.caption).foregroundStyle(palette.accent)
                             }
                             .padding(.horizontal, 12)
                             .padding(.vertical, 4)

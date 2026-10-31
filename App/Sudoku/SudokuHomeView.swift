@@ -80,7 +80,7 @@ struct SudokuHomeView: View {
             navigator.openGame(game.id)
         } label: {
             HStack(spacing: 16) {
-                Image(systemName: "play.fill")
+                PuzzleIcon.image("play.fill")
                     .foregroundStyle(palette.background)
                     .frame(width: 48, height: 48)
                     .background(palette.accent, in: Circle())
@@ -90,7 +90,7 @@ struct SudokuHomeView: View {
                         .font(.subheadline).foregroundStyle(.secondary).lineLimit(1)
                 }
                 Spacer(minLength: 0)
-                Image(systemName: "chevron.forward").foregroundStyle(.secondary)
+                PuzzleIcon.image("chevron.forward").foregroundStyle(.secondary)
             }
             .padding(16)
             .contentShape(Rectangle())
@@ -142,7 +142,7 @@ struct SudokuHomeView: View {
             Button {
                 navigator.push(.daily)
             } label: {
-                Image(systemName: "calendar")
+                PuzzleIcon.image("calendar")
                     .foregroundStyle(palette.accent)
                     .frame(width: 64, height: 64)
                     .contentShape(Rectangle())
@@ -203,7 +203,7 @@ struct SudokuHomeView: View {
                     }
                 }
                 Spacer(minLength: 0)
-                Image(systemName: "chevron.forward").foregroundStyle(.secondary)
+                PuzzleIcon.image("chevron.forward").foregroundStyle(.secondary)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
@@ -218,14 +218,14 @@ struct SudokuHomeView: View {
 
     private func tileLabel(_ title: String, symbol: String, trailing: Bool) -> some View {
         HStack(spacing: 12) {
-            Image(systemName: symbol)
+            PuzzleIcon.image(symbol)
                 .foregroundStyle(palette.accent)
                 .frame(width: 40, height: 40)
                 .background(palette.accent.opacity(0.14), in: RoundedRectangle(cornerRadius: 12))
             Text(title).font(.headline)
             Spacer(minLength: 0)
             if trailing {
-                Image(systemName: "chevron.forward").foregroundStyle(.secondary)
+                PuzzleIcon.image("chevron.forward").foregroundStyle(.secondary)
             }
         }
         .padding(.horizontal, 16)

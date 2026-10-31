@@ -68,7 +68,7 @@ struct SlideOutBackButton: View {
 
     var body: some View {
         Button(action: action) {
-            Image(systemName: "chevron.left").frame(width: 44, height: 44)
+            PuzzleIcon.image("chevron.left").frame(width: 44, height: 44)
         }
         .accessibilityLabel("Back")
         .accessibilityIdentifier("back")
@@ -85,7 +85,7 @@ struct SlideOutIconButton: View {
 
     var body: some View {
         Button(action: action) {
-            Image(systemName: systemName).frame(width: 40, height: 44)
+            PuzzleIcon.image(systemName).frame(width: 40, height: 44)
         }
         .disabled(!enabled)
         .accessibilityLabel(label)
