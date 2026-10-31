@@ -1,8 +1,9 @@
+import SlideOutEngine
 import SwiftUI
 
 struct SlideOutBoardView: View {
-    let board: SlideOutBoard
-    let hint: SlideOutMove?
+    let board: Board
+    let hint: Move?
     let onSlide: (Int, Int) -> Void
 
     @Environment(\.colorScheme) private var scheme
@@ -10,19 +11,19 @@ struct SlideOutBoardView: View {
     var body: some View {
         let colors = SlideColors.of(scheme)
         GeometryReader { proxy in
-            let cell = proxy.size.width / CGFloat(SlideOutBoardSize)
+            let cell = proxy.size.width / CGFloat(boardSize)
             ZStack(alignment: .topLeading) {
                 Rectangle()
                     .fill(colors.exit)
                     .frame(width: 6, height: cell - 6)
-                    .offset(x: proxy.size.width - 3, y: cell * CGFloat(SlideOutExitRow) + 3)
-                ForEach(0..<SlideOutBoardSize * SlideOutBoardSize, id: \.self) { index in
+                    .offset(x: proxy.size.width - 3, y: cell * CGFloat(exitRow) + 3)
+                ForEach(0..<boardSize * boardSize, id: \.self) { index in
                     RoundedRectangle(cornerRadius: 8)
                         .fill(colors.slot)
                         .frame(width: cell - 6, height: cell - 6)
                         .offset(
-                            x: cell * CGFloat(index % SlideOutBoardSize) + 3,
-                            y: cell * CGFloat(index / SlideOutBoardSize) + 3
+                            x: cell * CGFloat(index % boardSize) + 3,
+                            y: cell * CGFloat(index / boardSize) + 3
                         )
                 }
                 ForEach(Array(board.blocks.enumerated()), id: \.offset) { index, block in
@@ -47,7 +48,7 @@ struct SlideOutBoardView: View {
 
 private struct SlideOutBlockView: View {
     let index: Int
-    let block: SlideOutBlock
+    let block: Block
     let range: ClosedRange<Int>
     let isHinted: Bool
     let cell: CGFloat

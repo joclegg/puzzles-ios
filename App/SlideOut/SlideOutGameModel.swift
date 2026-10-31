@@ -1,19 +1,20 @@
 import Foundation
 import Observation
+import SlideOutEngine
 
 @Observable
 @MainActor
 final class SlideOutGameModel {
     let gameId: Int64
-    private(set) var ref: SlideOutPuzzleRef?
-    private(set) var game: SlideOutGameState?
+    private(set) var ref: PuzzleRef?
+    private(set) var game: GameState?
     private(set) var hints = 0
     private(set) var elapsedMs: Int64 = 0
     private(set) var newBest = false
     private(set) var resultSaved = false
     private(set) var revealed = false
 
-    @ObservationIgnored private var timer = SlideOutGameTimer()
+    @ObservationIgnored private var timer = GameTimer()
     @ObservationIgnored private var ticker: Task<Void, Never>?
     @ObservationIgnored private var pendingSave: Task<Void, Never>?
 
@@ -23,9 +24,9 @@ final class SlideOutGameModel {
             return
         }
         self.ref = ref
-        game = SlideOutGameState(puzzle: ref.puzzle, moves: (try? SlideOutMoveCodec.decode(record.moves)) ?? [])
+        game = GameState(puzzle: ref.puzzle, moves: (try? MoveCodec.decode(record.moves)) ?? [])
         hints = record.hints
-        timer = SlideOutGameTimer(accumulatedMs: record.elapsedMs)
+        timer = GameTimer(accumulatedMs: record.elapsedMs)
         elapsedMs = record.elapsedMs
     }
 
@@ -62,7 +63,7 @@ final class SlideOutGameModel {
             return
         }
         if current.hint != nil {
-            game = SlideOutGameState(puzzle: current.puzzle, moves: current.moves)
+            game = GameState(puzzle: current.puzzle, moves: current.moves)
             return
         }
         hints += 1
@@ -90,7 +91,7 @@ final class SlideOutGameModel {
             return
         }
         game = current.restart()
-        timer = SlideOutGameTimer()
+        timer = GameTimer()
         elapsedMs = 0
         hints = 0
         resumeTimer()
@@ -115,7 +116,7 @@ final class SlideOutGameModel {
         persistNow()
     }
 
-    private func change(_ update: (SlideOutGameState) -> SlideOutGameState) {
+    private func change(_ update: (GameState) -> GameState) {
         guard !revealed, let before = game else {
             return
         }
@@ -131,7 +132,7 @@ final class SlideOutGameModel {
         }
     }
 
-    private func finish(_ solved: SlideOutGameState) {
+    private func finish(_ solved: GameState) {
         pauseTimer()
         pendingSave?.cancel()
         newBest = SlideOutStore.solve(id: gameId, moves: solved.moves, elapsedMs: elapsedMs, hints: hints)
