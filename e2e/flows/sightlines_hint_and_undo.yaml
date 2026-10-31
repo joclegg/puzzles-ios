@@ -1,0 +1,21 @@
+appId: com.joclegg.puzzles
+name: Sightlines - a hint points out a wrong dot, and undo clears it
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "sightlines_two_left"
+- tapOn:
+    id: "dot_r1c3"
+- tapOn:
+    id: "hint"
+- assertVisible:
+    id: "hint_message"
+    text: "This dot is the wrong colour."
+- tapOn:
+    id: "undo"
+- assertNotVisible:
+    id: "hint_message"
+- assertVisible:
+    id: "progress"
+    text: "0%"

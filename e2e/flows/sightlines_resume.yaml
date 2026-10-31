@@ -1,0 +1,25 @@
+appId: com.joclegg.puzzles
+name: Sightlines - a puzzle in progress survives the app being closed
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "sightlines_two_left"
+- tapOn:
+    id: "dot_r1c2"
+- assertVisible:
+    id: "progress"
+    text: "50%"
+- launchApp:
+    stopApp: true
+- extendedWaitUntil:
+    visible:
+      id: "game_sightlines"
+    timeout: 120000
+- tapOn:
+    id: "game_sightlines"
+- tapOn:
+    id: "continue"
+- assertVisible:
+    id: "progress"
+    text: "50%"

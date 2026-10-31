@@ -1,0 +1,15 @@
+appId: com.joclegg.puzzles
+name: Sightlines - a number shows how many blue dots it sees now
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "sightlines_two_left"
+- assertVisible:
+    id: "dot_r1c1_seen"
+    text: "1"
+- tapOn:
+    id: "dot_r1c2"
+- assertVisible:
+    id: "dot_r1c1_seen"
+    text: "2"
