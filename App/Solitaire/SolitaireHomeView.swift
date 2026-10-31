@@ -95,15 +95,7 @@ struct SolitaireHomeView: View {
     private var hero: some View {
         let shape = RoundedRectangle(cornerRadius: 24)
         return HStack(spacing: 16) {
-            ZStack(alignment: .topLeading) {
-                SolitaireCardFace(card: Card(rank: Card.king, suit: .spades), width: 34, selected: false)
-                    .frame(width: 34, height: 48)
-                    .offset(x: 2, y: 2)
-                SolitaireCardFace(card: Card(rank: Card.ace, suit: .hearts), width: 34, selected: false)
-                    .frame(width: 34, height: 48)
-                    .offset(x: 20, y: 6)
-            }
-            .frame(width: 56, height: 56)
+            SolitaireGameIcon()
             .frame(width: 80, height: 80)
             .background(SolitaireColors.background, in: RoundedRectangle(cornerRadius: 20))
             .shadow(radius: 1)
