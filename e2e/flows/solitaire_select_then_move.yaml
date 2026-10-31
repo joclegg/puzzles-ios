@@ -1,0 +1,36 @@
+appId: com.joclegg.puzzles
+name: With one tap move off, a card moves by tapping it and then its target
+---
+- launchApp:
+    clearState: true
+- waitForAnimationToEnd:
+    timeout: 1500
+- scrollUntilVisible:
+    element:
+      id: "game_solitaire"
+    centerElement: true
+- tapOn:
+    id: "game_solitaire"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "settings"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "setting_one_tap_move"
+- launchApp:
+    arguments:
+      fixture: "simple"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "card_QH"
+- assertVisible:
+    id: "move_count"
+    text: "Moves 0"
+- tapOn:
+    id: "card_KS"
+- assertVisible:
+    id: "move_count"
+    text: "Moves 1"
