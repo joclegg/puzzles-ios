@@ -46,6 +46,7 @@ import Testing
         "given a saved game id when its date is read then only daily ids have one",
         arguments: [
             ("daily_2026-10-31", true),
+            ("daily2_2026-10-31", true),
             ("nyt_2026-10-31", true),
             ("daily_2026-10-31_8", true),
             ("daily_2026-10-31_hard", true),

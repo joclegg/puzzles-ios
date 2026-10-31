@@ -13,7 +13,7 @@ struct FiveLettersHomeView: View {
     private let store = FiveLettersStore.shared
     @State private var dailyNumber = Words.dayNumber(Self.today)
     @State private var starting = false
-    @State private var nytUnavailable = false
+    @State private var daily2Unavailable = false
     @State private var openGame: FiveLettersGameRoute?
     @State private var fixtureStarted = false
 
@@ -107,7 +107,7 @@ struct FiveLettersHomeView: View {
     private var today: some View {
         let date = Self.today
         let daily = store.existing(wordId: WordRef.dailyId(date))?.status
-        let nyt = store.existing(wordId: WordRef.nytId(date))?.status
+        let daily2 = store.existing(wordId: WordRef.daily2Id(date))?.status
         return section("Today", aside: Self.todayLabel) {
             tile(
                 "Today's word · #\(dailyNumber)",
@@ -120,21 +120,21 @@ struct FiveLettersHomeView: View {
                 launch { try await openDaily(date) }
             }
             tile(
-                "NY Times daily",
-                id: "nyt_daily",
+                "Daily puzzle 2",
+                id: "daily2",
                 icon: "newspaper",
-                detail: nyt?.homeLabel,
-                active: nyt == .inProgress,
-                done: nyt == .won
+                detail: daily2?.homeLabel,
+                active: daily2 == .inProgress,
+                done: daily2 == .won
             ) {
-                launch { await openNyt(date) }
+                launch { await openDaily2(date) }
             }
-            if nytUnavailable {
-                Text("Couldn't reach the New York Times. Check your connection and try again.")
+            if daily2Unavailable {
+                Text("Couldn't load Daily puzzle 2. Check your connection and try again.")
                     .font(.footnote)
                     .foregroundStyle(.red)
                     .padding(.horizontal, 4)
-                    .accessibilityIdentifier("nyt_unavailable")
+                    .accessibilityIdentifier("daily2_unavailable")
             }
         }
     }
@@ -260,18 +260,18 @@ struct FiveLettersHomeView: View {
         open(store.start(ref: .daily(words: words, date: date), hardMode: FiveLettersSetting.hardMode.current))
     }
 
-    private func openNyt(_ date: CalendarDay) async {
-        if let existing = store.existing(wordId: WordRef.nytId(date)) {
-            nytUnavailable = false
+    private func openDaily2(_ date: CalendarDay) async {
+        if let existing = store.existing(wordId: WordRef.daily2Id(date)) {
+            daily2Unavailable = false
             open(existing)
             return
         }
-        guard let answer = await FiveLettersNyt.word(date: date.isoString) else {
-            nytUnavailable = true
+        guard let answer = await FiveLettersDaily2.word(date: date.isoString) else {
+            daily2Unavailable = true
             return
         }
-        nytUnavailable = false
-        open(store.start(ref: .nyt(date: date, answer: answer), hardMode: FiveLettersSetting.hardMode.current))
+        daily2Unavailable = false
+        open(store.start(ref: .daily2(date: date, answer: answer), hardMode: FiveLettersSetting.hardMode.current))
     }
 
     private func startPractice() async throws {

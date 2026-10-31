@@ -17,7 +17,7 @@ enum FiveLettersDailies {
     static func on(_ date: CalendarDay) -> [GameDaily] {
         let store = FiveLettersStore.shared
         let daily = WordRef.dailyId(date)
-        let nyt = WordRef.nytId(date)
+        let daily2 = WordRef.daily2Id(date)
         let finished = store.history.contains { $0.ref.id == daily && ($0.status == .won || $0.status == .lost) }
         return [
             GameDaily(
@@ -34,17 +34,17 @@ enum FiveLettersDailies {
                 return store.start(ref: .daily(words: words, date: date), hardMode: FiveLettersSetting.hardMode.current).uuid
             },
             GameDaily(
-                tab: .fiveLetters, group: "FIVE_LETTERS", label: "NY Times", tag: "daily_play_nyt",
-                done: store.history.contains { $0.ref.id == nyt && $0.status == .won }, offered: false,
-                calendarLabel: "NY Times daily"
+                tab: .fiveLetters, group: "FIVE_LETTERS", label: "Daily puzzle 2", tag: "daily_play_daily2",
+                done: store.history.contains { $0.ref.id == daily2 && $0.status == .won }, offered: false,
+                calendarLabel: "Daily puzzle 2"
             ) {
-                if let existing = store.existing(wordId: nyt) {
+                if let existing = store.existing(wordId: daily2) {
                     return existing.uuid
                 }
-                guard let answer = await FiveLettersNyt.word(date: date.isoString) else {
+                guard let answer = await FiveLettersDaily2.word(date: date.isoString) else {
                     return nil
                 }
-                return store.start(ref: .nyt(date: date, answer: answer), hardMode: FiveLettersSetting.hardMode.current).uuid
+                return store.start(ref: .daily2(date: date, answer: answer), hardMode: FiveLettersSetting.hardMode.current).uuid
             },
         ]
     }

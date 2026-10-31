@@ -33,7 +33,7 @@ final class FiveLettersGameModel {
         guard let ref = saved?.ref else {
             return false
         }
-        return ref.isDaily || ref.isNyt
+        return ref.isDaily || ref.isDaily2
     }
 
     var shareText: String {

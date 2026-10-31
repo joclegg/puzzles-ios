@@ -101,7 +101,7 @@ final class FiveLettersStore {
     }
 
     var practice: SavedGame? {
-        inProgress.first { !$0.ref.isDaily && !$0.ref.isNyt }
+        inProgress.first { !$0.ref.isDaily && !$0.ref.isDaily2 }
     }
 
     var stats: WordStats {
@@ -176,9 +176,9 @@ final class FiveLettersStore {
     }
 }
 
-enum FiveLettersNyt {
+enum FiveLettersDaily2 {
     static func word(date: String) async -> String? {
-        guard let url = URL(string: "https://www.nytimes.com/svc/wordle/v2/\(date).json") else {
+        guard let url = URL(string: "https://puzzles-daily.joclegg.dev/word/\(date)") else {
             return nil
         }
         let request = URLRequest(url: url, timeoutInterval: 5)
@@ -187,6 +187,6 @@ enum FiveLettersNyt {
         else {
             return nil
         }
-        return nytSolution(json: String(decoding: data, as: UTF8.self))
+        return daily2Word(json: String(decoding: data, as: UTF8.self))
     }
 }

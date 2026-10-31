@@ -60,15 +60,13 @@ public func parseCalendarDay(_ text: some StringProtocol) -> CalendarDay? {
     return parsed.isoString == text ? parsed : nil
 }
 
+public let legacyDaily2Prefix = "nyt_"
+
 public func dailyDate(fromId id: String) -> CalendarDay? {
-    let rest: Substring
-    if id.hasPrefix("daily_") {
-        rest = id.dropFirst("daily_".count)
-    } else if id.hasPrefix("nyt_") {
-        rest = id.dropFirst("nyt_".count)
-    } else {
+    guard let prefix = ["daily_", "daily2_", legacyDaily2Prefix].first(where: id.hasPrefix) else {
         return nil
     }
+    let rest = id.dropFirst(prefix.count)
     let date = rest.prefix(10)
     let suffix = rest.dropFirst(10)
     guard suffix.isEmpty || suffix.hasPrefix("_") else {
