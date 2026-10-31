@@ -358,6 +358,7 @@ private struct KakuroSolvedDialog: View {
     let navigator: KakuroNavigator
 
     @Environment(\.colorScheme) private var scheme
+    @State private var popped = false
 
     private var accent: Color {
         KakuroColors.of(scheme).accent
@@ -381,6 +382,9 @@ private struct KakuroSolvedDialog: View {
                         .foregroundStyle(Color(.systemBackground))
                         .frame(width: 64, height: 64)
                         .background(accent, in: Circle())
+                        .scaleEffect(popped ? 1 : 0.6)
+                        .animation(.spring(response: 0.5, dampingFraction: 0.5), value: popped)
+                        .onAppear { popped = true }
                     Text("Solved!").font(.title2.bold())
                     if model.newBest {
                         Text("NEW BEST")
@@ -409,17 +413,18 @@ private struct KakuroSolvedDialog: View {
                 if !dailiesLeft.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("STILL TO PLAY TODAY").font(.caption2).foregroundStyle(.secondary)
-                        HStack(spacing: 8) {
+                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 84), spacing: 8)], alignment: .leading, spacing: 8) {
                             ForEach(dailiesLeft, id: \.self) { size in
                                 Button {
                                     navigator.openDaily(size: size)
                                 } label: {
-                                    Text(sizeLabel(size))
-                                        .font(.caption)
-                                        .lineLimit(1)
-                                        .fixedSize()
-                                        .padding(.horizontal, 8)
-                                        .padding(.vertical, 5)
+                                    HStack(spacing: 6) {
+                                        Text(sizeLabel(size)).font(.caption).lineLimit(1).fixedSize()
+                                        Image(systemName: "chevron.right").font(.system(size: 10)).foregroundStyle(accent)
+                                    }
+                                    .padding(.leading, 12)
+                                    .padding(.trailing, 6)
+                                    .padding(.vertical, 4)
                                         .background(accent.opacity(0.15), in: Capsule())
                                         .overlay(Capsule().stroke(accent.opacity(0.35), lineWidth: 1))
                                 }

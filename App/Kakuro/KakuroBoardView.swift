@@ -175,7 +175,7 @@ struct KakuroNumberPad: View {
             onDigit(digit)
         } label: {
             Text("\(digit)")
-                .font(.system(size: 34))
+                .font(.system(size: 36))
                 .frame(maxWidth: .infinity)
                 .aspectRatio(1, contentMode: .fit)
                 .foregroundStyle(done ? Color.secondary.opacity(0.4) : colors.accent)
@@ -207,7 +207,7 @@ private struct KakuroPadToolKey: View {
             }
         } label: {
             Image(systemName: tool.symbol)
-                .font(.system(size: 24))
+                .font(.system(size: 26))
                 .frame(maxWidth: .infinity)
                 .aspectRatio(1, contentMode: .fit)
                 .background(tool.on ? colors.selected : colors.accent.opacity(0.15), in: RoundedRectangle(cornerRadius: 8))
