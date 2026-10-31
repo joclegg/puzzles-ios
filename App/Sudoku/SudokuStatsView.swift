@@ -85,11 +85,13 @@ struct SudokuHistoryView: View {
                 SudokuBackButton(action: navigator.back)
                 Text("History").font(.title.weight(.regular))
             }
-            HStack(spacing: 8) {
-                chip("All", selected: filter == nil, id: "filter_all") { filter = nil }
-                ForEach(SudokuHistoryFilter.allCases, id: \.self) { option in
-                    chip(option.rawValue.capitalized, selected: filter == option, id: "filter_\(option.rawValue)") {
-                        filter = option
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    chip("All", selected: filter == nil, id: "filter_all") { filter = nil }
+                    ForEach(SudokuHistoryFilter.allCases, id: \.self) { option in
+                        chip(option.rawValue.capitalized, selected: filter == option, id: "filter_\(option.rawValue)") {
+                            filter = option
+                        }
                     }
                 }
             }

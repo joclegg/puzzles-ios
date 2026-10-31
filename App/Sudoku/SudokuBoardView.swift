@@ -331,7 +331,7 @@ struct SudokuPadView: View {
             onDigit(digit)
         } label: {
             Text("\(digit)")
-                .font(.system(size: digits.upperBound == SudokuGrid.standard.size ? 34 : 30))
+                .font(.system(size: digits.upperBound == SudokuGrid.standard.size ? 40 : 34))
                 .minimumScaleFactor(0.6)
                 .foregroundStyle(done ? palette.doneDigit : active ? palette.enteredDigit : palette.accent)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)

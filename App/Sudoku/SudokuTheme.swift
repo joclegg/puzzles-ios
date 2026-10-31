@@ -122,6 +122,7 @@ struct SudokuSegments<Option: Hashable>: View {
 struct SudokuDialog<Content: View>: View {
     let id: String?
     var title: String?
+    var bordered = false
     let onDismiss: () -> Void
     @ViewBuilder let content: Content
     @Environment(\.sudokuPalette) private var palette
@@ -141,6 +142,11 @@ struct SudokuDialog<Content: View>: View {
             .padding(20)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(palette.background, in: RoundedRectangle(cornerRadius: 24))
+            .overlay {
+                if bordered {
+                    RoundedRectangle(cornerRadius: 24).stroke(palette.accent.opacity(0.3))
+                }
+            }
             .padding(24)
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier(id ?? "")
@@ -161,6 +167,14 @@ struct SudokuTextButton: View {
     }
 }
 
+struct SudokuPressStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.97 : 1)
+            .animation(.default, value: configuration.isPressed)
+    }
+}
+
 struct SudokuMedal: View {
     let medal: Medal
     var size: CGFloat = 18
@@ -176,13 +190,14 @@ struct SudokuMedal: View {
 
 struct SudokuTileStyle: ViewModifier {
     var active = false
+    var radius: CGFloat = 16
     @Environment(\.sudokuPalette) private var palette
 
     func body(content: Content) -> some View {
         content
-            .background(Color.primary.opacity(0.05), in: RoundedRectangle(cornerRadius: 16))
+            .background(Color.primary.opacity(0.05), in: RoundedRectangle(cornerRadius: radius))
             .overlay(
-                RoundedRectangle(cornerRadius: 16)
+                RoundedRectangle(cornerRadius: radius)
                     .stroke(active ? palette.accent.opacity(0.5) : Color.primary.opacity(0.12))
             )
     }

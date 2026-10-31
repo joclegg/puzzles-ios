@@ -512,15 +512,22 @@ private struct SudokuWinDialog: View {
     let saved: SudokuSavedGame
     @Environment(SudokuNavigator.self) private var navigator
     @Environment(\.sudokuPalette) private var palette
+    @State private var pop: CGFloat = 0.6
 
     var body: some View {
-        SudokuDialog(id: "solved_screen", onDismiss: navigator.home) {
+        SudokuDialog(id: "solved_screen", bordered: true, onDismiss: navigator.home) {
             VStack(spacing: 6) {
                 Image(systemName: "trophy.fill")
                     .font(.title)
                     .foregroundStyle(palette.background)
                     .frame(width: 64, height: 64)
                     .background(palette.accent, in: Circle())
+                    .scaleEffect(pop)
+                    .onAppear {
+                        withAnimation(.spring(duration: 0.5, bounce: 0.5)) {
+                            pop = 1
+                        }
+                    }
                 Text("Solved!").font(.title2.bold())
                 if model.newBest {
                     Text("NEW BEST")
@@ -533,6 +540,12 @@ private struct SudokuWinDialog: View {
                 }
             }
             .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .background(
+                LinearGradient(
+                    colors: [palette.accent.opacity(0.3), palette.accent.opacity(0.08), .clear], startPoint: .top,
+                    endPoint: .bottom),
+                in: RoundedRectangle(cornerRadius: 16))
             HStack(spacing: 8) {
                 stat("Time", formatDuration(model.elapsedMs), id: "final_time")
                 if model.display.isOn(.showMistakeCount) {
@@ -544,13 +557,23 @@ private struct SudokuWinDialog: View {
                 Text("STILL TO PLAY TODAY").font(.caption2).foregroundStyle(.secondary)
                 HStack {
                     ForEach(left, id: \.self) { mode in
-                        Button(mode.label) {
+                        Button {
                             Task {
                                 if let id = await SudokuStore.shared.openDaily(mode: mode, date: sudokuToday()) {
                                     navigator.openGame(id)
                                 }
                             }
+                        } label: {
+                            HStack(spacing: 6) {
+                                Text(mode.label).font(.subheadline)
+                                Image(systemName: "chevron.forward").font(.caption).foregroundStyle(palette.accent)
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 4)
+                            .background(palette.accent.opacity(0.15), in: Capsule())
+                            .overlay(Capsule().stroke(palette.accent.opacity(0.35)))
                         }
+                        .buttonStyle(.plain)
                         .accessibilityIdentifier("still_to_play_\(mode.slug)")
                     }
                 }

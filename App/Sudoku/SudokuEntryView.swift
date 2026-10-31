@@ -249,9 +249,12 @@ struct SudokuEntryView: View {
                     SudokuBackButton(action: navigator.back)
                     Text("Enter puzzle").font(.headline)
                     Spacer()
-                    Text(model.cageTool ? "Cage sum: \(model.cages.sumInput.isEmpty ? "–" : model.cages.sumInput)" : "\(model.givenCount) numbers")
-                        .foregroundStyle(.secondary)
-                        .accessibilityIdentifier("entry_status")
+                    Text(
+                        model.cageTool
+                            ? "Cage sum: \(model.cages.sumInput.isEmpty ? "–" : model.cages.sumInput)" : "\(model.givenCount) numbers"
+                    )
+                    .foregroundStyle(.secondary)
+                    .accessibilityIdentifier("entry_status")
                 }
                 .padding(.horizontal, 12)
                 SudokuSegments(
@@ -325,7 +328,8 @@ struct SudokuEntryView: View {
                     tag: "cage_tool", on: model.cageTool, action: { model.toggleCageTool() }))
         }
         if model.cageTool {
-            list.append(SudokuPadTool(symbol: "checkmark", description: "Save this cage", tag: "confirm_cage", action: { model.confirmCage() }))
+            list.append(
+                SudokuPadTool(symbol: "checkmark", description: "Save this cage", tag: "confirm_cage", action: { model.confirmCage() }))
             list.append(SudokuPadTool(symbol: "eraser", description: "Delete the selected cage", tag: "erase", action: { model.erase() }))
         } else {
             list.append(SudokuPadTool(symbol: "eraser", description: "Erase the selected cell", tag: "erase", action: { model.erase() }))
