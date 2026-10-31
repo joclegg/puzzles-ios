@@ -26,8 +26,6 @@ name: Word Wheel - rules, settings and the walkthrough
     id: "walkthrough_close"
 - tapOn:
     id: "game_menu"
-- waitForAnimationToEnd:
-    timeout: 1500
 - tapOn:
     text: "Settings"
 - assertVisible:
@@ -40,8 +38,6 @@ name: Word Wheel - rules, settings and the walkthrough
     id: "hint"
 - tapOn:
     id: "game_menu"
-- waitForAnimationToEnd:
-    timeout: 1500
 - tapOn:
     text: "Show solution"
 - tapOn:

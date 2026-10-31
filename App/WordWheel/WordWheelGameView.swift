@@ -122,21 +122,12 @@ struct WordWheelGameView: View {
     }
 
     private var menu: some View {
-        Menu {
-            if allowReveal && !model.isSolved {
-                Button("Show solution") { revealing = true }
-                    .accessibilityIdentifier("menu_solution")
-            }
-            Button("Settings") { showSettings = true }
-                .accessibilityIdentifier("menu_settings")
-        } label: {
-            PuzzleIcon.image("ellipsis")
-                .frame(width: 40, height: 40)
-                .contentShape(Rectangle())
-        }
-        .tint(.primary)
-        .accessibilityLabel("More")
-        .accessibilityIdentifier("game_menu")
+        WordWheelGameMenu(
+            canReveal: allowReveal && !model.isSolved,
+            onReveal: { revealing = true },
+            onSettings: { showSettings = true }
+        )
+        .equatable()
     }
 
     private func tool(_ icon: String, _ label: String, _ tag: String, action: @escaping () -> Void) -> some View {
