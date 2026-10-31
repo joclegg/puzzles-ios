@@ -49,6 +49,9 @@ struct SolitaireHomeView: View {
         .overlay { resumeDialog }
         .navigationDestination(item: $route) { destination($0) }
         .task {
+            if let id = DailyRouter.shared.take(.solitaire).flatMap(Int64.init) {
+                route = .game(id)
+            }
             if let startDeal, !startedFixture {
                 startedFixture = true
                 route = .game(store.start(startDeal).id)
@@ -82,6 +85,7 @@ struct SolitaireHomeView: View {
             Text("Solitaire")
                 .font(.largeTitle)
                 .frame(maxWidth: .infinity, alignment: .leading)
+            DailyCalendarButton(tab: .solitaire)
             SolitaireIconButton(symbol: "chart.bar", label: "Stats", tag: "stats") { route = .stats }
             SolitaireIconButton(symbol: "clock.arrow.circlepath", label: "History", tag: "history") { route = .history }
             SolitaireIconButton(symbol: "gearshape", label: "Settings", tag: "settings") { route = .settings }

@@ -66,6 +66,9 @@ struct TwoToneHomeView: View {
             }
         }
         .task {
+            if let id = DailyRouter.shared.take(.twoTone).flatMap(Int64.init) {
+                open(id)
+            }
             guard let fixture, !fixtureOpened else {
                 return
             }
@@ -98,6 +101,7 @@ struct TwoToneHomeView: View {
         HStack(spacing: 4) {
             Text("Two Tone").font(.largeTitle.bold()).lineLimit(1).minimumScaleFactor(0.7)
             Spacer()
+            DailyCalendarButton(tab: .twoTone)
             headerButton("chart.bar", "Stats", "stats") { route = .stats }
             headerButton("clock.arrow.circlepath", "History", "history") { route = .history }
             headerButton("gearshape", "Settings", "settings") { route = .settings }

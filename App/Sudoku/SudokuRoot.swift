@@ -6,7 +6,6 @@ enum SudokuRoute: Hashable {
     case entry(GameMode)
     case stats
     case history
-    case daily
     case settings(GameMode)
 }
 
@@ -70,8 +69,6 @@ struct SudokuRootView: View {
                 SudokuStatsView()
             case .history:
                 SudokuHistoryView()
-            case .daily:
-                SudokuDailyView()
             case .settings(let mode):
                 SettingsHubView(initial: .sudoku, sudokuMode: mode, onBack: navigator.back)
             }
@@ -90,6 +87,9 @@ struct SudokuRootView: View {
         .onAppear {
             navigator.leave = { dismiss() }
             prepareFixture()
+            if let id = DailyRouter.shared.take(.sudoku).flatMap(Int.init) {
+                navigator.openGame(id)
+            }
         }
     }
 

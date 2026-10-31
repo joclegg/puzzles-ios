@@ -31,7 +31,7 @@
                     puzzle: Puzzle(givens: blank(fastSolution, [2]), solution: fastSolution))
             case "daily_classic_one_left":
                 var made = ref(name, .classic, blank(solution, [2]))
-                made.id = DailyIds.of(mode: .classic, date: today.day)
+                made.id = DailyIds.of(mode: .classic, difficulty: .easy, date: today.day)
                 return made
             default:
                 return nil

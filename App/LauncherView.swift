@@ -12,6 +12,10 @@ struct LauncherView: View {
         let home: @MainActor () -> AnyView
         let fixture: @MainActor (String) -> AnyView?
 
+        var tab: SettingsTab {
+            SettingsTab.games.first { $0.tag == id } ?? .sudoku
+        }
+
         var accent: Color {
             let light = light
             let dark = dark
@@ -74,38 +78,52 @@ struct LauncherView: View {
         ),
     ]
 
+    @State private var router = DailyRouter.shared
+
     var body: some View {
-        NavigationStack {
-            if let view = fixtureView {
-                view
-            } else {
-                ScrollView {
-                    VStack(spacing: 12) {
-                        ForEach(entries) { entry in
-                            NavigationLink {
-                                entry.home()
-                            } label: {
-                                card(entry)
+        NavigationStack(path: $router.path) {
+            Group {
+                if let view = fixtureView {
+                    view
+                } else {
+                    ScrollView {
+                        VStack(spacing: 12) {
+                            ForEach(entries) { entry in
+                                NavigationLink(value: DailyRoute.game(entry.tab)) {
+                                    card(entry)
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityIdentifier("game_\(entry.id)")
                             }
-                            .buttonStyle(.plain)
-                            .accessibilityIdentifier("game_\(entry.id)")
                         }
+                        .padding()
                     }
-                    .padding()
-                }
-                .navigationTitle("Puzzles")
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        NavigationLink {
-                            SettingsHubView()
-                        } label: {
-                            PuzzleIcon.image("gearshape")
+                    .navigationTitle("Puzzles")
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            NavigationLink {
+                                SettingsHubView()
+                            } label: {
+                                PuzzleIcon.image("gearshape")
+                            }
+                            .accessibilityLabel("Settings")
+                            .accessibilityIdentifier("settings")
                         }
-                        .accessibilityLabel("Settings")
-                        .accessibilityIdentifier("settings")
                     }
                 }
             }
+            .navigationDestination(for: DailyRoute.self, destination: destination)
+        }
+        .id(router.generation)
+    }
+
+    @ViewBuilder
+    private func destination(_ route: DailyRoute) -> some View {
+        switch route {
+        case .game(let tab):
+            entries.first { $0.tab == tab }?.home()
+        case .calendar(let tab):
+            DailyCalendarView(tab: tab)
         }
     }
 

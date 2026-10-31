@@ -1,5 +1,5 @@
 appId: com.joclegg.puzzles
-name: Finishing today's daily earns a silver medal on Home and in the calendar
+name: Finishing today's daily earns a bronze medal on Home and in the calendar
 ---
 - launchApp:
     clearState: true
@@ -17,15 +17,13 @@ name: Finishing today's daily earns a silver medal on Home and in the calendar
     id: "solved_home"
 - extendedWaitUntil:
     visible:
-      id: "todays_medal_silver"
+      id: "calendar_medal_bronze"
     timeout: 15000
-- assertVisible:
-    id: "todays_medal_silver"
 - tapOn:
     id: "daily_calendar"
 - assertVisible:
     id: "daily_today"
-    text: ".*silver medal"
+    text: ".*bronze medal"
 - tapOn:
     id: "daily_today"
 - waitForAnimationToEnd:
@@ -33,5 +31,5 @@ name: Finishing today's daily earns a silver medal on Home and in the calendar
 - assertVisible:
     id: "daily_choice"
 - assertVisible:
-    id: "daily_play_classic"
-    text: "Classic · .*✓"
+    id: "daily_play_classic_easy"
+    text: "Classic Easy ✓"

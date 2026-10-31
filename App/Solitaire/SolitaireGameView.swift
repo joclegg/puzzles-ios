@@ -249,51 +249,23 @@ struct SolitaireGameView: View {
             }
         }
         if model.isWon && model.resultSaved {
-            SolitaireDialog(tag: "won_dialog", onDismiss: {}) {
-                wonContent
-            }
-        }
-    }
-
-    private var wonContent: some View {
-        VStack(spacing: 12) {
-            ZStack {
-                Circle().fill(SolitaireColors.accent).frame(width: 64, height: 64)
-                PuzzleIcon.image("trophy.fill")
-                    .font(.title)
-                    .foregroundStyle(SolitaireColors.background)
-            }
-            Text("You won!").font(.title2.bold())
-            if model.newBest {
-                Text("NEW BEST")
-                    .font(.caption.bold())
-                    .foregroundStyle(SolitaireColors.background)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 2)
-                    .background(SolitaireColors.accent, in: Capsule())
-                    .accessibilityIdentifier("new_best")
-            }
-            HStack(spacing: 8) {
-                statBox("Time", formatDuration(model.elapsedMs), tag: "won_time")
-                statBox("Moves", "\(model.moveCount)", tag: "won_moves")
-            }
-            HStack {
-                Spacer()
+            WinDialog(
+                title: "You won!",
+                accent: SolitaireColors.accent,
+                dailyGroup: "SOLITAIRE",
+                newBest: model.newBest,
+                stats: [
+                    WinStat(label: "Time", value: formatDuration(model.elapsedMs), tag: "won_time"),
+                    WinStat(label: "Moves", value: "\(model.moveCount)", tag: "won_moves"),
+                ],
+                tag: "won_dialog",
+                newLabel: "Deal",
+                newTag: "won_new_deal",
+                onNew: { newDeal() }
+            ) {
                 SolitaireTextButton(title: "Home", tag: "won_home", action: onHome)
-                SolitaireTextButton(title: "New deal", tag: "won_new_deal") { newDeal() }
             }
         }
-        .frame(maxWidth: .infinity)
-    }
-
-    private func statBox(_ label: String, _ value: String, tag: String) -> some View {
-        VStack(spacing: 2) {
-            Text(label).font(.caption).foregroundStyle(SolitaireColors.onSurfaceVariant)
-            Text(value).font(.title3.bold()).accessibilityIdentifier(tag)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(8)
-        .background(SolitaireColors.accent.opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
     }
 
     @ViewBuilder

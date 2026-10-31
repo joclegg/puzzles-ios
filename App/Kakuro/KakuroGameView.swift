@@ -28,7 +28,8 @@ private let kakuroRules = [
 ]
 
 private let kakuroTutorial = [
-    KakuroTourStep(target: "board", text: "Each white cell takes a digit from 1 to 9. A clue is the sum of the run to its right or below it."),
+    KakuroTourStep(
+        target: "board", text: "Each white cell takes a digit from 1 to 9. A clue is the sum of the run to its right or below it."),
     KakuroTourStep(target: "hint", text: "Stuck? The bulb shows you the next step."),
     KakuroTourStep(target: "menu", text: "Restart, show the solution and settings live in this menu."),
 ]
@@ -358,101 +359,20 @@ private struct KakuroSolvedDialog: View {
     let navigator: KakuroNavigator
 
     @Environment(\.colorScheme) private var scheme
-    @State private var popped = false
-
-    private var accent: Color {
-        KakuroColors.of(scheme).accent
-    }
-
-    private var dailiesLeft: [Int] {
-        let store = KakuroStore.shared
-        return sizes.filter { size in
-            let id = PuzzleRef.dailyId(date: .today, size: size)
-            return !store.games.contains { $0.ref.id == id && $0.status == .solved }
-        }
-    }
 
     var body: some View {
-        ZStack {
-            Color.black.opacity(0.4).ignoresSafeArea().accessibilityHidden(true)
-            VStack(spacing: 0) {
-                VStack(spacing: 8) {
-                    PuzzleIcon.image("trophy.fill")
-                        .font(.system(size: 28))
-                        .foregroundStyle(Color(.systemBackground))
-                        .frame(width: 64, height: 64)
-                        .background(accent, in: Circle())
-                        .scaleEffect(popped ? 1 : 0.6)
-                        .animation(.spring(response: 0.5, dampingFraction: 0.5), value: popped)
-                        .onAppear { popped = true }
-                    Text("Solved!").font(.title2.bold())
-                    if model.newBest {
-                        Text("NEW BEST")
-                            .font(.caption.bold())
-                            .foregroundStyle(Color(.systemBackground))
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 2)
-                            .background(accent, in: Capsule())
-                            .accessibilityIdentifier("new_best")
-                    }
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.top, 24)
-                .padding(.bottom, 12)
-                .background(LinearGradient(colors: [accent.opacity(0.3), accent.opacity(0.08), .clear], startPoint: .top, endPoint: .bottom))
-                VStack(spacing: 2) {
-                    Text("Time").font(.caption2).foregroundStyle(.secondary)
-                    Text(formatDuration(ms: model.elapsedMs))
-                        .font(.headline)
-                        .accessibilityIdentifier("solved_time")
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 8)
-                .background(accent.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
-                .padding(.horizontal, 20)
-                if !dailiesLeft.isEmpty {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("STILL TO PLAY TODAY").font(.caption2).foregroundStyle(.secondary)
-                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 84), spacing: 8)], alignment: .leading, spacing: 8) {
-                            ForEach(dailiesLeft, id: \.self) { size in
-                                Button {
-                                    navigator.openDaily(size: size)
-                                } label: {
-                                    HStack(spacing: 6) {
-                                        Text(sizeLabel(size)).font(.caption).lineLimit(1).fixedSize()
-                                        PuzzleIcon.image("chevron.right").font(.system(size: 10)).foregroundStyle(accent)
-                                    }
-                                    .padding(.leading, 12)
-                                    .padding(.trailing, 6)
-                                    .padding(.vertical, 4)
-                                        .background(accent.opacity(0.15), in: Capsule())
-                                        .overlay(Capsule().stroke(accent.opacity(0.35), lineWidth: 1))
-                                }
-                                .buttonStyle(.plain)
-                                .accessibilityIdentifier("solved_daily_\(size)")
-                            }
-                        }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 20)
-                    .padding(.top, 16)
-                }
-                HStack(spacing: 16) {
-                    Spacer()
-                    Button("Home") { navigator.home() }.accessibilityIdentifier("solved_home")
-                    Button("New puzzle") { navigator.startRandom(size: model.saved.ref.size) }
-                        .accessibilityIdentifier("solved_new_puzzle")
-                }
-                .foregroundStyle(accent)
-                .fontWeight(.medium)
-                .padding(16)
-            }
-            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 28))
-            .overlay(RoundedRectangle(cornerRadius: 28).stroke(accent.opacity(0.3), lineWidth: 1))
-            .clipShape(RoundedRectangle(cornerRadius: 28))
-            .padding(24)
-            .accessibilityElement(children: .contain)
-            .accessibilityIdentifier("solved_dialog")
+        WinDialog(
+            title: "Solved!",
+            accent: KakuroColors.of(scheme).accent,
+            dailyGroup: "KAKURO",
+            newBest: model.newBest,
+            stats: [WinStat(label: "Time", value: formatDuration(ms: model.elapsedMs), tag: "solved_time")],
+            tag: "solved_dialog",
+            newLabel: sizeLabel(model.saved.ref.size),
+            newTag: "solved_new_puzzle",
+            onNew: { navigator.startRandom(size: model.saved.ref.size) }
+        ) {
+            Button("Home") { navigator.home() }.accessibilityIdentifier("solved_home")
         }
     }
 }

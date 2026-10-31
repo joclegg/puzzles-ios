@@ -81,69 +81,31 @@ struct FiveLettersResultDialog: View {
     let onNewPractice: () -> Void
 
     private let theme = FiveLettersTheme()
-    @State private var popScale = 0.6
 
     var body: some View {
-        FiveLettersDialogCard(onDismiss: onClose) {
-            VStack(spacing: 8) {
-                VStack(spacing: 12) {
-                    PuzzleIcon.image(game.isWon ? "trophy.fill" : "book.fill")
-                        .font(.title)
-                        .foregroundStyle(Color(.systemBackground))
-                        .frame(width: 64, height: 64)
-                        .background(theme.accent, in: .circle)
-                        .scaleEffect(popScale)
-                        .onAppear {
-                            withAnimation(.spring(response: 0.5, dampingFraction: 0.5)) {
-                                popScale = 1
-                            }
-                        }
-                    Text(game.resultTitle)
-                        .font(.title2.bold())
-                        .multilineTextAlignment(.center)
-                        .accessibilityIdentifier("result_title")
-                }
-                .padding(.top, 24)
-                .padding(.bottom, 12)
-                .padding(.horizontal, 16)
-                .frame(maxWidth: .infinity)
-                .background(
-                    LinearGradient(
-                        colors: [theme.accent.opacity(0.3), theme.accent.opacity(0.08), .clear],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
-                Text(
-                    isDated
-                        ? "A new word comes tomorrow. Share your grid without giving the word away."
-                        : "Play another practice word, or share your grid."
-                )
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 20)
-                HStack(spacing: 24) {
-                    Spacer()
-                    if isDated {
-                        Button("Close", action: onClose)
-                            .accessibilityIdentifier("result_close")
-                    } else {
-                        Button("New word", action: onNewPractice)
-                            .accessibilityIdentifier("result_new_practice")
-                    }
-                    ShareLink("Share", item: shareText)
-                        .labelStyle(.titleOnly)
-                        .accessibilityIdentifier("result_share")
-                }
-                .padding(16)
-            }
-            .clipShape(.rect(cornerRadius: 28))
-            .overlay {
-                RoundedRectangle(cornerRadius: 28).stroke(theme.accent.opacity(0.3))
-            }
-            .accessibilityElement(children: .contain)
-            .accessibilityIdentifier("result_dialog")
+        WinDialog(
+            title: game.resultTitle,
+            accent: theme.accent,
+            dailyGroup: "FIVE_LETTERS",
+            newBest: false,
+            stats: [],
+            tag: "result_dialog",
+            message:
+                isDated
+                ? "A new word comes tomorrow. Share your grid without giving the word away."
+                : "Play another practice word, or share your grid.",
+            titleTag: "result_title",
+            lost: !game.isWon,
+            newLabel: "Word",
+            newTag: "result_new_practice",
+            onNew: isDated ? nil : onNewPractice,
+            onDismiss: onClose
+        ) {
+            Button("Close", action: onClose)
+                .accessibilityIdentifier("result_close")
+            ShareLink("Share", item: shareText)
+                .labelStyle(.titleOnly)
+                .accessibilityIdentifier("result_share")
         }
     }
 }

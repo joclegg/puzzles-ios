@@ -89,6 +89,9 @@ struct KakuroRootView: View {
         .toolbar(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
         .onAppear {
+            if let id = DailyRouter.shared.take(.kakuro).flatMap(Int64.init), let game = KakuroStore.shared.game(id: id) {
+                navigator.open(game)
+            }
             guard let fixture, !openedFixture else {
                 return
             }

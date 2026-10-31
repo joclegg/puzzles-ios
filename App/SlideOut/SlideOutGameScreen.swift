@@ -56,7 +56,6 @@ private struct SlideOutGameContent: View {
     @State private var rulesOpen = false
     @State private var tourStep: Int?
     @State private var failed = false
-    @State private var trophyScale: CGFloat = 0.6
 
     private var colors: SlideColors { SlideColors.of(scheme) }
 
@@ -201,97 +200,30 @@ private struct SlideOutGameContent: View {
     }
 
     private var solvedDialog: some View {
-        ZStack {
-            Color.black.opacity(0.4).ignoresSafeArea()
-            VStack(spacing: 12) {
-                PuzzleIcon.image("trophy")
-                    .font(.title)
-                    .foregroundStyle(Color(uiColor: .systemBackground))
-                    .frame(width: 64, height: 64)
-                    .background(colors.accent, in: Circle())
-                    .scaleEffect(trophyScale)
-                    .onAppear {
-                        withAnimation(.spring(response: 0.5, dampingFraction: 0.5)) { trophyScale = 1 }
-                    }
-                Text("Solved!").font(.title2).bold()
-                if model.newBest {
-                    Text("NEW BEST")
-                        .font(.caption)
-                        .bold()
-                        .foregroundStyle(Color(uiColor: .systemBackground))
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 2)
-                        .background(colors.accent, in: Capsule())
-                        .accessibilityIdentifier("new_best")
-                }
-                HStack(spacing: 8) {
-                    stat("Moves", solvedMovesText(moveCount: model.moveCount, par: model.par), id: "solved_moves")
-                    stat("Time", formatDuration(model.elapsedMs), id: "solved_time")
-                    if model.hints > 0 {
-                        stat("Hints", "\(model.hints)", id: "")
-                    }
-                }
-                stillToPlay
-                HStack(spacing: 16) {
-                    Spacer()
-                    Button("Home", action: onHome).accessibilityIdentifier("solved_home")
-                    Button("New puzzle", action: newPuzzle).accessibilityIdentifier("solved_new_puzzle")
-                }
-            }
-            .padding(20)
-            .background(
-                LinearGradient(colors: [colors.accent.opacity(0.3), .clear], startPoint: .top, endPoint: .center)
-                    .background(Color(uiColor: .secondarySystemGroupedBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 28))
-            )
-            .padding(24)
-            .accessibilityElement(children: .contain)
-            .accessibilityIdentifier("solved_dialog")
+        WinDialog(
+            title: "Solved!",
+            accent: colors.accent,
+            dailyGroup: "SLIDE_OUT",
+            newBest: model.newBest,
+            stats: solvedStats,
+            tag: "solved_dialog",
+            newLabel: model.ref?.level.label,
+            newTag: "solved_new_puzzle",
+            onNew: newPuzzle
+        ) {
+            Button("Home", action: onHome).accessibilityIdentifier("solved_home")
         }
     }
 
-    @ViewBuilder
-    private var stillToPlay: some View {
-        let today = CalendarDay.slideOutToday
-        let left = SlideOutStore.dailiesLeft(today: today)
-        if !left.isEmpty {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("STILL TO PLAY TODAY").font(.caption2).foregroundStyle(.secondary)
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(left, id: \.self) { level in
-                            Button {
-                                openDaily(level, today: today)
-                            } label: {
-                                HStack(spacing: 6) {
-                                    Text(level.label)
-                                    PuzzleIcon.image("chevron.right").foregroundStyle(colors.accent)
-                                }
-                            }
-                            .font(.caption)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(colors.accent.opacity(0.15), in: Capsule())
-                            .accessibilityIdentifier("still_to_play_\(level.name.lowercased())")
-                        }
-                    }
-                }
-            }
+    private var solvedStats: [WinStat] {
+        var stats = [
+            WinStat(label: "Moves", value: solvedMovesText(moveCount: model.moveCount, par: model.par), tag: "solved_moves"),
+            WinStat(label: "Time", value: formatDuration(model.elapsedMs), tag: "solved_time"),
+        ]
+        if model.hints > 0 {
+            stats.append(WinStat(label: "Hints", value: "\(model.hints)"))
         }
-    }
-
-    private func stat(_ label: String, _ value: String, id: String) -> some View {
-        VStack {
-            Text(label).font(.caption2).foregroundStyle(.secondary)
-            Text(value)
-                .font(.subheadline)
-                .fontWeight(.semibold)
-                .multilineTextAlignment(.center)
-                .accessibilityIdentifier(id)
-        }
-        .padding(8)
-        .frame(maxWidth: .infinity)
-        .background(colors.accent.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
+        return stats
     }
 
     private func tourOverlay(step: Int, rect: CGRect?) -> some View {
@@ -332,16 +264,6 @@ private struct SlideOutGameContent: View {
         Task {
             do {
                 onOpenGame(try await model.newPuzzle())
-            } catch {
-                failed = true
-            }
-        }
-    }
-
-    private func openDaily(_ level: Level, today: CalendarDay) {
-        Task {
-            do {
-                onOpenGame(SlideOutStore.start(try await SlideOutBank.shared.daily(level, date: today)))
             } catch {
                 failed = true
             }

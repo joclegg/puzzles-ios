@@ -512,93 +512,43 @@ private struct SudokuWinDialog: View {
     let saved: SudokuSavedGame
     @Environment(SudokuNavigator.self) private var navigator
     @Environment(\.sudokuPalette) private var palette
-    @State private var pop: CGFloat = 0.6
 
     var body: some View {
-        SudokuDialog(id: "solved_screen", bordered: true, onDismiss: navigator.home) {
-            VStack(spacing: 6) {
-                PuzzleIcon.image("trophy.fill")
-                    .font(.title)
-                    .foregroundStyle(palette.background)
-                    .frame(width: 64, height: 64)
-                    .background(palette.accent, in: Circle())
-                    .scaleEffect(pop)
-                    .onAppear {
-                        withAnimation(.spring(duration: 0.5, bounce: 0.5)) {
-                            pop = 1
-                        }
-                    }
-                Text("Solved!").font(.title2.bold())
-                if model.newBest {
-                    Text("NEW BEST")
-                        .font(.caption.bold())
-                        .foregroundStyle(palette.background)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 2)
-                        .background(palette.accent, in: Capsule())
-                        .accessibilityIdentifier("new_best")
-                }
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
-            .background(
-                LinearGradient(
-                    colors: [palette.accent.opacity(0.3), palette.accent.opacity(0.08), .clear], startPoint: .top,
-                    endPoint: .bottom),
-                in: RoundedRectangle(cornerRadius: 16))
-            HStack(spacing: 8) {
-                stat("Time", formatDuration(model.elapsedMs), id: "final_time")
-                if model.display.isOn(.showMistakeCount) {
-                    stat("Mistakes", "\(saved.mistakes)", id: nil)
-                }
-            }
-            let left = dailiesLeft
-            if !left.isEmpty {
-                Text("STILL TO PLAY TODAY").font(.caption2).foregroundStyle(.secondary)
-                HStack {
-                    ForEach(left, id: \.self) { mode in
-                        Button {
-                            Task {
-                                if let id = await SudokuStore.shared.openDaily(mode: mode, date: sudokuToday()) {
-                                    navigator.openGame(id)
-                                }
-                            }
-                        } label: {
-                            HStack(spacing: 6) {
-                                Text(mode.label).font(.subheadline)
-                                PuzzleIcon.image("chevron.forward").font(.caption).foregroundStyle(palette.accent)
-                            }
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 4)
-                            .background(palette.accent.opacity(0.15), in: Capsule())
-                            .overlay(Capsule().stroke(palette.accent.opacity(0.35)))
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityIdentifier("still_to_play_\(mode.slug)")
-                    }
-                }
-            }
-            HStack {
-                Spacer()
-                SudokuTextButton(title: "Home", id: "solved_home", action: navigator.home)
-            }
+        WinDialog(
+            title: "Solved!",
+            accent: palette.accent,
+            dailyGroup: "SUDOKU_\(saved.ref.mode.rawValue)",
+            newBest: model.newBest,
+            stats: stats,
+            tag: "solved_screen",
+            newLabel: saved.ref.difficulty.map { levelLabel($0) },
+            newTag: "solved_new_puzzle",
+            onNew: newPuzzle,
+            onDismiss: navigator.home
+        ) {
+            SudokuTextButton(title: "Home", id: "solved_home", action: navigator.home)
         }
     }
 
-    private var dailiesLeft: [GameMode] {
-        let day = SudokuStore.shared.dailyResults[sudokuToday()]
-        return GameMode.allCases.filter { (day?.status($0) ?? .notDone) == .notDone }
+    private var stats: [WinStat] {
+        var stats = [WinStat(label: "Time", value: formatDuration(model.elapsedMs), tag: "final_time")]
+        if model.display.isOn(.showMistakeCount) {
+            stats.append(WinStat(label: "Mistakes", value: "\(saved.mistakes)"))
+        }
+        return stats
     }
 
-    private func stat(_ label: String, _ value: String, id: String?) -> some View {
-        VStack {
-            Text(label).font(.caption2).foregroundStyle(.secondary)
-            Text(value)
-                .font(.headline)
-                .accessibilityIdentifier(id ?? "")
+    private var newPuzzle: (() -> Void)? {
+        guard let level = saved.ref.difficulty, !saved.ref.custom else {
+            return nil
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 8)
-        .background(palette.accent.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
+        let mode = saved.ref.mode
+        return {
+            Task {
+                if let id = await SudokuStore.shared.openLevel(mode: mode, difficulty: level) {
+                    navigator.openGame(id)
+                }
+            }
+        }
     }
 }

@@ -2,6 +2,7 @@ import SwiftUI
 import WordWheelEngine
 
 struct WordWheelGameView: View {
+    let gameId: Int64
     let onOpenGame: (Int64) -> Void
     let onHome: () -> Void
 
@@ -20,6 +21,7 @@ struct WordWheelGameView: View {
     @Environment(\.scenePhase) private var scenePhase
 
     init(id: Int64, onOpenGame: @escaping (Int64) -> Void, onHome: @escaping () -> Void) {
+        gameId = id
         _model = State(initialValue: WordWheelGameModel(id: id))
         self.onOpenGame = onOpenGame
         self.onHome = onHome
@@ -196,97 +198,25 @@ struct WordWheelGameView: View {
     }
 
     private var solvedDialog: some View {
-        WordWheelDialogCard(tag: "solved_dialog", onDismiss: {}) {
-            VStack(spacing: 8) {
-                PuzzleIcon.image("trophy.fill")
-                    .font(.title)
-                    .foregroundStyle(Color(.systemBackground))
-                    .frame(width: 64, height: 64)
-                    .background(WheelColors.accent, in: Circle())
-                Text("Solved!").font(.title2.bold())
-                if model.newBest {
-                    Text("NEW BEST")
-                        .font(.caption.bold())
-                        .foregroundStyle(Color(.systemBackground))
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 2)
-                        .background(WheelColors.accent, in: Capsule())
-                        .accessibilityIdentifier("new_best")
-                }
+        WinDialog(
+            title: "Solved!",
+            accent: WheelColors.accent,
+            dailyGroup: "WORD_WHEEL",
+            newBest: model.newBest,
+            stats: [
+                WinStat(label: "Time", value: formatDuration(model.elapsedMs)),
+                WinStat(label: "Bonus words", value: "\(model.game?.bonus.count ?? 0)"),
+            ],
+            tag: "solved_dialog",
+            newLabel: WordWheelRepository.shared.game(id: gameId)?.ref.level.label,
+            newTag: "solved_new_puzzle",
+            onNew: {
+                Task { onOpenGame(await model.newPuzzle()) }
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
-            .background(
-                LinearGradient(
-                    colors: [WheelColors.accent.opacity(0.3), WheelColors.accent.opacity(0.08), .clear],
-                    startPoint: .top,
-                    endPoint: .bottom
-                ),
-                in: RoundedRectangle(cornerRadius: 16)
-            )
-            HStack(spacing: 8) {
-                stat("Time", formatDuration(model.elapsedMs))
-                stat("Bonus words", "\(model.game?.bonus.count ?? 0)")
-            }
-            let dailies = dailiesLeft
-            if !dailies.isEmpty {
-                Text("STILL TO PLAY TODAY")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                HStack(spacing: 8) {
-                    ForEach(dailies, id: \.self) { level in
-                        dailyChip(level)
-                    }
-                }
-            }
-            HStack(spacing: 16) {
-                Spacer()
-                Button("Home", action: onHome)
-                    .accessibilityIdentifier("solved_home")
-                Button("Next puzzle") {
-                    Task { onOpenGame(await model.newPuzzle()) }
-                }
-                .accessibilityIdentifier("solved_new_puzzle")
-            }
-            .tint(WheelColors.accent)
+        ) {
+            Button("Home", action: onHome)
+                .accessibilityIdentifier("solved_home")
         }
-    }
-
-    private var dailiesLeft: [Level] {
-        let solved = WordWheelRepository.shared.dailySolved(on: WordWheelDates.today)
-        return Level.allCases.filter { !solved.contains($0) }
-    }
-
-    private func dailyChip(_ level: Level) -> some View {
-        Button {
-            Task {
-                if let id = try? await WordWheelRepository.shared.openDaily(level) {
-                    onOpenGame(id)
-                }
-            }
-        } label: {
-            HStack(spacing: 6) {
-                Text(level.label).font(.caption.weight(.medium))
-                PuzzleIcon.image("chevron.right")
-                    .font(.caption2)
-                    .foregroundStyle(WheelColors.accent)
-            }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 5)
-            .background(WheelColors.accent.opacity(0.15), in: Capsule())
-            .overlay { Capsule().stroke(WheelColors.accent.opacity(0.35), lineWidth: 1) }
-        }
-        .buttonStyle(.plain)
-    }
-
-    private func stat(_ label: String, _ value: String) -> some View {
-        VStack {
-            Text(label).font(.caption).foregroundStyle(.secondary)
-            Text(value).font(.headline)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 8)
-        .background(WheelColors.accent.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
     }
 }
 

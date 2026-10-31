@@ -149,7 +149,10 @@ struct TwoToneGameView: View {
             .padding(.leading, 16)
             HStack(spacing: 0) {
                 tool("arrow.uturn.backward", "Undo the last tap", "undo", enabled: model.canUndo) { model.onUndo() }
-                tool(showGivens ? "smallcircle.filled.circle.fill" : "smallcircle.filled.circle", showGivens ? "Hide the starting tiles" : "Show the starting tiles", "starting_tiles") {
+                tool(
+                    showGivens ? "smallcircle.filled.circle.fill" : "smallcircle.filled.circle",
+                    showGivens ? "Hide the starting tiles" : "Show the starting tiles", "starting_tiles"
+                ) {
                     showGivens.toggle()
                 }
                 tool("paintpalette", pickColour ? "Switch to tap to cycle" : "Switch to pick a colour", "input_mode") {
@@ -238,21 +241,28 @@ struct TwoToneGameView: View {
             }
         }
         if model.game.isSolved && model.resultSaved {
-            TwoToneSolvedDialog(
-                model: model,
-                dailiesLeft: dailiesLeft(),
-                onDaily: { size in
-                    Task { onOpen(await store.openDaily(date: TwoToneStore.today(), size: size)) }
-                },
-                onNewPuzzle: { newPuzzle(model) },
-                onHome: onHome
-            )
+            WinDialog(
+                title: "Solved!",
+                accent: TwoToneColors.accent,
+                dailyGroup: "TWO_TONE",
+                newBest: model.newBest,
+                stats: solvedStats(model),
+                tag: "solved_dialog",
+                newLabel: TwoToneStore.shared.game(id: gameId).map { sizeLabel($0.size) },
+                newTag: "solved_new_puzzle",
+                onNew: { newPuzzle(model) }
+            ) {
+                Button("Home", action: onHome).accessibilityIdentifier("solved_home")
+            }
         }
     }
 
-    private func dailiesLeft() -> [Int] {
-        let solved = store.dailySolved(date: TwoToneStore.today())
-        return sizes.filter { !solved.contains($0) }
+    private func solvedStats(_ model: TwoToneGameModel) -> [WinStat] {
+        var stats = [WinStat(label: "Time", value: formatDuration(model.elapsedMs), tag: "solved_time")]
+        if model.hints > 0 {
+            stats.append(WinStat(label: "Hints", value: "\(model.hints)"))
+        }
+        return stats
     }
 }
 
@@ -295,90 +305,5 @@ private struct TwoToneWalkthrough: View {
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("walkthrough")
         }
-    }
-}
-
-private struct TwoToneSolvedDialog: View {
-    let model: TwoToneGameModel
-    let dailiesLeft: [Int]
-    let onDaily: (Int) -> Void
-    let onNewPuzzle: () -> Void
-    let onHome: () -> Void
-
-    @State private var popped = false
-
-    var body: some View {
-        ZStack {
-            Color.black.opacity(0.4).ignoresSafeArea().accessibilityHidden(true)
-            VStack(spacing: 12) {
-                Circle()
-                    .fill(TwoToneColors.accent)
-                    .frame(width: 64, height: 64)
-                    .overlay {
-                        PuzzleIcon.image("trophy.fill").font(.title).foregroundStyle(.background)
-                    }
-                    .scaleEffect(popped ? 1 : 0.6)
-                    .accessibilityHidden(true)
-                Text("Solved!").font(.title2.bold())
-                if model.newBest {
-                    Text("NEW BEST")
-                        .font(.caption.bold())
-                        .foregroundStyle(.background)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 2)
-                        .background(TwoToneColors.accent, in: .capsule)
-                        .accessibilityIdentifier("new_best")
-                }
-                HStack(spacing: 8) {
-                    stat("Time", formatDuration(model.elapsedMs), tag: "solved_time")
-                    if model.hints > 0 {
-                        stat("Hints", "\(model.hints)", tag: nil)
-                    }
-                }
-                if !dailiesLeft.isEmpty {
-                    Text("STILL TO PLAY TODAY")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(dailiesLeft, id: \.self) { size in
-                                Button("Two Tone \(sizeLabel(size))") { onDaily(size) }
-                                    .font(.footnote)
-                                    .buttonStyle(.bordered)
-                            }
-                        }
-                    }
-                }
-                HStack(spacing: 16) {
-                    Spacer()
-                    Button("Home", action: onHome).accessibilityIdentifier("solved_home")
-                    Button("New puzzle", action: onNewPuzzle).accessibilityIdentifier("solved_new_puzzle")
-                }
-            }
-            .padding(20)
-            .background(Color(uiColor: .secondarySystemGroupedBackground), in: .rect(cornerRadius: 28))
-            .overlay {
-                RoundedRectangle(cornerRadius: 28).stroke(TwoToneColors.accent.opacity(0.3))
-            }
-            .padding(24)
-            .accessibilityElement(children: .contain)
-            .accessibilityIdentifier("solved_dialog")
-        }
-        .onAppear {
-            withAnimation(.spring(response: 0.5, dampingFraction: 0.5)) {
-                popped = true
-            }
-        }
-    }
-
-    private func stat(_ label: String, _ value: String, tag: String?) -> some View {
-        VStack {
-            Text(label).font(.caption2).foregroundStyle(.secondary)
-            Text(value).font(.headline).accessibilityIdentifier(tag ?? "")
-        }
-        .padding(.vertical, 8)
-        .frame(maxWidth: .infinity)
-        .background(TwoToneColors.accent.opacity(0.1), in: .rect(cornerRadius: 12))
     }
 }

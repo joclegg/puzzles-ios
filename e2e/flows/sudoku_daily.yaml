@@ -1,5 +1,5 @@
 appId: com.joclegg.puzzles
-name: Daily puzzle - shows its level, starts it, and resumes it the same day
+name: Daily puzzle - starts one level's puzzle, and resumes it the same day
 ---
 - launchApp:
     clearState: true
@@ -13,11 +13,8 @@ name: Daily puzzle - shows its level, starts it, and resumes it the same day
     id: "game_sudoku"
 - waitForAnimationToEnd:
     timeout: 1500
-- assertVisible:
-    id: "daily"
-    text: "Daily puzzle · .*"
 - tapOn:
-    id: "daily"
+    id: "daily_medium"
 - waitForAnimationToEnd:
     timeout: 1500
 - assertVisible:
@@ -27,7 +24,7 @@ name: Daily puzzle - shows its level, starts it, and resumes it the same day
 - waitForAnimationToEnd:
     timeout: 1500
 - tapOn:
-    id: "daily"
+    id: "daily_medium"
 - waitForAnimationToEnd:
     timeout: 1500
 - assertNotVisible:

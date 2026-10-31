@@ -44,6 +44,7 @@ struct SightlinesHomeView: View {
         .navigationTitle("Sightlines")
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
+                DailyCalendarButton(tab: .sightlines)
                 toolbarButton("chart.bar", "Stats", tag: "stats", .stats)
                 toolbarButton("clock.arrow.circlepath", "History", tag: "history", .history)
                 toolbarButton("gearshape", "Settings", tag: "settings", .settings)
@@ -67,6 +68,9 @@ struct SightlinesHomeView: View {
             }
         }
         .task {
+            if let id = DailyRouter.shared.take(.sightlines).flatMap(Int64.init) {
+                screen = .game(id)
+            }
             guard let fixture, !fixtureOpened else {
                 return
             }

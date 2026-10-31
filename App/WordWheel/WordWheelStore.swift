@@ -116,8 +116,7 @@ final class WordWheelRepository {
         return id
     }
 
-    func openDaily(_ level: Level) async throws -> Int64 {
-        let date = WordWheelDates.today
+    func openDaily(_ level: Level, date: CalendarDay = WordWheelDates.today) async throws -> Int64 {
         let id = PuzzleRef.dailyId(date: date, level: level)
         if let existing = inProgress.first(where: { $0.ref.id == id }) {
             return existing.id

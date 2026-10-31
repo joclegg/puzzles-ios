@@ -20,23 +20,6 @@ extension View {
     }
 }
 
-private struct SightlinesTrophy: View {
-    @State private var scale = 0.6
-
-    var body: some View {
-        Circle()
-            .fill(SightlinesColors.accent)
-            .frame(width: 64, height: 64)
-            .overlay {
-                PuzzleIcon.image("trophy.fill").font(.title).foregroundStyle(Color(uiColor: .systemBackground))
-            }
-            .scaleEffect(scale)
-            .onAppear {
-                withAnimation(.spring(response: 0.6, dampingFraction: 0.5)) { scale = 1 }
-            }
-    }
-}
-
 struct SightlinesGameView: View {
     let onOpenGame: (Int64) -> Void
     let onHome: () -> Void
@@ -216,95 +199,27 @@ struct SightlinesGameView: View {
     }
 
     private var solvedDialog: some View {
-        SightlinesDialog(tag: "solved_dialog", border: SightlinesColors.accent.opacity(0.3)) {
-            VStack(spacing: 8) {
-                SightlinesTrophy()
-                Text("Solved!").font(.title2.bold())
-                if model.newBest {
-                    Text("NEW BEST")
-                        .font(.caption.bold())
-                        .foregroundStyle(Color(uiColor: .systemBackground))
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 2)
-                        .background(SightlinesColors.accent, in: Capsule())
-                        .accessibilityIdentifier("new_best")
-                }
-            }
-            .padding(.top, 24)
-            .padding(.bottom, 12)
-            .frame(maxWidth: .infinity)
-            .background(
-                LinearGradient(
-                    colors: [SightlinesColors.accent.opacity(0.3), SightlinesColors.accent.opacity(0.08), .clear],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-            )
-            .padding(.horizontal, -20)
-            .padding(.top, -20)
-            HStack(spacing: 8) {
-                stat("Time", formatDuration(ms: model.elapsedMs), tag: "solved_time")
-                if model.hints > 0 {
-                    stat("Hints", "\(model.hints)", tag: nil)
-                }
-            }
-            dailiesLeft
-            HStack(spacing: 16) {
-                Spacer()
-                Text("Home").sightlinesDialogAction("solved_home", action: onHome)
-                Text("New puzzle").sightlinesDialogAction("solved_new_puzzle", action: newPuzzle)
-            }
+        WinDialog(
+            title: "Solved!",
+            accent: SightlinesColors.accent,
+            dailyGroup: "SIGHTLINES",
+            newBest: model.newBest,
+            stats: solvedStats,
+            tag: "solved_dialog",
+            newLabel: model.size.map { sizeLabel($0) },
+            newTag: "solved_new_puzzle",
+            onNew: newPuzzle
+        ) {
+            Button("Home", action: onHome).accessibilityIdentifier("solved_home")
         }
     }
 
-    @ViewBuilder
-    private var dailiesLeft: some View {
-        let date = SightlinesToday.date
-        let solved = SightlinesStore.shared.games.dailySolved(date: date)
-        let left = sizes.filter { !solved.contains($0) }
-        if !left.isEmpty {
-            Text("STILL TO PLAY TODAY").font(.caption2).foregroundStyle(.secondary)
-            ScrollView {
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 130), spacing: 8)], alignment: .leading, spacing: 8) {
-                    ForEach(left, id: \.self) { size in
-                        Button {
-                            openDaily(date: date, size: size)
-                        } label: {
-                            HStack(spacing: 6) {
-                                Text("Sightlines \(sizeLabel(size))").font(.caption.weight(.medium))
-                                PuzzleIcon.image("chevron.right").font(.caption2).foregroundStyle(SightlinesColors.accent)
-                            }
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(SightlinesColors.accent.opacity(0.15), in: Capsule())
-                            .overlay(Capsule().stroke(SightlinesColors.accent.opacity(0.35)))
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityIdentifier("daily_left_\(size)")
-                    }
-                }
-            }
-            .frame(maxHeight: 136)
+    private var solvedStats: [WinStat] {
+        var stats = [WinStat(label: "Time", value: formatDuration(ms: model.elapsedMs), tag: "solved_time")]
+        if model.hints > 0 {
+            stats.append(WinStat(label: "Hints", value: "\(model.hints)"))
         }
-    }
-
-    private func stat(_ label: String, _ value: String, tag: String?) -> some View {
-        VStack {
-            Text(label).font(.caption2).foregroundStyle(.secondary)
-            statValue(value, tag: tag)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 8)
-        .background(SightlinesColors.accent.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
-    }
-
-    @ViewBuilder
-    private func statValue(_ value: String, tag: String?) -> some View {
-        if let tag {
-            Text(value).font(.headline).accessibilityIdentifier(tag)
-        } else {
-            Text(value).font(.headline)
-        }
+        return stats
     }
 
     private static let rules = [
@@ -379,17 +294,6 @@ struct SightlinesGameView: View {
         let seed = Int64.random(in: .min ... .max)
         Task {
             onOpenGame(await SightlinesStore.shared.start { PuzzleRef.random(seed: seed, size: size) })
-        }
-    }
-
-    private func openDaily(date: CalendarDay, size: Int) {
-        let store = SightlinesStore.shared
-        if let existing = store.games.dailyInProgress(date: date, size: size) {
-            onOpenGame(existing.id)
-            return
-        }
-        Task {
-            onOpenGame(await store.start { PuzzleRef.daily(date: date, size: size) })
         }
     }
 }

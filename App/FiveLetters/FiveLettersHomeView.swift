@@ -42,6 +42,7 @@ struct FiveLettersHomeView: View {
         .fiveLettersHeader("Five Letters")
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
+                DailyCalendarButton(tab: .fiveLetters)
                 NavigationLink {
                     FiveLettersStatsView()
                 } label: {
@@ -61,6 +62,9 @@ struct FiveLettersHomeView: View {
         }
         .onAppear {
             dailyNumber = Words.dayNumber(Self.today)
+            if let id = DailyRouter.shared.take(.fiveLetters) {
+                openGame = FiveLettersGameRoute(id: id)
+            }
             if let fixture, !fixtureStarted {
                 fixtureStarted = true
                 open(store.start(ref: fixture, hardMode: FiveLettersSetting.hardMode.current))

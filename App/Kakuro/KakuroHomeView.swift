@@ -50,6 +50,7 @@ struct KakuroHomeView: View {
             KakuroBackButton(action: onBack)
             Text("Kakuro").font(.largeTitle)
             Spacer()
+            DailyCalendarButton(tab: .kakuro)
             headerButton("chart.bar", "Stats", "stats") { navigator.path.append(.stats) }
             headerButton("clock.arrow.circlepath", "History", "history") { navigator.path.append(.history) }
             headerButton("gearshape", "Settings", "settings") { navigator.path.append(.settings) }

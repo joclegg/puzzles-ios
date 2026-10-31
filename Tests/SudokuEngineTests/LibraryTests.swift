@@ -9,12 +9,23 @@ import Testing
     @Test("given a daily id when parsed then the mode and date come back")
     func dailyIdRoundTrip() throws {
         // Act
-        let parsed = try #require(DailyIds.parse(DailyIds.of(mode: .killer, date: day)))
+        let id = DailyIds.of(mode: .killer, difficulty: .hard, date: day)
+        let parsed = try #require(DailyIds.parse(id))
 
         // Assert
-        #expect(DailyIds.of(mode: .killer, date: day) == "daily_killer:2026-10-31")
+        #expect(id == "daily_killer_hard:2026-10-31")
         #expect(parsed.mode == .killer)
         #expect(parsed.date == day)
+    }
+
+    @Test("given an old daily id when parsed then the mode and date come back")
+    func oldDailyId() throws {
+        // Act
+        let parsed = try #require(DailyIds.parse("daily_classic:2026-01-31"))
+
+        // Assert
+        #expect(parsed.mode == .classic)
+        #expect(parsed.date == CalendarDay(year: 2026, month: 1, day: 31))
     }
 
     @Test(
@@ -25,41 +36,31 @@ import Testing
         #expect(DailyIds.parse(id) == nil)
     }
 
-    @Test("given finishes on the day and later when grouped then the medal follows the rules")
-    func medals() {
-        // Arrange
-        let classic = DailyIds.of(mode: .classic, date: day)
-        let killer = DailyIds.of(mode: .killer, date: day)
-        let later = day.adding(days: 1)
-
+    @Test(
+        "given a date and level when the daily is picked then it is the same line Android and web pick",
+        arguments: [
+            (GameMode.classic, Difficulty.fast, 2737),
+            (GameMode.classic, Difficulty.medium, 4380),
+            (GameMode.classic, Difficulty.expert, 5377),
+            (GameMode.killer, Difficulty.fast, 3934),
+            (GameMode.killer, Difficulty.evil, 5057),
+        ])
+    func dailyPick(mode: GameMode, level: Difficulty, expected: Int) {
         // Act
-        let silver = dailyDays(completed: [DailyFinish(puzzleId: classic, finishedOn: day)])[day]
-        let gold = dailyDays(completed: [
-            DailyFinish(puzzleId: classic, finishedOn: day), DailyFinish(puzzleId: killer, finishedOn: day),
-        ])[day]
-        let late = dailyDays(completed: [DailyFinish(puzzleId: classic, finishedOn: later)])[day]
-        let lateThenOnTime = dailyDays(completed: [
-            DailyFinish(puzzleId: classic, finishedOn: later), DailyFinish(puzzleId: classic, finishedOn: day),
-        ])[day]
+        let index = BankPick.dailyIndex(
+            mode: mode, difficulty: level, date: CalendarDay(year: 2026, month: 10, day: 25), size: 10_000)
 
         // Assert
-        #expect(silver?.medal == .silver)
-        #expect(gold?.medal == .gold)
-        #expect(late?.medal == Medal.none)
-        #expect(late?.doneLate == true)
-        #expect(lateThenOnTime?.status(.classic) == .onTheDay)
+        #expect(index == expected)
     }
 
-    @Test("given a date when the daily is picked then level and index are stable and in range")
-    func dailyPick() {
+    @Test("given a date when every level's daily is named then each id is different", arguments: GameMode.allCases)
+    func dailyIdsPerLevel(mode: GameMode) {
         // Act
-        let level = BankPick.dailyLevel(mode: .killer, date: day)
-        let index = BankPick.dailyIndex(mode: .killer, date: day, size: 10)
+        let ids = Set(mode.levels.map { DailyIds.of(mode: mode, difficulty: $0, date: day) })
 
         // Assert
-        #expect(killerLevels.contains(level))
-        #expect(level == BankPick.dailyLevel(mode: .killer, date: day))
-        #expect((0..<10).contains(index))
+        #expect(ids.count == mode.levels.count)
     }
 
     @Test("given puzzle refs when asked for their slot then each kind has its own")

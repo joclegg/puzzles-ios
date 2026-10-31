@@ -212,13 +212,9 @@ final class SudokuStore {
         records().filter { $0.status == GameStatus.inProgress.rawValue }.compactMap(\.saved)
     }
 
-    var dailyResults: [CalendarDay: DailyDay] {
-        let finishes = records().filter { $0.status == GameStatus.completed.rawValue }.map { record in
-            DailyFinish(
-                puzzleId: record.puzzleId,
-                finishedOn: record.finishedAt.map { sudokuDay(Date(timeIntervalSince1970: Double($0) / 1000)) })
-        }
-        return dailyDays(completed: finishes)
+    var completedDailies: [(id: String, finishedAt: Int64?)] {
+        records().filter { $0.status == GameStatus.completed.rawValue && $0.puzzleId.hasPrefix(PuzzleRef.dailyPrefix) }
+            .map { ($0.puzzleId, $0.finishedAt) }
     }
 
     var bests: [BestTime] {
@@ -305,22 +301,29 @@ final class SudokuStore {
         return loaded
     }
 
-    func openDaily(mode: GameMode, date: CalendarDay) async -> Int? {
-        let id = DailyIds.of(mode: mode, date: date)
+    func openDaily(mode: GameMode, difficulty: Difficulty, date: CalendarDay) async -> Int? {
+        let id = DailyIds.of(mode: mode, difficulty: difficulty, date: date)
         if let existing = inProgress.first(where: { $0.ref.id == id }) {
             return existing.id
         }
-        let difficulty = BankPick.dailyLevel(mode: mode, date: date)
         let bank = await lines(mode, difficulty)
         guard !bank.isEmpty else {
             return nil
         }
-        let index = BankPick.dailyIndex(mode: mode, date: date, size: bank.count)
+        let index = BankPick.dailyIndex(mode: mode, difficulty: difficulty, date: date, size: bank.count)
         guard let puzzle = try? PuzzleCodec.decode(bank[index]) else {
             return nil
         }
         let ref = PuzzleRef(id: id, mode: mode, difficulty: difficulty, puzzle: puzzle)
         return start(ref, mistakeCheck: sudokuModeSettings(mode).mistakeCheck).id
+    }
+
+    func openLevel(mode: GameMode, difficulty: Difficulty) async -> Int? {
+        let slot = PuzzleRef.levelSlot(mode: mode, difficulty: difficulty)
+        if let existing = inProgress.first(where: { $0.ref.slot == slot }) {
+            return existing.id
+        }
+        return await startNew(mode: mode, difficulty: difficulty)
     }
 
     func startNew(mode: GameMode, difficulty: Difficulty) async -> Int? {

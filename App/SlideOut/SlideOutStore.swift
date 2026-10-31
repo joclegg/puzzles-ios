@@ -136,6 +136,17 @@ enum SlideOutStore {
         return isNewBest(elapsedMs: elapsedMs, previousBestMs: previous)
     }
 
+    static func solvedGames() -> [SlideOutGameRecord] {
+        let solved = GameStatus.solved.rawValue
+        return (try? context.fetch(FetchDescriptor<SlideOutGameRecord>(predicate: #Predicate { $0.status == solved }))) ?? []
+    }
+
+    static func inProgress(puzzleId: String) -> Int64? {
+        let status = GameStatus.inProgress.rawValue
+        let open = FetchDescriptor<SlideOutGameRecord>(predicate: #Predicate { $0.status == status && $0.puzzleId == puzzleId })
+        return (try? context.fetch(open))?.first?.id
+    }
+
     static func dailiesLeft(today: CalendarDay) -> [Level] {
         let solved = GameStatus.solved.rawValue
         let finished = FetchDescriptor<SlideOutGameRecord>(predicate: #Predicate { $0.status == solved })

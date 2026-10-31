@@ -13,7 +13,6 @@ struct SudokuHomeView: View {
 
     var body: some View {
         let inProgress = store.inProgress
-        let medal = store.dailyResults[sudokuToday()]?.medal ?? .none
         ZStack {
             ScrollView {
                 VStack(spacing: 20) {
@@ -26,7 +25,7 @@ struct SudokuHomeView: View {
                         options: GameMode.allCases, selected: mode, label: \.label, id: { "mode_\($0.slug)" },
                         onSelect: { mode = $0 })
                     section("Today", aside: sudokuToday().shortLabel) {
-                        today(medal: medal)
+                        today
                     }
                     section("New game", aside: nil) {
                         levels(inProgress)
@@ -45,6 +44,7 @@ struct SudokuHomeView: View {
             SudokuBackButton(action: navigator.back)
             Text("Sudoku").font(.largeTitle.weight(.regular))
             Spacer()
+            DailyCalendarButton(tab: .sudoku)
             SudokuIconButton(symbol: "trophy", label: "Best times", id: "stats") { navigator.push(.stats) }
             SudokuIconButton(symbol: "clock.arrow.circlepath", label: "History", id: "history") {
                 navigator.push(.history)
@@ -117,41 +117,34 @@ struct SudokuHomeView: View {
         }
     }
 
-    private func today(medal: Medal) -> some View {
-        HStack(spacing: 8) {
-            Button {
-                launch { await store.openDaily(mode: mode, date: sudokuToday()) }
-            } label: {
-                tileLabel(
-                    "Daily puzzle · \(levelLabel(BankPick.dailyLevel(mode: mode, date: sudokuToday())))",
-                    symbol: "calendar.badge.clock", trailing: medal == .none
-                )
-                .modifier(SudokuTileStyle(active: medal != .none))
+    private var today: some View {
+        let date = sudokuToday()
+        let solved = Set(store.completedDailies.map(\.id))
+        return LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
+            ForEach(mode.levels, id: \.self) { level in
+                dailyTile(level, done: solved.contains(DailyIds.of(mode: mode, difficulty: level, date: date)), date: date)
             }
-            .buttonStyle(SudokuPressStyle())
-            .accessibilityIdentifier("daily")
-            .overlay(alignment: .trailing) {
-                if medal != .none {
-                    SudokuMedal(medal: medal, size: 24)
-                        .padding(.trailing, 16)
-                        .accessibilityElement()
-                        .accessibilityLabel(medal == .gold ? "Gold medal" : "Silver medal")
-                        .accessibilityIdentifier(medal == .gold ? "todays_medal_gold" : "todays_medal_silver")
+        }
+    }
+
+    private func dailyTile(_ level: Difficulty, done: Bool, date: CalendarDay) -> some View {
+        Button {
+            launch { await store.openDaily(mode: mode, difficulty: level, date: date) }
+        } label: {
+            VStack(spacing: 4) {
+                Text(levelLabel(level)).font(.subheadline.weight(.semibold)).lineLimit(1).minimumScaleFactor(0.7)
+                if done {
+                    PuzzleIcon.image("checkmark.circle.fill").foregroundStyle(palette.accent)
+                } else {
+                    Text("Play").font(.caption2).foregroundStyle(.secondary)
                 }
             }
-            Button {
-                navigator.push(.daily)
-            } label: {
-                PuzzleIcon.image("calendar")
-                    .foregroundStyle(palette.accent)
-                    .frame(width: 64, height: 64)
-                    .contentShape(Rectangle())
-                    .modifier(SudokuTileStyle())
-            }
-            .buttonStyle(SudokuPressStyle())
-            .accessibilityLabel("Daily calendar")
-            .accessibilityIdentifier("daily_calendar")
+            .frame(maxWidth: .infinity, minHeight: 64)
+            .contentShape(Rectangle())
+            .modifier(SudokuTileStyle(active: done))
         }
+        .buttonStyle(SudokuPressStyle())
+        .accessibilityIdentifier("daily_\(level.name.lowercased())")
     }
 
     private func levels(_ inProgress: [SudokuSavedGame]) -> some View {

@@ -19,6 +19,7 @@ struct WordWheelHomeView: View {
             .navigationTitle("Word Wheel")
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
+                    DailyCalendarButton(tab: .wordWheel)
                     toolbarButton("chart.bar", "Stats", "stats") { showStats = true }
                     toolbarButton("clock", "History", "history") { showHistory = true }
                     toolbarButton("gearshape", "Settings", "settings") { showSettings = true }
@@ -67,6 +68,9 @@ struct WordWheelHomeView: View {
                 }
             }
             .task {
+                if let id = DailyRouter.shared.take(.wordWheel).flatMap(Int64.init) {
+                    openGame = id
+                }
                 if let fixture, !fixtureOpened {
                     fixtureOpened = true
                     openGame = repository.start(fixture)

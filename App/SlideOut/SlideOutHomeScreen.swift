@@ -48,6 +48,9 @@ struct SlideOutHomeScreen: View {
             destination(route).modelContainer(SlideOutStore.container)
         }
         .task {
+            if let id = DailyRouter.shared.take(.slideOut).flatMap(Int64.init) {
+                route = .game(id)
+            }
             if let fixture, !fixtureStarted {
                 fixtureStarted = true
                 route = .game(SlideOutStore.start(fixture))
@@ -60,6 +63,7 @@ struct SlideOutHomeScreen: View {
             SlideOutBackButton { dismiss() }
             Text("Slide Out").font(.largeTitle).lineLimit(1).minimumScaleFactor(0.7)
             Spacer()
+            DailyCalendarButton(tab: .slideOut).id(games.count { $0.gameStatus == .solved })
             SlideOutIconButton(systemName: "chart.bar", label: "Stats", id: "stats") { route = .stats }
             SlideOutIconButton(systemName: "clock.arrow.circlepath", label: "History", id: "history") {
                 route = .history

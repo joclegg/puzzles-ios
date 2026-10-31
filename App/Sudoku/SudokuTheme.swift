@@ -17,8 +17,6 @@ struct SudokuPalette {
     let thickLine: Color
     let cageLine: Color
     let cageSum: Color
-    let medalGold: Color
-    let medalSilver: Color
     let accent: Color
     let givenPeer: Color
 
@@ -27,7 +25,7 @@ struct SudokuPalette {
         enteredDigit: hex(0x14181F), noteDigit: hex(0x4A515B), highlightedNote: hex(0x1565D8),
         selected: hex(0x8EC0FA), sameDigit: hex(0xBCD9FC), peer: hex(0xE5F0FE), wrong: hex(0xD32F2F),
         trialMark: hex(0xE53935), thinLine: hex(0xA7AFBB), thickLine: hex(0x263040), cageLine: hex(0x5F6670),
-        cageSum: hex(0x262C35), medalGold: hex(0xE2B33C), medalSilver: hex(0xAEB6C1), accent: hex(0x1565D8),
+        cageSum: hex(0x262C35), accent: hex(0x1565D8),
         givenPeer: hex(0xDDE4EE))
 
     static let dark = SudokuPalette(
@@ -35,7 +33,7 @@ struct SudokuPalette {
         enteredDigit: hex(0xE9ECF1), noteDigit: hex(0xB8BEC8), highlightedNote: hex(0x7DB5FF),
         selected: hex(0x2F5E99), sameDigit: hex(0x244A78), peer: hex(0x1A2B40), wrong: hex(0xFF6B6B),
         trialMark: hex(0xFF5252), thinLine: hex(0x555E6C), thickLine: hex(0xB4BFCF), cageLine: hex(0xA2A9B4),
-        cageSum: hex(0xDDE1E7), medalGold: hex(0xD9A93A), medalSilver: hex(0x8E97A3), accent: hex(0x7DB5FF),
+        cageSum: hex(0xDDE1E7), accent: hex(0x7DB5FF),
         givenPeer: hex(0x283341))
 
     private static func hex(_ value: UInt32, _ alpha: Double = 1) -> Color {
@@ -172,19 +170,6 @@ struct SudokuPressStyle: ButtonStyle {
         configuration.label
             .scaleEffect(configuration.isPressed ? 0.97 : 1)
             .animation(.default, value: configuration.isPressed)
-    }
-}
-
-struct SudokuMedal: View {
-    let medal: Medal
-    var size: CGFloat = 18
-    @Environment(\.sudokuPalette) private var palette
-
-    var body: some View {
-        Circle()
-            .fill(medal == .gold ? palette.medalGold : palette.medalSilver)
-            .overlay(Circle().stroke(Color.white.opacity(0.6), lineWidth: size / 8))
-            .frame(width: size, height: size)
     }
 }
 

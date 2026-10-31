@@ -74,8 +74,8 @@ public struct PuzzleRef: Sendable, Equatable {
 }
 
 public enum DailyIds {
-    public static func of(mode: GameMode, date: CalendarDay) -> String {
-        "\(PuzzleRef.dailyPrefix)\(mode.slug):\(date.isoString)"
+    public static func of(mode: GameMode, difficulty: Difficulty, date: CalendarDay) -> String {
+        "\(PuzzleRef.dailyPrefix)\(mode.slug)_\(difficulty.name.lowercased()):\(date.isoString)"
     }
 
     public static func parse(_ id: String) -> (mode: GameMode, date: CalendarDay)? {
@@ -83,101 +83,28 @@ public enum DailyIds {
             return nil
         }
         let fields = parts(id.dropFirst(PuzzleRef.dailyPrefix.count), separator: ":")
-        guard fields.count == 2, let mode = GameMode(rawValue: fields[0].uppercased()) else {
+        guard fields.count == 2, let kind = fields[0].split(separator: "_", omittingEmptySubsequences: false).first,
+            let mode = GameMode(rawValue: kind.uppercased()), let date = parseCalendarDay(fields[1])
+        else {
             return nil
         }
-        let numbers = parts(fields[1], separator: "-").compactMap { Int($0) }
-        guard numbers.count == 3 else {
-            return nil
-        }
-        return (mode, CalendarDay(year: numbers[0], month: numbers[1], day: numbers[2]))
+        return (mode, date)
     }
-}
-
-public enum DailyStatus: Int, Sendable, Comparable {
-    case notDone
-    case late
-    case onTheDay
-
-    public static func < (lhs: DailyStatus, rhs: DailyStatus) -> Bool {
-        lhs.rawValue < rhs.rawValue
-    }
-}
-
-public enum Medal: Sendable {
-    case none
-    case silver
-    case gold
-}
-
-public struct DailyDay: Sendable, Equatable {
-    public let date: CalendarDay
-    public let statuses: [GameMode: DailyStatus]
-
-    public init(date: CalendarDay, statuses: [GameMode: DailyStatus]) {
-        self.date = date
-        self.statuses = statuses
-    }
-
-    public func status(_ mode: GameMode) -> DailyStatus {
-        statuses[mode] ?? .notDone
-    }
-
-    public var medal: Medal {
-        let onTheDay = GameMode.allCases.count { status($0) == .onTheDay }
-        if onTheDay == GameMode.allCases.count {
-            return .gold
-        }
-        return onTheDay == 0 ? .none : .silver
-    }
-
-    public var doneLate: Bool {
-        medal == .none && GameMode.allCases.contains { status($0) == .late }
-    }
-}
-
-public struct DailyFinish: Sendable {
-    public let puzzleId: String
-    public let finishedOn: CalendarDay?
-
-    public init(puzzleId: String, finishedOn: CalendarDay?) {
-        self.puzzleId = puzzleId
-        self.finishedOn = finishedOn
-    }
-}
-
-public func dailyDays(completed: [DailyFinish]) -> [CalendarDay: DailyDay] {
-    var statuses: [CalendarDay: [GameMode: DailyStatus]] = [:]
-    for game in completed {
-        guard let (mode, date) = DailyIds.parse(game.puzzleId) else {
-            continue
-        }
-        let status: DailyStatus = game.finishedOn == date ? .onTheDay : .late
-        statuses[date, default: [:]][mode] = max(statuses[date]?[mode] ?? .notDone, status)
-    }
-    return Dictionary(uniqueKeysWithValues: statuses.map { ($0.key, DailyDay(date: $0.key, statuses: $0.value)) })
 }
 
 public enum BankPick {
     private static let dailySeedStride: Int64 = 31
+    private static let dailyModeStride: Int64 = 8
 
     public static func fileName(mode: GameMode, difficulty: Difficulty) -> String {
         "\(mode.slug)_\(difficulty.name.lowercased())"
     }
 
-    public static func dailyLevel(mode: GameMode, date: CalendarDay) -> Difficulty {
-        var random = dailyRandom(mode: mode, date: date)
-        return mode.levels[random.nextInt(below: mode.levels.count)]
-    }
-
-    public static func dailyIndex(mode: GameMode, date: CalendarDay, size: Int) -> Int {
-        var random = dailyRandom(mode: mode, date: date)
-        _ = random.nextInt(below: mode.levels.count)
+    public static func dailyIndex(mode: GameMode, difficulty: Difficulty, date: CalendarDay, size: Int) -> Int {
+        let level = Int64(mode.levels.firstIndex(of: difficulty) ?? -1)
+        let seed = Int64(date.daysSinceEpoch) * dailySeedStride + mode.ordinal * dailyModeStride + level
+        var random = XorWowRandom(seed: seed)
         return random.nextInt(below: size)
-    }
-
-    private static func dailyRandom(mode: GameMode, date: CalendarDay) -> XorWowRandom {
-        XorWowRandom(seed: Int64(date.daysSinceEpoch) * dailySeedStride + mode.ordinal)
     }
 }
 
