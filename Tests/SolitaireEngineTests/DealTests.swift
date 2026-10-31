@@ -131,8 +131,14 @@ struct DealTests {
         arguments: [
             ("5C/AH|/KS|/QH|/|/|/|/;;;|||", Selection(pile: .tableau(0), count: 1), Pile.foundation(2), "Move the A♥ to its foundation."),
             ("/AH|/KS|/QH|/|/|/|/;;;|||", Selection(pile: .tableau(2), count: 1), Pile.tableau(1), "Move the Q♥ onto the K♠."),
-            ("5C/QH|/KS|/|/|/|/|/;;;|||", Selection(pile: .tableau(0), count: 1), Pile.tableau(1), "Move the Q♥ onto the K♠ to turn over the card under it."),
-            ("/|/AH|/QH|/|/|/|/;;KS;|||", Selection(pile: .waste, count: 1), Pile.tableau(0), "Move the K♠ from the waste to the empty column 1, so the card under it can be played."),
+            (
+                "5C/QH|/KS|/|/|/|/|/;;;|||", Selection(pile: .tableau(0), count: 1), Pile.tableau(1),
+                "Move the Q♥ onto the K♠ to turn over the card under it."
+            ),
+            (
+                "/|/AH|/QH|/|/|/|/;;KS;|||", Selection(pile: .waste, count: 1), Pile.tableau(0),
+                "Move the K♠ from the waste to the empty column 1, so the card under it can be played."
+            ),
         ]
     )
     func hint(board: String, selection: Selection, to: Pile, text: String) {

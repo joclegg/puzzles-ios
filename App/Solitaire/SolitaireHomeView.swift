@@ -341,11 +341,14 @@ struct SolitaireHistoryView: View {
                 SolitaireBackButton(action: onBack)
                 Text("History").font(.largeTitle)
             }
-            HStack(spacing: 8) {
-                chip("All", selected: filter == nil, tag: "filter_all") { filter = nil }
-                ForEach(DrawMode.allCases, id: \.self) { mode in
-                    chip(mode.label, selected: filter == mode, tag: "filter_\(mode.tagName)") { filter = mode }
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    chip("All", selected: filter == nil, tag: "filter_all") { filter = nil }
+                    ForEach(DrawMode.allCases, id: \.self) { mode in
+                        chip(mode.label, selected: filter == mode, tag: "filter_\(mode.tagName)") { filter = mode }
+                    }
                 }
+                .padding(1)
             }
             let games = store.history(filter: filter)
             if games.isEmpty {
@@ -361,7 +364,10 @@ struct SolitaireHistoryView: View {
                             Divider()
                         }
                     }
+                    .padding(.horizontal, 16)
                 }
+                .background(SolitaireColors.tile, in: RoundedRectangle(cornerRadius: 16))
+                .overlay(RoundedRectangle(cornerRadius: 16).stroke(SolitaireColors.accent.opacity(0.25), lineWidth: 1))
             }
         }
         .padding(16)
@@ -450,7 +456,9 @@ struct SolitaireSettingsView: View {
                         $oneTapMove,
                         tag: "setting_one_tap_move"
                     )
-                    row("Winnable deals only", "Every new deal can be won. Applies to new deals.", $winnableOnly, tag: "setting_winnable_only")
+                    row(
+                        "Winnable deals only", "Every new deal can be won. Applies to new deals.", $winnableOnly,
+                        tag: "setting_winnable_only")
                     row(
                         "Tell me when a deal can't be won",
                         "Checks after a full pass through the stock with no move, and offers to undo to the last winnable position.",
@@ -462,7 +470,9 @@ struct SolitaireSettingsView: View {
                     row("Hints", "Show the hint button.", $showHints, tag: "setting_show_hints")
                     row("How to play", "Show the ? button with the rules and a walkthrough.", $showTutorial, tag: "setting_show_tutorial")
                     if showHints {
-                        row("Hints fill the answer in", "Off: a hint points at the next step and says why.", $hintFill, tag: "setting_hint_fill")
+                        row(
+                            "Hints fill the answer in", "Off: a hint points at the next step and says why.", $hintFill,
+                            tag: "setting_hint_fill")
                     }
                 }
                 .padding(16)

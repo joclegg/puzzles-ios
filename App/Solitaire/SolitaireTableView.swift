@@ -76,6 +76,10 @@ private struct PlacedCard: Identifiable {
     let position: CGPoint
     let layer: Double
     let interactive: Bool
+
+    var identity: String {
+        "\(pile)-\(id)"
+    }
 }
 
 private struct CardDrag: Equatable {
@@ -98,7 +102,7 @@ struct SolitaireTableView: View {
             let metrics = TableMetrics(size: proxy.size)
             ZStack(alignment: .topLeading) {
                 piles(metrics)
-                ForEach(placed(metrics)) { placed in
+                ForEach(placed(metrics), id: \.identity) { placed in
                     cardView(placed, metrics)
                 }
             }
@@ -295,6 +299,7 @@ private struct SolitaireLanding: ViewModifier {
         content
             .scaleEffect(1 + lift * 0.5)
             .rotationEffect(.degrees(lift * -18))
+            .offset(y: -lift * 40)
             .onAppear {
                 withAnimation(.spring(duration: 0.35, bounce: 0.4)) {
                     popped = true
