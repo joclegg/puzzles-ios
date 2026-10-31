@@ -1,0 +1,32 @@
+appId: com.joclegg.puzzles
+name: Slide Out - a daily opens, and reopens the same game
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "game_slide_out"
+    timeout: 120000
+- tapOn:
+    id: "game_slide_out"
+- tapOn:
+    id: "daily_beginner"
+- assertVisible:
+    id: "game_title"
+    text: "Daily.*Beginner"
+- tapOn:
+    id: "back"
+- tapOn:
+    id: "daily_beginner"
+- assertVisible:
+    id: "game_title"
+    text: "Daily.*Beginner"
+- tapOn:
+    id: "back"
+- tapOn:
+    id: "history"
+- assertVisible:
+    id: "history_item"
+- assertNotVisible:
+    id: "history_item"
+    index: 1
