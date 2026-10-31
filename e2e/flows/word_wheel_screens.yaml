@@ -1,0 +1,75 @@
+appId: com.joclegg.puzzles
+name: Word Wheel - resume, stats, history replay, settings and the walkthrough
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    id: "game_word_wheel"
+- tapOn:
+    id: "level_5"
+- assertVisible:
+    id: "game_title"
+    text: "5 letters"
+- tapOn:
+    id: "rules"
+- tapOn:
+    id: "walkthrough_start"
+- assertVisible:
+    id: "walkthrough_text"
+    text: "Find every word in this crossword."
+- tapOn:
+    id: "walkthrough_next"
+- tapOn:
+    id: "walkthrough_close"
+- tapOn:
+    id: "game_menu"
+- tapOn:
+    text: "Settings"
+- assertVisible:
+    id: "setting_show_timer"
+- tapOn:
+    id: "setting_show_hints"
+- tapOn:
+    label: "Back"
+    index: 0
+- assertNotVisible:
+    id: "hint"
+- tapOn:
+    id: "game_menu"
+- tapOn:
+    text: "Show solution"
+- tapOn:
+    id: "confirm_reveal"
+- assertVisible:
+    id: "words_left"
+    text: "0 to find"
+- tapOn:
+    label: "Back"
+    index: 0
+- tapOn:
+    id: "stats"
+- assertVisible:
+    id: "level_5_solved"
+    text: "0/1"
+- tapOn:
+    label: "Back"
+    index: 0
+- tapOn:
+    id: "history"
+- tapOn:
+    id: "history_item"
+- assertVisible:
+    id: "game_title"
+    text: "5 letters"
+- tapOn:
+    label: "Back"
+    index: 0
+- tapOn:
+    id: "level_5"
+- assertVisible:
+    id: "resume_dialog"
+- tapOn:
+    id: "resume_game"
+- assertVisible:
+    id: "game_title"
+    text: "5 letters"
