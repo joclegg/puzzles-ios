@@ -26,7 +26,7 @@ actor BankStore {
         else {
             return false
         }
-        return manifest.files.keys.allSatisfy { FileManager.default.fileExists(atPath: directory.appending(path: $0).path()) }
+        return manifest.files.keys.allSatisfy { Self.exists(directory.appending(path: $0)) }
     }
 
     func update() async throws {
@@ -48,7 +48,7 @@ actor BankStore {
         #if DEBUG && targetEnvironment(simulator)
             let source = URL(filePath: "/tmp/puzzles-e2e-banks")
             let manager = FileManager.default
-            guard manager.fileExists(atPath: source.path()), !manager.fileExists(atPath: directory.path()) else {
+            guard Self.exists(source), !Self.exists(directory) else {
                 return
             }
             try? manager.createDirectory(at: directory.deletingLastPathComponent(), withIntermediateDirectories: true)
@@ -67,6 +67,10 @@ actor BankStore {
         }
         try FileManager.default.createDirectory(at: target.deletingLastPathComponent(), withIntermediateDirectories: true)
         try data.write(to: target, options: .atomic)
+    }
+
+    private static func exists(_ url: URL) -> Bool {
+        FileManager.default.fileExists(atPath: url.path(percentEncoded: false))
     }
 
     private static func hash(_ data: Data) -> String {
