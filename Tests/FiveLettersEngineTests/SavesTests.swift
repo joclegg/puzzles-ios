@@ -22,8 +22,8 @@ struct WordRefTests {
         arguments: [
             ("daily_2026-10-25", "Five Letters 1"),
             ("daily_2026-10-31", "Five Letters 7"),
-            ("nyt_2021-06-20", "Wordle 1"),
-            ("nyt_2026-10-31", "Wordle 1,960"),
+            ("daily2_2026-10-31", "Daily puzzle 2 · 7"),
+            ("nyt_2026-10-31", "Daily puzzle 2 · 7"),
             ("practice_5", "Practice"),
         ]
     )
@@ -39,6 +39,7 @@ struct WordRefTests {
         "given a word id when asked for its slot then dated games keep their own and practice shares one",
         arguments: [
             ("daily_2026-10-31", "daily_2026-10-31"),
+            ("daily2_2026-10-31", "daily2_2026-10-31"),
             ("nyt_2026-10-31", "nyt_2026-10-31"),
             ("practice_5", "practice"),
             ("practice_6", "practice"),
@@ -56,14 +57,15 @@ struct WordRefTests {
     func refsFromDate() {
         // Act
         let daily = WordRef.daily(words: words, date: date)
-        let nyt = WordRef.nyt(date: date, answer: "SLATE")
+        let daily2 = WordRef.daily2(date: date, answer: "SLATE")
 
         // Assert
         #expect(daily.id == "daily_2026-10-31")
         #expect(daily.isDaily)
         #expect(daily.answer == words.daily(date))
-        #expect(nyt.id == "nyt_2026-10-31")
-        #expect(nyt.isNyt)
+        #expect(daily2.id == "daily2_2026-10-31")
+        #expect(daily2.isDaily2)
+        #expect(WordRef(id: "nyt_2026-10-31", answer: "SLATE").isDaily2)
     }
 
     @Test("given a seed when a practice ref is made then the same seed gives the same word")
@@ -165,17 +167,17 @@ struct SavesTests {
     }
 
     @Test(
-        "given a New York Times reply when it is read then only a five-letter solution comes back",
+        "given a Daily puzzle 2 reply when it is read then only a five-letter solution comes back",
         arguments: [
-            (#"{"id":1,"solution":"crane","print_date":"2026-10-31"}"#, "CRANE" as String?),
-            (#"{"solution" : "Crane"}"#, "CRANE"),
-            (#"{"solution":"cranes"}"#, nil),
+            (#"{"date":"2026-10-31","word":"crane"}"#, "CRANE" as String?),
+            (#"{"word" : "Crane"}"#, "CRANE"),
+            (#"{"word":"cranes"}"#, nil),
             ("not json", nil),
         ]
     )
-    func nyt(json: String, expected: String?) {
+    func daily2(json: String, expected: String?) {
         // Act
-        let word = nytSolution(json: json)
+        let word = daily2Word(json: json)
 
         // Assert
         #expect(word == expected)

@@ -22,9 +22,8 @@ public enum GameStatus: String, Sendable, CaseIterable {
 
 public struct WordRef: Hashable, Sendable {
     public static let dailyPrefix = "daily_"
-    public static let nytPrefix = "nyt_"
+    public static let daily2Prefix = "daily2_"
     private static let practiceSlot = "practice"
-    private static let wordleLaunch = CalendarDay(year: 2021, month: 6, day: 19)
 
     public let id: String
     public let answer: String
@@ -38,20 +37,27 @@ public struct WordRef: Hashable, Sendable {
         id.hasPrefix(WordRef.dailyPrefix)
     }
 
-    public var isNyt: Bool {
-        id.hasPrefix(WordRef.nytPrefix)
+    public var isDaily2: Bool {
+        daily2Date != nil
+    }
+
+    private var daily2Date: CalendarDay? {
+        guard let prefix = [WordRef.daily2Prefix, legacyDaily2Prefix].first(where: id.hasPrefix) else {
+            return nil
+        }
+        return CalendarDay(iso: String(id.dropFirst(prefix.count)))
     }
 
     public var slot: String {
-        isDaily || isNyt ? id : WordRef.practiceSlot
+        isDaily || isDaily2 ? id : WordRef.practiceSlot
     }
 
     public var title: String {
         if isDaily, let date = CalendarDay(iso: String(id.dropFirst(WordRef.dailyPrefix.count))) {
             return "Five Letters \(Words.dayNumber(date))"
         }
-        if isNyt, let date = CalendarDay(iso: String(id.dropFirst(WordRef.nytPrefix.count))) {
-            return "Wordle \(groupedThousands(date.days(since: WordRef.wordleLaunch)))"
+        if let date = daily2Date {
+            return "Daily puzzle 2 · \(Words.dayNumber(date))"
         }
         return "Practice"
     }
@@ -60,16 +66,16 @@ public struct WordRef: Hashable, Sendable {
         dailyPrefix + date.isoString
     }
 
-    public static func nytId(_ date: CalendarDay) -> String {
-        nytPrefix + date.isoString
+    public static func daily2Id(_ date: CalendarDay) -> String {
+        daily2Prefix + date.isoString
     }
 
     public static func daily(words: Words, date: CalendarDay) -> WordRef {
         WordRef(id: dailyId(date), answer: words.daily(date))
     }
 
-    public static func nyt(date: CalendarDay, answer: String) -> WordRef {
-        WordRef(id: nytId(date), answer: answer)
+    public static func daily2(date: CalendarDay, answer: String) -> WordRef {
+        WordRef(id: daily2Id(date), answer: answer)
     }
 
     public static func practice(words: Words, seed: Int64) -> WordRef {
@@ -158,8 +164,8 @@ public func decodeGuesses(_ text: String) -> [String] {
     text.split(separator: ",").map(String.init)
 }
 
-public func nytSolution(json: String) -> String? {
-    guard let match = json.firstMatch(of: /"solution"\s*:\s*"([A-Za-z]+)"/) else {
+public func daily2Word(json: String) -> String? {
+    guard let match = json.firstMatch(of: /"word"\s*:\s*"([A-Za-z]+)"/) else {
         return nil
     }
     let word = match.1.uppercased()
@@ -197,15 +203,4 @@ extension CalendarDay {
         }
         self.init(year: parts[0], month: parts[1], day: parts[2])
     }
-}
-
-private func groupedThousands(_ value: Int) -> String {
-    let digits = String(abs(value))
-    let grouped = digits.reversed().enumerated().reduce(into: "") { result, item in
-        if item.offset > 0 && item.offset.isMultiple(of: 3) {
-            result.insert(",", at: result.startIndex)
-        }
-        result.insert(item.element, at: result.startIndex)
-    }
-    return value < 0 ? "-\(grouped)" : grouped
 }

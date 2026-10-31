@@ -57,7 +57,7 @@ Rules marked (lint) are enforced by `swift-format lint`, `scripts/verify-no-comm
 ### Offline
 
 - MUST download puzzle banks from https://joclegg.github.io/puzzles-data/ through `BankStore`, and keep them on the device so every game plays offline. MUST NOT bundle puzzle banks in the app or the repository.
-- MUST NOT add analytics, crash reporting or ads. The only network calls are bank downloads, sync and the Five Letters NY Times daily.
+- MUST NOT add analytics, crash reporting or ads. The only network calls are bank downloads, sync and the Five Letters Daily puzzle 2 word from https://puzzles-daily.joclegg.dev.
 - MUST keep sign-in optional, so every game plays signed out.
 
 ### UI
