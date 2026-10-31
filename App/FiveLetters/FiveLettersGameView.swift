@@ -179,7 +179,7 @@ struct FiveLettersGameView: View {
         ToolbarItemGroup(placement: .topBarTrailing) {
             if game.isOver {
                 ShareLink(item: model.shareText) {
-                    Label("Share your result", systemImage: "square.and.arrow.up")
+                    Label { Text("Share your result") } icon: { PuzzleIcon.image("square.and.arrow.up") }
                 }
                 .accessibilityIdentifier("share")
             }
@@ -207,7 +207,7 @@ struct FiveLettersGameView: View {
                 }
                 .accessibilityIdentifier("menu_settings")
             } label: {
-                Label("More", systemImage: "ellipsis")
+                Label { Text("More") } icon: { PuzzleIcon.image("ellipsis") }
             }
             .accessibilityIdentifier("game_menu")
             .tourTarget("menu", in: $tour)

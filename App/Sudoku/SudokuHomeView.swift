@@ -45,7 +45,7 @@ struct SudokuHomeView: View {
             Text("Sudoku").font(.largeTitle.weight(.regular))
             Spacer()
             DailyCalendarButton(tab: .sudoku)
-            SudokuIconButton(symbol: "trophy", label: "Best times", id: "stats") { navigator.push(.stats) }
+            SudokuIconButton(symbol: "chart.bar", label: "Best times", id: "stats") { navigator.push(.stats) }
             SudokuIconButton(symbol: "clock.arrow.circlepath", label: "History", id: "history") {
                 navigator.push(.history)
             }

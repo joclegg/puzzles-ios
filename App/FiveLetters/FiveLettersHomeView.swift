@@ -46,13 +46,13 @@ struct FiveLettersHomeView: View {
                 NavigationLink {
                     FiveLettersStatsView()
                 } label: {
-                    Label("Stats", systemImage: "chart.bar")
+                    Label { Text("Stats") } icon: { PuzzleIcon.image("chart.bar") }
                 }
                 .accessibilityIdentifier("stats")
                 NavigationLink {
                     SettingsHubView(initial: .fiveLetters)
                 } label: {
-                    Label("Settings", systemImage: "gearshape")
+                    Label { Text("Settings") } icon: { PuzzleIcon.image("gearshape") }
                 }
                 .accessibilityIdentifier("settings")
             }

@@ -90,6 +90,7 @@ struct LauncherView: View {
                 } else {
                     ScrollView {
                         VStack(spacing: 12) {
+                            header
                             ForEach(entries) { entry in
                                 NavigationLink(value: DailyRoute.game(entry.tab)) {
                                     card(entry)
@@ -100,28 +101,8 @@ struct LauncherView: View {
                         }
                         .padding()
                     }
-                    .navigationTitle("Puzzles")
+                    .toolbar(.hidden, for: .navigationBar)
                     .sheet(isPresented: $signingIn) { SignInView() }
-                    .toolbar {
-                        ToolbarItem(placement: .topBarLeading) {
-                            if SyncCenter.shared.signedIn {
-                                Button("Sign out") { SyncCenter.shared.signOut() }
-                                    .accessibilityIdentifier("sign_out")
-                            } else {
-                                Button("Sign in to sync") { signingIn = true }
-                                    .accessibilityIdentifier("sign_in")
-                            }
-                        }
-                        ToolbarItem(placement: .topBarTrailing) {
-                            NavigationLink {
-                                SettingsHubView()
-                            } label: {
-                                PuzzleIcon.image("gearshape")
-                            }
-                            .accessibilityLabel("Settings")
-                            .accessibilityIdentifier("settings")
-                        }
-                    }
                 }
             }
             .navigationDestination(for: DailyRoute.self, destination: destination)
@@ -136,6 +117,37 @@ struct LauncherView: View {
             entries.first { $0.tab == tab }?.home()
         case .calendar(let tab):
             DailyCalendarView(tab: tab)
+        }
+    }
+
+    private var header: some View {
+        HStack(spacing: 8) {
+            Text("Puzzles")
+                .font(.largeTitle)
+                .lineLimit(1)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            Group {
+                if SyncCenter.shared.signedIn {
+                    Button("Sign out") { SyncCenter.shared.signOut() }
+                        .accessibilityIdentifier("sign_out")
+                } else {
+                    Button("Sign in to sync") { signingIn = true }
+                        .accessibilityIdentifier("sign_in")
+                }
+            }
+            .buttonStyle(.bordered)
+            .buttonBorderShape(.capsule)
+            .font(.subheadline)
+            .lineLimit(1)
+            .fixedSize()
+            NavigationLink {
+                SettingsHubView()
+            } label: {
+                PuzzleIcon.image("gearshape").frame(width: 44, height: 44)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Settings")
+            .accessibilityIdentifier("settings")
         }
     }
 

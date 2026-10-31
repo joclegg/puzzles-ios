@@ -7,6 +7,6 @@
   "respectsExistingLineBreaks": true,
   "lineBreakBeforeEachArgument": false,
   "rules": {
-    "OnlyOneTrailingClosureArguments": false
+    "OnlyOneTrailingClosureArgument": false
   }
 }
