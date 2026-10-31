@@ -20,6 +20,23 @@ extension View {
     }
 }
 
+private struct SightlinesTrophy: View {
+    @State private var scale = 0.6
+
+    var body: some View {
+        Circle()
+            .fill(SightlinesColors.accent)
+            .frame(width: 64, height: 64)
+            .overlay {
+                Image(systemName: "trophy.fill").font(.title).foregroundStyle(Color(uiColor: .systemBackground))
+            }
+            .scaleEffect(scale)
+            .onAppear {
+                withAnimation(.spring(response: 0.6, dampingFraction: 0.5)) { scale = 1 }
+            }
+    }
+}
+
 struct SightlinesGameView: View {
     let onOpenGame: (Int64) -> Void
     let onHome: () -> Void
@@ -39,6 +56,7 @@ struct SightlinesGameView: View {
     @State private var tourStep: Int?
     @State private var settingsOpen = false
     @State private var bounds: [String: CGRect] = [:]
+    @State private var tooltip: String?
 
     init(id: Int64, onOpenGame: @escaping (Int64) -> Void, onHome: @escaping () -> Void) {
         self.onOpenGame = onOpenGame
@@ -127,6 +145,27 @@ struct SightlinesGameView: View {
             menu.tourTarget("menu")
         }
         .padding(.horizontal, 12)
+        .overlay(alignment: .bottomTrailing) {
+            if let tooltip {
+                Text(tooltip)
+                    .font(.caption)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 4))
+                    .offset(x: -12, y: 28)
+                    .accessibilityIdentifier("tooltip")
+            }
+        }
+        .zIndex(1)
+        .task(id: tooltip) {
+            guard tooltip != nil else {
+                return
+            }
+            try? await Task.sleep(for: .seconds(2))
+            if !Task.isCancelled {
+                tooltip = nil
+            }
+        }
     }
 
     private func tool(
@@ -140,6 +179,7 @@ struct SightlinesGameView: View {
             Image(systemName: icon).frame(width: 40, height: 40)
         }
         .disabled(!enabled)
+        .simultaneousGesture(LongPressGesture().onEnded { _ in tooltip = description })
         .accessibilityLabel(description)
         .accessibilityIdentifier(tag)
     }
@@ -176,14 +216,9 @@ struct SightlinesGameView: View {
     }
 
     private var solvedDialog: some View {
-        SightlinesDialog(tag: "solved_dialog") {
+        SightlinesDialog(tag: "solved_dialog", border: SightlinesColors.accent.opacity(0.3)) {
             VStack(spacing: 8) {
-                Circle()
-                    .fill(SightlinesColors.accent)
-                    .frame(width: 64, height: 64)
-                    .overlay {
-                        Image(systemName: "trophy.fill").font(.title).foregroundStyle(Color(uiColor: .systemBackground))
-                    }
+                SightlinesTrophy()
                 Text("Solved!").font(.title2.bold())
                 if model.newBest {
                     Text("NEW BEST")
@@ -195,7 +230,18 @@ struct SightlinesGameView: View {
                         .accessibilityIdentifier("new_best")
                 }
             }
+            .padding(.top, 24)
+            .padding(.bottom, 12)
             .frame(maxWidth: .infinity)
+            .background(
+                LinearGradient(
+                    colors: [SightlinesColors.accent.opacity(0.3), SightlinesColors.accent.opacity(0.08), .clear],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+            .padding(.horizontal, -20)
+            .padding(.top, -20)
             HStack(spacing: 8) {
                 stat("Time", formatDuration(ms: model.elapsedMs), tag: "solved_time")
                 if model.hints > 0 {
@@ -218,8 +264,8 @@ struct SightlinesGameView: View {
         let left = sizes.filter { !solved.contains($0) }
         if !left.isEmpty {
             Text("STILL TO PLAY TODAY").font(.caption2).foregroundStyle(.secondary)
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
+            ScrollView {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 130), spacing: 8)], alignment: .leading, spacing: 8) {
                     ForEach(left, id: \.self) { size in
                         Button {
                             openDaily(date: date, size: size)
@@ -231,12 +277,14 @@ struct SightlinesGameView: View {
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
                             .background(SightlinesColors.accent.opacity(0.15), in: Capsule())
+                            .overlay(Capsule().stroke(SightlinesColors.accent.opacity(0.35)))
                         }
                         .buttonStyle(.plain)
                         .accessibilityIdentifier("daily_left_\(size)")
                     }
                 }
             }
+            .frame(maxHeight: 136)
         }
     }
 

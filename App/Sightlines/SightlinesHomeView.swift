@@ -204,7 +204,8 @@ struct SightlinesHomeView: View {
                     if let saved {
                         HStack(spacing: 6) {
                             Circle().fill(SightlinesColors.accent).frame(width: 6, height: 6)
-                            Text("In progress · \(formatDuration(ms: saved.elapsedMs))").font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                            Text("In progress · \(formatDuration(ms: saved.elapsedMs))").font(.caption).foregroundStyle(.secondary)
+                                .lineLimit(1)
                         }
                     }
                 }
@@ -215,7 +216,9 @@ struct SightlinesHomeView: View {
             .padding(.vertical, 12)
             .frame(maxWidth: .infinity, minHeight: 64)
             .background(SightlinesColors.tile, in: RoundedRectangle(cornerRadius: 16))
-            .overlay(RoundedRectangle(cornerRadius: 16).stroke(saved != nil ? SightlinesColors.accent.opacity(0.5) : SightlinesColors.tileBorder))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16).stroke(saved != nil ? SightlinesColors.accent.opacity(0.5) : SightlinesColors.tileBorder)
+            )
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("size_\(size)")

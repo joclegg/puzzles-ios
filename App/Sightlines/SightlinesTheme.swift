@@ -61,6 +61,7 @@ struct SightlinesGameIcon: View {
 struct SightlinesDialog<Content: View>: View {
     let tag: String
     var dismiss: (() -> Void)?
+    var border: Color = .clear
     @ViewBuilder let content: Content
 
     var body: some View {
@@ -75,6 +76,8 @@ struct SightlinesDialog<Content: View>: View {
             .padding(20)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 28))
+            .clipShape(RoundedRectangle(cornerRadius: 28))
+            .overlay(RoundedRectangle(cornerRadius: 28).stroke(border))
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier(tag)
             .padding(24)

@@ -141,7 +141,9 @@ final class SightlinesStore {
     }
 
     private func reload() {
-        let order = [SortDescriptor(\SightlinesGameRecord.startedAt, order: .reverse), SortDescriptor(\SightlinesGameRecord.id, order: .reverse)]
+        let order = [
+            SortDescriptor(\SightlinesGameRecord.startedAt, order: .reverse), SortDescriptor(\SightlinesGameRecord.id, order: .reverse),
+        ]
         let records = (try? context.fetch(FetchDescriptor<SightlinesGameRecord>(sortBy: order))) ?? []
         games = records.compactMap(\.model)
     }

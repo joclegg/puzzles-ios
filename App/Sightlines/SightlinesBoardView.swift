@@ -143,7 +143,7 @@ struct SightlinesColourPicker: View {
                 }
                 .overlay {
                     if colour == dot {
-                        RoundedRectangle(cornerRadius: 10).strokeBorder(SightlinesColors.hintTarget, lineWidth: 3)
+                        RoundedRectangle(cornerRadius: 10).strokeBorder(SightlinesColors.accent, lineWidth: 3)
                     }
                 }
         }
