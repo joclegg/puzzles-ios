@@ -1,0 +1,20 @@
+appId: com.joclegg.puzzles
+name: Word Wheel - a real word that isn't in the crossword counts as a bonus
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "word_wheel_two_words"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "wheel_letter_4"
+- tapOn:
+    id: "wheel_letter_3"
+- tapOn:
+    id: "wheel_letter_1"
+- tapOn:
+    id: "submit_word"
+- assertVisible:
+    id: "bonus_count"
+    text: "Bonus 1"
