@@ -124,7 +124,11 @@ struct GameStateTests {
     func appendKeepsDailies() {
         // Arrange
         let answers = (0..<944).map { index in
-            let codes = (0..<5).map { UInt8(97 + ((index >> ($0 * 2)) & 3) + $0 * 4) }
+            var codes: [UInt8] = []
+            for position in 0..<5 {
+                let offset: Int = (index >> (position * 2)) & 3
+                codes.append(UInt8(97 + offset + position * 4))
+            }
             return String(decoding: codes, as: UTF8.self)
         }
         let before = Words(answers: answers, guesses: [])
