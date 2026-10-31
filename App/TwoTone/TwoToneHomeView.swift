@@ -116,32 +116,52 @@ struct TwoToneHomeView: View {
     private var hero: some View {
         HStack(spacing: 16) {
             TwoToneGameIcon()
+                .frame(width: 80, height: 80)
+                .background(Color(uiColor: .systemBackground), in: .rect(cornerRadius: 20))
+                .shadow(radius: 1)
             Text("Fill the grid red and blue, three simple rules")
-                .font(.subheadline)
                 .foregroundStyle(.secondary)
             Spacer(minLength: 0)
         }
         .padding(16)
         .frame(maxWidth: .infinity)
-        .background(TwoToneColors.accent.opacity(0.1), in: .rect(cornerRadius: 20))
+        .background(
+            LinearGradient(
+                colors: [TwoToneColors.accent.opacity(0.2), TwoToneColors.accent.opacity(0.06), .clear],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            ),
+            in: .rect(cornerRadius: 24)
+        )
+        .overlay { RoundedRectangle(cornerRadius: 24).stroke(TwoToneColors.accent.opacity(0.25)) }
     }
 
     private func continueCard(_ game: TwoToneGameRecord) -> some View {
         Button {
             open(game.id)
         } label: {
-            HStack {
+            HStack(spacing: 16) {
+                Circle()
+                    .fill(TwoToneColors.accent)
+                    .frame(width: 48, height: 48)
+                    .overlay { Image(systemName: "play.fill").foregroundStyle(.background) }
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Continue").font(.headline)
-                    Text("\(game.title) · \(formatDuration(game.elapsedMs))").font(.caption)
+                    Text("\(game.title) · \(formatDuration(game.elapsedMs))")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
                 }
-                Spacer()
-                Image(systemName: "play.fill")
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.right").foregroundStyle(.secondary)
             }
-            .foregroundStyle(.white)
             .padding(16)
             .frame(maxWidth: .infinity)
-            .background(TwoToneColors.accent, in: .rect(cornerRadius: 16))
+            .background(
+                RoundedRectangle(cornerRadius: 24)
+                    .fill(Color(uiColor: .secondarySystemGroupedBackground))
+                    .overlay { RoundedRectangle(cornerRadius: 24).stroke(TwoToneColors.accent, lineWidth: 2) }
+            )
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("continue")
@@ -173,13 +193,17 @@ struct TwoToneHomeView: View {
         Button {
             launch { await store.openDaily(date: today, size: size) }
         } label: {
-            VStack(spacing: 6) {
-                Image(systemName: done ? "checkmark.circle.fill" : "calendar")
-                    .foregroundStyle(TwoToneColors.accent)
-                Text(sizeLabel(size)).font(.subheadline.weight(.semibold))
+            VStack(spacing: 4) {
+                Text(sizeLabel(size)).font(.subheadline.weight(.semibold)).lineLimit(1)
+                if done {
+                    Image(systemName: "checkmark.circle.fill").foregroundStyle(TwoToneColors.accent)
+                } else {
+                    Text("Play").font(.caption2).foregroundStyle(.secondary)
+                }
             }
             .frame(maxWidth: .infinity, minHeight: 64)
             .background(tileBackground(highlighted: done))
+            .background(done ? TwoToneColors.accent.opacity(0.16) : .clear, in: .rect(cornerRadius: 16))
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("daily_\(size)")
