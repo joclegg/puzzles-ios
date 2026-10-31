@@ -24,7 +24,7 @@ enum TwoToneGame {
             guard let solution = Grid.parse(size: 4, text: "RBBR BRRB RBRB BRBR") else {
                 return nil
             }
-            let givens: Grid
+            let givens: TwoToneEngine.Grid
             switch name {
             case "two_tone_one_left":
                 givens = solution.with(cell: 1, tile: .empty)
