@@ -3,11 +3,18 @@ import SwiftUI
 enum SlideOutGame {
     @MainActor
     static func home() -> AnyView {
-        AnyView(Text("Slide Out"))
+        AnyView(SlideOutHomeScreen().modelContainer(SlideOutStore.container))
     }
 
     @MainActor
     static func fixture(_ name: String) -> AnyView? {
-        nil
+        #if DEBUG
+            guard let ref = SlideOutFixtures.puzzle(name) else {
+                return nil
+            }
+            return AnyView(SlideOutHomeScreen(fixture: ref).modelContainer(SlideOutStore.container))
+        #else
+            return nil
+        #endif
     }
 }

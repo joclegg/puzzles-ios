@@ -1,0 +1,22 @@
+appId: com.joclegg.puzzles
+name: Slide Out - show solution ends the puzzle without a solved dialog
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "slide_out_two_moves"
+- extendedWaitUntil:
+    visible:
+      id: "move_count"
+    timeout: 120000
+- tapOn:
+    id: "game_menu"
+- tapOn:
+    id: "menu_solution"
+- tapOn:
+    id: "confirm_reveal"
+- assertVisible:
+    id: "move_count"
+    text: "Moves 2"
+- assertNotVisible:
+    id: "solved_dialog"
