@@ -1,0 +1,23 @@
+appId: com.joclegg.puzzles
+name: Sudoku - Settings in the puzzle menu opens Sudoku's settings
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "classic_easy"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "puzzle_menu"
+- tapOn:
+    id: "menu_settings"
+- waitForAnimationToEnd:
+    timeout: 1500
+- assertVisible:
+    id: "setting_digit_first"
+- tapOn:
+    id: "back"
+- waitForAnimationToEnd:
+    timeout: 1500
+- assertVisible:
+    id: "puzzle_menu"

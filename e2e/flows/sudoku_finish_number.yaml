@@ -1,0 +1,43 @@
+appId: com.joclegg.puzzles
+name: Finishing a number by hand disables its button
+---
+- launchApp:
+    clearState: true
+- waitForAnimationToEnd:
+    timeout: 1500
+- scrollUntilVisible:
+    element:
+      id: "game_sudoku"
+    centerElement: true
+- tapOn:
+    id: "game_sudoku"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "settings"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "setting_digit_first"
+- launchApp:
+    arguments:
+      fixture: "classic_easy"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "digit_1"
+- tapOn:
+    id: "cell_r1c8"
+- tapOn:
+    id: "cell_r3c1"
+- tapOn:
+    id: "cell_r4c6"
+- tapOn:
+    id: "cell_r6c2"
+- tapOn:
+    id: "cell_r7c3"
+- tapOn:
+    id: "cell_r9c7"
+- assertVisible:
+    id: "digit_1"
+    enabled: false

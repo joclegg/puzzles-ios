@@ -1,0 +1,61 @@
+appId: com.joclegg.puzzles
+name: Each level keeps its own game in progress
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "classic_easy"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "cell_r1c3"
+- tapOn:
+    id: "digit_4"
+- tapOn:
+    id: "back"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "level_medium"
+- waitForAnimationToEnd:
+    timeout: 1500
+- assertVisible:
+    id: "game_title"
+    text: "Classic · Medium"
+- tapOn:
+    id: "back"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "level_easy"
+- waitForAnimationToEnd:
+    timeout: 1500
+- assertVisible:
+    id: "resume_dialog"
+- tapOn:
+    id: "resume_game"
+- waitForAnimationToEnd:
+    timeout: 1500
+- assertVisible:
+    id: "game_title"
+    text: "Classic · Easy"
+- assertVisible:
+    id: "cell_r1c3"
+    text: "4"
+- tapOn:
+    id: "back"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "level_easy"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "new_game"
+- waitForAnimationToEnd:
+    timeout: 1500
+- assertVisible:
+    id: "game_title"
+    text: "Classic · Easy"
+- assertNotVisible:
+    id: "resume_dialog"
