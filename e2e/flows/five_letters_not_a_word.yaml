@@ -1,0 +1,31 @@
+appId: com.joclegg.puzzles
+name: Five Letters - a word that isn't in the list is refused and kept
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "five_letters_crane"
+- extendedWaitUntil:
+    visible:
+      id: "game_title"
+    timeout: 60000
+- tapOn:
+    id: "key_Z"
+- tapOn:
+    id: "key_Z"
+- tapOn:
+    id: "key_Z"
+- tapOn:
+    id: "key_Z"
+- tapOn:
+    id: "key_Z"
+- tapOn:
+    id: "key_enter"
+- assertVisible:
+    id: "message"
+    text: "Not in the word list"
+- tapOn:
+    id: "key_delete"
+- assertNotVisible:
+    id: "message"
+    text: "Not in the word list"

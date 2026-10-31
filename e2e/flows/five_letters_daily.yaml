@@ -1,0 +1,59 @@
+appId: com.joclegg.puzzles
+name: Five Letters - today's word opens, keeps a guess and comes back to the same game
+tags:
+  - fast
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "game_five_letters"
+    timeout: 120000
+- tapOn:
+    id: "game_five_letters"
+- extendedWaitUntil:
+    visible:
+      id: "daily"
+    timeout: 10000
+- tapOn:
+    id: "daily"
+- extendedWaitUntil:
+    visible:
+      id: "game_title"
+    timeout: 10000
+- assertVisible:
+    id: "game_title"
+    text: "Five Letters.*"
+- tapOn:
+    id: "key_A"
+- tapOn:
+    id: "key_D"
+- tapOn:
+    id: "key_I"
+- tapOn:
+    id: "key_E"
+- tapOn:
+    id: "key_U"
+- tapOn:
+    id: "key_enter"
+- launchApp:
+    stopApp: true
+- extendedWaitUntil:
+    visible:
+      id: "game_five_letters"
+    timeout: 120000
+- tapOn:
+    id: "game_five_letters"
+- extendedWaitUntil:
+    visible:
+      id: "daily"
+    timeout: 10000
+- tapOn:
+    id: "daily"
+- extendedWaitUntil:
+    visible:
+      id: "game_title"
+    timeout: 10000
+- assertVisible:
+    id: "letter_r1c1"
+    text: "A"

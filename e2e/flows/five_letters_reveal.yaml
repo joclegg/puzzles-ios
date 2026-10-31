@@ -1,0 +1,18 @@
+appId: com.joclegg.puzzles
+name: Five Letters - Show the word ends the game
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "five_letters_crane"
+- extendedWaitUntil:
+    visible:
+      id: "game_title"
+    timeout: 60000
+- tapOn:
+    id: "game_menu"
+- tapOn:
+    id: "menu_solution"
+- tapOn:
+    id: "confirm_reveal"
+- assertVisible: ".*CRANE.*"
