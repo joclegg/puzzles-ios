@@ -122,12 +122,17 @@ struct WordWheelGameView: View {
     }
 
     private var menu: some View {
-        WordWheelGameMenu(
-            canReveal: allowReveal && !model.isSolved,
-            onReveal: { revealing = true },
-            onSettings: { showSettings = true }
-        )
-        .equatable()
+        GameMenu(key: ObjectIdentifier(model), items: menuItems, tinted: true)
+            .equatable()
+    }
+
+    private var menuItems: [GameMenuItem] {
+        var items: [GameMenuItem] = []
+        if allowReveal && !model.isSolved {
+            items.append(GameMenuItem(title: "Show solution", id: "menu_solution") { revealing = true })
+        }
+        items.append(GameMenuItem(title: "Settings", id: "menu_settings") { showSettings = true })
+        return items
     }
 
     private func tool(_ icon: String, _ label: String, _ tag: String, action: @escaping () -> Void) -> some View {
