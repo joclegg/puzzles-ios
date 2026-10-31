@@ -1,0 +1,24 @@
+appId: com.joclegg.puzzles
+name: Kakuro - redo puts an undone digit back, and Mark boxes a cell
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "kakuro_empty"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "cell_r2c2"
+- tapOn:
+    id: "digit_9"
+- tapOn:
+    id: "undo"
+- tapOn:
+    id: "redo"
+- assertVisible:
+    id: "cell_r2c2"
+    text: "9"
+- tapOn:
+    id: "mark"
+- assertVisible:
+    id: "mark"
