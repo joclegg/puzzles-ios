@@ -129,18 +129,24 @@ struct TwoToneGameView: View {
     }
 
     private func topBar(_ model: TwoToneGameModel) -> some View {
-        VStack(spacing: 4) {
-            HStack(spacing: 12) {
-                Text(model.title).font(.headline).accessibilityIdentifier("game_title")
-                if showTimer {
-                    Text(formatDuration(model.elapsedMs)).monospacedDigit().accessibilityIdentifier("timer")
+        HStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(model.title)
+                    .font(.headline)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+                    .accessibilityIdentifier("game_title")
+                HStack(spacing: 12) {
+                    if showTimer {
+                        Text(formatDuration(model.elapsedMs)).monospacedDigit().accessibilityIdentifier("timer")
+                    }
+                    if showProgress {
+                        Text("\(model.game.progressPercent)%").accessibilityIdentifier("progress")
+                    }
                 }
-                if showProgress {
-                    Text("\(model.game.progressPercent)%").accessibilityIdentifier("progress")
-                }
-                Spacer()
             }
-            .padding(.horizontal, 16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.leading, 16)
             HStack(spacing: 0) {
                 tool("arrow.uturn.backward", "Undo the last tap", "undo", enabled: model.canUndo) { model.onUndo() }
                 tool(showGivens ? "smallcircle.filled.circle.fill" : "smallcircle.filled.circle", showGivens ? "Hide the starting tiles" : "Show the starting tiles", "starting_tiles") {
@@ -165,7 +171,7 @@ struct TwoToneGameView: View {
 
     private func tool(_ icon: String, _ label: String, _ tag: String, enabled: Bool = true, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Image(systemName: icon).frame(maxWidth: .infinity, minHeight: 44)
+            Image(systemName: icon).frame(width: 38, height: 44)
         }
         .tint(.primary)
         .disabled(!enabled)
@@ -187,7 +193,7 @@ struct TwoToneGameView: View {
             Button("Settings") { settingsOpen = true }
                 .accessibilityIdentifier("menu_settings")
         } label: {
-            Image(systemName: "ellipsis").frame(maxWidth: .infinity, minHeight: 44)
+            Image(systemName: "ellipsis").frame(width: 38, height: 44)
         }
         .tint(.primary)
         .accessibilityLabel("More")
