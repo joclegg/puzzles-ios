@@ -20,7 +20,13 @@ actor BankStore {
 
     var isReady: Bool {
         seedFromHost()
-        return FileManager.default.fileExists(atPath: directory.appending(path: "manifest.json").path())
+        let manifestURL = directory.appending(path: "manifest.json")
+        guard let data = try? Data(contentsOf: manifestURL),
+            let manifest = try? JSONDecoder().decode(Manifest.self, from: data)
+        else {
+            return false
+        }
+        return manifest.files.keys.allSatisfy { FileManager.default.fileExists(atPath: directory.appending(path: $0).path()) }
     }
 
     func update() async throws {
