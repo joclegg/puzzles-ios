@@ -18,6 +18,7 @@ Puzzles for iOS: eight games, playable offline after a first download of their p
 - `xcodebuild -project Puzzles.xcodeproj -scheme PuzzlesApp -destination 'generic/platform=iOS Simulator' -derivedDataPath build -jobs 4 build`: build
 - `e2e/run.sh`: build, install and run every flow on one simulator
 - `e2e/run.sh --fast`, `e2e/run.sh --part I/N`, `e2e/run.sh e2e/flows/<flow>.yaml`: run some of them
+- `E2E_DEVICE=<simulator name> e2e/run.sh`: run on another simulator than `iPhone 17`. Use one kept for flows, not one someone is using by hand
 
 ## Structure
 
@@ -25,10 +26,20 @@ Puzzles for iOS: eight games, playable offline after a first download of their p
 - `Sources/PuzzlesCore/`: `XorWowRandom`, which reproduces Kotlin's `Random(seed)` and puzzles-web's `createRandom`; `CalendarDay`; daily medals
 - `Sources/PuzzlesSync/`: PKCE and sign-in URLs, `SupabaseAuth`, `SyncEngine`
 - `App/<Game>/`: one game's screens, store and fixtures. `<Game>Game.swift` is its entry point
-- `App/LauncherView.swift`, `SettingsHubView.swift`, `WinDialog.swift`, `DailyCalendar.swift`, `TodaysDailies.swift`, `PuzzleIcon.swift`, `BankStore.swift`: shared by every game
+- `App/LauncherView.swift`, `SettingsHubView.swift`, `WinDialog.swift`, `DailyCalendar.swift`, `TodaysDailies.swift`, `PuzzleIcon.swift`, `BankStore.swift`, `BackSwipe.swift`: shared by every game
+- `App/RootView.swift`: holds the launcher back until the banks are on the device
 - `App/Sync/`: `SyncCenter`, sign-in, the per-game sync sources and settings mapping
 - `e2e/flows/`: Maestro flows, one behaviour per file, named `<game>_<behaviour>.yaml`
 - `Puzzles-Info.plist`: only the `com.joclegg.puzzles://` URL scheme; the rest is generated
+
+## Working here
+
+- `e2e/run.sh` runs `e2e/fetch-banks.sh`, which puts the banks in `/tmp/puzzles-e2e-banks`. Debug simulator builds copy them in on first launch, because the CI simulator's TLS fails, so e2e runs never exercise the first download.
+- Maestro needs Java 21. `e2e/run.sh` uses Homebrew's `openjdk@21` when it's installed.
+- Xcode 27.2 has no `Simulator.app`. Use `DeviceHub.app` in `/Applications/Xcode.app/Contents/Applications/`.
+- GitHub's `macos-26` runner can be on an older Xcode than yours, so CI can fail on code that compiles locally.
+- Read Android from `origin/main` of puzzles-android, not a local checkout that may be behind.
+- Several games still keep their own copies of shared UI, such as headers, icon buttons and back buttons. Prefer one shared component, matching Android's `core/ui`, when you touch them.
 
 ## Rules
 
