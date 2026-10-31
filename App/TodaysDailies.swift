@@ -173,13 +173,9 @@ enum TodaysDailies {
         let router = DailyRouter.shared
         let offered = SettingsTab.games.flatMap { $0.dailies(on: .today) }.filter(\.offered)
         let own = offered.filter { $0.group == group }
-        let others = offered.filter { $0.group != group }
         return own.map { daily in
             DailyLeft(id: daily.tag, label: daily.label) { router.open(daily) }
         }
-            + others.map { daily in
-                DailyLeft(id: daily.tag, label: daily.labelWithGame) { router.open(daily) }
-            }
     }
 }
 
