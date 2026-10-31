@@ -56,7 +56,8 @@ final class SudokuGameRecord {
             "id": uuid, "puzzleId": puzzleId, "mode": jsonName(fromEnum: mode),
             "difficulty": difficulty.map { jsonName(fromEnum: $0) as Any } ?? NSNull(), "custom": custom, "puzzle": puzzle,
             "values": cellValues, "notes": notes.split(separator: ",").compactMap { Int($0) }, "moves": undoHistory,
-            "mistakes": mistakes, "mistakeCheck": jsonName(fromEnum: mistakeLevel), "elapsedMs": elapsedMs, "status": jsonName(fromEnum: status), "startedAt": startedAt, "finishedAt": nullable(finishedAt),
+            "mistakes": mistakes, "mistakeCheck": jsonName(fromEnum: mistakeLevel), "elapsedMs": elapsedMs,
+            "status": jsonName(fromEnum: status), "startedAt": startedAt, "finishedAt": nullable(finishedAt),
         ]
     }
 

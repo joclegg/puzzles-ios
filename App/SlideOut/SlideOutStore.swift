@@ -45,7 +45,8 @@ final class SlideOutGameRecord {
     var syncJSON: [String: Any] {
         [
             "id": uuid, "puzzleId": puzzleId, "size": Level.allCases.first { $0.name == level }?.rawValue ?? 0, "puzzle": puzzle,
-            "changes": moves, "hints": hints, "mistakes": 0, "elapsedMs": elapsedMs, "status": jsonName(fromEnum: status), "startedAt": startedAt, "finishedAt": nullable(finishedAt),
+            "changes": moves, "hints": hints, "mistakes": 0, "elapsedMs": elapsedMs, "status": jsonName(fromEnum: status),
+            "startedAt": startedAt, "finishedAt": nullable(finishedAt),
         ]
     }
 

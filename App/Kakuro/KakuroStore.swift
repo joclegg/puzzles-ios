@@ -45,7 +45,8 @@ final class KakuroGameEntity {
     var syncJSON: [String: Any] {
         [
             "id": uuid, "puzzleId": puzzleId, "size": size, "puzzle": puzzle, "changes": changes, "hints": hints,
-            "mistakes": mistakes, "elapsedMs": elapsedMs, "status": jsonName(fromEnum: status), "startedAt": startedAt, "finishedAt": nullable(finishedAt),
+            "mistakes": mistakes, "elapsedMs": elapsedMs, "status": jsonName(fromEnum: status), "startedAt": startedAt,
+            "finishedAt": nullable(finishedAt),
         ]
     }
 

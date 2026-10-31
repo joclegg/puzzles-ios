@@ -45,7 +45,8 @@ final class SolitaireGameRecord {
     var syncJSON: [String: Any] {
         [
             "id": uuid, "dealId": dealId, "drawMode": jsonName(fromEnum: drawMode), "order": jsonName(fromEnum: buildOrder),
-            "board": deal, "moves": moves, "moveCount": moveCount, "elapsedMs": elapsedMs, "status": jsonName(fromEnum: status), "startedAt": startedAt, "finishedAt": nullable(finishedAt),
+            "board": deal, "moves": moves, "moveCount": moveCount, "elapsedMs": elapsedMs, "status": jsonName(fromEnum: status),
+            "startedAt": startedAt, "finishedAt": nullable(finishedAt),
         ]
     }
 

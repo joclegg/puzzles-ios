@@ -39,7 +39,8 @@ struct KakuroSettingsView: View {
                     KakuroToggleRow(
                         toggle: .autoRemoveNotes, title: "Remove pencil marks automatically",
                         detail: "Placing a number clears that number's pencil marks from its across and down runs.")
-                    KakuroToggleRow(toggle: .highlightRuns, title: "Highlight runs", detail: "Shade the across and down runs of the selected cell.")
+                    KakuroToggleRow(
+                        toggle: .highlightRuns, title: "Highlight runs", detail: "Shade the across and down runs of the selected cell.")
                     KakuroToggleRow(toggle: .showTimer, title: "Show the timer")
                     KakuroToggleRow(
                         toggle: .showCombinations, title: "Sum helper",
@@ -48,7 +49,8 @@ struct KakuroSettingsView: View {
                         toggle: .greyUsedDigits, title: "Grey out used-up numbers",
                         detail: "Dim a number on the pad once every cell that needs it has it.")
                     KakuroToggleRow(toggle: .showHints, title: "Hints", detail: "Show the hint button.")
-                    KakuroToggleRow(toggle: .showTutorial, title: "How to play", detail: "Show the ? button with the rules and a walkthrough.")
+                    KakuroToggleRow(
+                        toggle: .showTutorial, title: "How to play", detail: "Show the ? button with the rules and a walkthrough.")
                     KakuroToggleRow(toggle: .allowReveal, title: "Show solution", detail: "Offer Show solution in the game menu.")
                     if showHints {
                         Toggle(isOn: $hintFill) {

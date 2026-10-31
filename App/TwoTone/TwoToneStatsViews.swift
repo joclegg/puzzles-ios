@@ -157,10 +157,14 @@ struct TwoToneSettingsView: View {
                     }
                     .clipShape(.capsule)
                     .overlay { Capsule().stroke(.secondary.opacity(0.5)) }
-                    Text("Tap to cycle steps a spot through the colours. Pick a colour shows colour buttons under the board: pick one, then tap spots to fill them.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    toggle("Mark broken rules", "Outline tiles that make three in a row, overfill a line or copy another line.", "setting_mark_broken_rules", $markBrokenRules)
+                    Text(
+                        "Tap to cycle steps a spot through the colours. Pick a colour shows colour buttons under the board: pick one, then tap spots to fill them."
+                    )
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    toggle(
+                        "Mark broken rules", "Outline tiles that make three in a row, overfill a line or copy another line.",
+                        "setting_mark_broken_rules", $markBrokenRules)
                     toggle("Show the timer", nil, "setting_show_timer", $showTimer)
                     toggle("Show how much is filled in", nil, "setting_show_progress", $showProgress)
                     toggle("Hints", "Show the hint button.", "setting_show_hints", $showHints)

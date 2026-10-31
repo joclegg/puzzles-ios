@@ -44,7 +44,8 @@ final class TwoToneGameRecord {
     var syncJSON: [String: Any] {
         [
             "id": uuid, "puzzleId": puzzleId, "size": size, "puzzle": puzzle, "changes": changes, "hints": hints,
-            "mistakes": 0, "elapsedMs": elapsedMs, "status": jsonName(fromEnum: status), "startedAt": startedAt, "finishedAt": nullable(finishedAt),
+            "mistakes": 0, "elapsedMs": elapsedMs, "status": jsonName(fromEnum: status), "startedAt": startedAt,
+            "finishedAt": nullable(finishedAt),
         ]
     }
 
