@@ -1,0 +1,30 @@
+appId: com.joclegg.puzzles
+name: Two Tone - filling the last tile solves the puzzle and records a best time
+tags:
+  - fast
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "two_tone_one_left"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "tile_r1c2"
+- tapOn:
+    id: "tile_r1c2"
+- assertVisible:
+    id: "solved_dialog"
+- assertVisible:
+    id: "new_best"
+- tapOn:
+    id: "solved_home"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "stats"
+- waitForAnimationToEnd:
+    timeout: 1500
+- assertVisible:
+    id: "size_4_solved"
+    text: "1/1"

@@ -1,0 +1,19 @@
+appId: com.joclegg.puzzles
+name: Two Tone - the starting tiles show only when asked
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "two_tone_two_left"
+- waitForAnimationToEnd:
+    timeout: 1500
+- assertNotVisible:
+    id: "given_marker"
+- tapOn:
+    id: "starting_tiles"
+- assertVisible:
+    id: "given_marker"
+- tapOn:
+    id: "starting_tiles"
+- assertNotVisible:
+    id: "given_marker"
