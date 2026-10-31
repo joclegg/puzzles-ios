@@ -1,0 +1,29 @@
+appId: com.joclegg.puzzles
+name: Smoke - start an easy classic game
+tags:
+  - fast
+---
+- launchApp:
+    clearState: true
+- waitForAnimationToEnd:
+    timeout: 1500
+- scrollUntilVisible:
+    element:
+      id: "game_sudoku"
+    centerElement: true
+- tapOn:
+    id: "game_sudoku"
+- waitForAnimationToEnd:
+    timeout: 1500
+- assertVisible: "Sudoku"
+- tapOn:
+    id: "level_easy"
+- waitForAnimationToEnd:
+    timeout: 1500
+- assertVisible:
+    id: "cell_r1c1"
+- assertVisible:
+    id: "timer"
+- assertVisible:
+    id: "game_title"
+    text: "Classic · Easy"

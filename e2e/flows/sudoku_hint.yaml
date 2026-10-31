@@ -1,0 +1,14 @@
+appId: com.joclegg.puzzles
+name: A Sudoku hint points at a cell and says why
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "classic_easy"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "hint"
+- assertVisible:
+    id: "hint_message"
+    text: ".*(fits here|can only go here).*"

@@ -1,0 +1,62 @@
+appId: com.joclegg.puzzles
+name: Digit-first - place one digit in several cells, tap again to clear, erase several cells
+tags:
+  - fast
+---
+- launchApp:
+    clearState: true
+- waitForAnimationToEnd:
+    timeout: 1500
+- scrollUntilVisible:
+    element:
+      id: "game_sudoku"
+    centerElement: true
+- tapOn:
+    id: "game_sudoku"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "settings"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "setting_digit_first"
+- launchApp:
+    arguments:
+      fixture: "classic_easy"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "digit_5"
+- tapOn:
+    id: "cell_r1c3"
+- tapOn:
+    id: "cell_r1c4"
+- tapOn:
+    id: "cell_r1c6"
+- assertVisible:
+    id: "cell_r1c3"
+    text: "5"
+- assertVisible:
+    id: "cell_r1c4"
+    text: "5"
+- assertVisible:
+    id: "cell_r1c6"
+    text: "5"
+- tapOn:
+    id: "cell_r1c4"
+- assertNotVisible:
+    id: "cell_r1c4"
+    text: "5"
+- tapOn:
+    id: "erase"
+- tapOn:
+    id: "cell_r1c3"
+- tapOn:
+    id: "cell_r1c6"
+- assertNotVisible:
+    id: "cell_r1c3"
+    text: "5"
+- assertNotVisible:
+    id: "cell_r1c6"
+    text: "5"

@@ -1,0 +1,23 @@
+appId: com.joclegg.puzzles
+name: Cell-first - enter a digit and undo it
+tags:
+  - fast
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "classic_easy"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "cell_r1c3"
+- tapOn:
+    id: "digit_4"
+- assertVisible:
+    id: "cell_r1c3"
+    text: "4"
+- tapOn:
+    id: "undo"
+- assertNotVisible:
+    id: "cell_r1c3"
+    text: "4"

@@ -1,0 +1,75 @@
+appId: com.joclegg.puzzles
+name: Custom entry - clashes, multiple solutions, and a real puzzle
+---
+- launchApp:
+    clearState: true
+- waitForAnimationToEnd:
+    timeout: 1500
+- scrollUntilVisible:
+    element:
+      id: "game_sudoku"
+    centerElement: true
+- tapOn:
+    id: "game_sudoku"
+- waitForAnimationToEnd:
+    timeout: 1500
+- scrollUntilVisible:
+    element:
+      id: "enter_puzzle"
+- tapOn:
+    id: "enter_puzzle"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "cell_r1c1"
+- tapOn:
+    id: "digit_5"
+- tapOn:
+    id: "cell_r1c2"
+- tapOn:
+    id: "digit_5"
+- tapOn:
+    id: "fix_puzzle"
+- waitForAnimationToEnd:
+    timeout: 1500
+- assertVisible:
+    id: "entry_problem"
+- tapOn:
+    id: "cell_r1c2"
+- tapOn:
+    id: "erase"
+- tapOn:
+    id: "fix_puzzle"
+- waitForAnimationToEnd:
+    timeout: 1500
+- assertVisible:
+    id: "unverified_dialog"
+- tapOn: "Keep editing"
+- launchApp:
+    arguments:
+      fixture: "classic_easy_missing_r1c1"
+- waitForAnimationToEnd:
+    timeout: 1500
+- scrollUntilVisible:
+    element:
+      id: "enter_puzzle"
+- tapOn:
+    id: "enter_puzzle"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "cell_r1c1"
+- tapOn:
+    id: "digit_5"
+- tapOn:
+    id: "fix_puzzle"
+- waitForAnimationToEnd:
+    timeout: 1500
+- assertVisible:
+    id: "game_title"
+    text: "Custom · Easy"
+- assertVisible:
+    id: "cell_r1c1"
+    text: "5"
+- assertVisible:
+    id: "timer"
