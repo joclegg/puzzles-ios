@@ -116,6 +116,16 @@ final class WordWheelRepository {
         return id
     }
 
+    func openDaily(_ level: Level) async throws -> Int64 {
+        let date = WordWheelDates.today
+        let id = PuzzleRef.dailyId(date: date, level: level)
+        if let existing = inProgress.first(where: { $0.ref.id == id }) {
+            return existing.id
+        }
+        let puzzles = try await WordWheelBank.shared.puzzles(level)
+        return start(.daily(puzzles: puzzles, date: date, level: level))
+    }
+
     func save(_ game: SavedGame) {
         write(game, time: now)
         commit()

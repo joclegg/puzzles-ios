@@ -149,7 +149,7 @@ struct WordWheelHomeView: View {
 
     private func dailyTile(_ level: Level, done: Bool) -> some View {
         Button {
-            launch { try await openDaily(level) }
+            launch { try await repository.openDaily(level) }
         } label: {
             VStack(spacing: 4) {
                 Text(level.label).font(.subheadline.weight(.semibold)).lineLimit(1)
@@ -245,16 +245,6 @@ struct WordWheelHomeView: View {
             let puzzles = try await WordWheelBank.shared.puzzles(level)
             return repository.start(.random(puzzles: puzzles, level: level, seed: Int64.random(in: .min ... .max)))
         }
-    }
-
-    private func openDaily(_ level: Level) async throws -> Int64 {
-        let date = WordWheelDates.today
-        let id = PuzzleRef.dailyId(date: date, level: level)
-        if let existing = repository.inProgress.first(where: { $0.ref.id == id }) {
-            return existing.id
-        }
-        let puzzles = try await WordWheelBank.shared.puzzles(level)
-        return repository.start(.daily(puzzles: puzzles, date: date, level: level))
     }
 
     private func launch(_ work: @escaping @MainActor () async throws -> Int64) {

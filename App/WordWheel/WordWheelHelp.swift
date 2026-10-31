@@ -29,6 +29,7 @@ struct WordWheelWalkthrough: View {
             let origin = proxy.frame(in: .global).origin
             ZStack(alignment: .bottom) {
                 Color.black.opacity(0.4)
+                    .ignoresSafeArea()
                     .onTapGesture(perform: onClose)
                     .accessibilityHidden(true)
                 if let target = bounds[step.target] {
