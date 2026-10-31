@@ -94,9 +94,9 @@ struct SudokuHomeView: View {
             }
             .padding(16)
             .contentShape(Rectangle())
-            .modifier(SudokuTileStyle(active: true))
+            .modifier(SudokuTileStyle(active: true, radius: 24))
         }
-        .buttonStyle(.plain)
+        .buttonStyle(SudokuPressStyle())
         .accessibilityIdentifier("continue")
     }
 
@@ -124,10 +124,11 @@ struct SudokuHomeView: View {
             } label: {
                 tileLabel(
                     "Daily puzzle · \(levelLabel(BankPick.dailyLevel(mode: mode, date: sudokuToday())))",
-                    symbol: "calendar.badge.clock", trailing: medal == .none)
+                    symbol: "calendar.badge.clock", trailing: medal == .none
+                )
                 .modifier(SudokuTileStyle(active: medal != .none))
             }
-            .buttonStyle(.plain)
+            .buttonStyle(SudokuPressStyle())
             .accessibilityIdentifier("daily")
             .overlay(alignment: .trailing) {
                 if medal != .none {
@@ -147,7 +148,7 @@ struct SudokuHomeView: View {
                     .contentShape(Rectangle())
                     .modifier(SudokuTileStyle())
             }
-            .buttonStyle(.plain)
+            .buttonStyle(SudokuPressStyle())
             .accessibilityLabel("Daily calendar")
             .accessibilityIdentifier("daily_calendar")
         }
@@ -166,7 +167,7 @@ struct SudokuHomeView: View {
                 tileLabel("Enter puzzle", symbol: "pencil", trailing: true)
                     .modifier(SudokuTileStyle())
             }
-            .buttonStyle(.plain)
+            .buttonStyle(SudokuPressStyle())
             .accessibilityIdentifier("enter_puzzle")
         }
     }
@@ -211,7 +212,7 @@ struct SudokuHomeView: View {
             .contentShape(Rectangle())
             .modifier(SudokuTileStyle(active: saved != nil))
         }
-        .buttonStyle(.plain)
+        .buttonStyle(SudokuPressStyle())
         .accessibilityIdentifier("level_\(level.name.lowercased())")
     }
 

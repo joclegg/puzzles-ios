@@ -19,11 +19,15 @@ struct SudokuSettingsHubView: View {
                 id: { $0 ? "settings_tab_general" : "settings_tab_sudoku" }, onSelect: { showGeneral = $0 }
             )
             .padding(.horizontal, 16)
-            if showGeneral {
-                SudokuGeneralSettings()
-            } else {
-                SudokuSettingsView(initialMode: mode)
+            Group {
+                if showGeneral {
+                    SudokuGeneralSettings()
+                } else {
+                    SudokuSettingsView(initialMode: mode)
+                }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .background(LinearGradient(colors: [palette.accent.opacity(0.1), .clear], startPoint: .top, endPoint: .bottom))
         }
     }
 }
