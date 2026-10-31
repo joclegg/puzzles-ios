@@ -101,6 +101,7 @@ struct LauncherView: View {
                         }
                         .padding()
                     }
+                    .accessibilityHidden(!router.path.isEmpty)
                     .toolbar(.hidden, for: .navigationBar)
                     .sheet(isPresented: $signingIn) { SignInView() }
                 }

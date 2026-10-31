@@ -7,10 +7,13 @@ tags:
     clearState: true
 - waitForAnimationToEnd:
     timeout: 1500
+- extendedWaitUntil:
+    visible:
+      id: "game_sudoku"
+    timeout: 60000
 - scrollUntilVisible:
     element:
       id: "game_word_wheel"
-    centerElement: true
 - tapOn:
     id: "game_word_wheel"
 - waitForAnimationToEnd:

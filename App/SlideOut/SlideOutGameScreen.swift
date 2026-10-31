@@ -142,23 +142,20 @@ private struct SlideOutGameContent: View {
     }
 
     private var menu: some View {
-        Menu {
-            Button("Restart this puzzle") { model.restart() }
-                .disabled(model.isSolved)
-                .accessibilityIdentifier("restart")
-            Button("New puzzle", action: newPuzzle)
-                .accessibilityIdentifier("new_puzzle")
-            if allowReveal && !model.isSolved {
-                Button("Show solution") { revealing = true }
-                    .accessibilityIdentifier("menu_solution")
-            }
-            Button("Settings") { showSettings = true }
-                .accessibilityIdentifier("menu_settings")
-        } label: {
-            PuzzleIcon.image("ellipsis").frame(width: 40, height: 44)
+        GameMenu(key: ObjectIdentifier(model), items: menuItems, height: 44)
+            .equatable()
+    }
+
+    private var menuItems: [GameMenuItem] {
+        var items = [
+            GameMenuItem(title: "Restart this puzzle", id: "restart", disabled: model.isSolved) { model.restart() },
+            GameMenuItem(title: "New puzzle", id: "new_puzzle", action: newPuzzle),
+        ]
+        if allowReveal && !model.isSolved {
+            items.append(GameMenuItem(title: "Show solution", id: "menu_solution") { revealing = true })
         }
-        .accessibilityLabel("More")
-        .accessibilityIdentifier("game_menu")
+        items.append(GameMenuItem(title: "Settings", id: "menu_settings") { showSettings = true })
+        return items
     }
 
     @ViewBuilder

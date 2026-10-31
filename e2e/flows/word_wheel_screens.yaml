@@ -3,10 +3,13 @@ name: Word Wheel - rules, settings and the walkthrough
 ---
 - launchApp:
     clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "game_sudoku"
+    timeout: 60000
 - scrollUntilVisible:
     element:
       id: "game_word_wheel"
-    centerElement: true
 - tapOn:
     id: "game_word_wheel"
 - tapOn:

@@ -183,24 +183,20 @@ struct TwoToneGameView: View {
     }
 
     private func menu(_ model: TwoToneGameModel) -> some View {
-        Menu {
-            Button("Restart this puzzle") { model.onRestart() }
-                .disabled(model.game.isSolved)
-                .accessibilityIdentifier("restart")
-            Button("New puzzle") { newPuzzle(model) }
-                .accessibilityIdentifier("new_puzzle")
-            if allowReveal && !model.game.isSolved {
-                Button("Show solution") { revealing = true }
-                    .accessibilityIdentifier("menu_solution")
-            }
-            Button("Settings") { settingsOpen = true }
-                .accessibilityIdentifier("menu_settings")
-        } label: {
-            PuzzleIcon.image("ellipsis").frame(width: 38, height: 44)
+        GameMenu(key: ObjectIdentifier(model), items: menuItems(model), width: 38, height: 44, tinted: true)
+            .equatable()
+    }
+
+    private func menuItems(_ model: TwoToneGameModel) -> [GameMenuItem] {
+        var items = [
+            GameMenuItem(title: "Restart this puzzle", id: "restart", disabled: model.game.isSolved) { model.onRestart() },
+            GameMenuItem(title: "New puzzle", id: "new_puzzle") { newPuzzle(model) },
+        ]
+        if allowReveal && !model.game.isSolved {
+            items.append(GameMenuItem(title: "Show solution", id: "menu_solution") { revealing = true })
         }
-        .tint(.primary)
-        .accessibilityLabel("More")
-        .accessibilityIdentifier("game_menu")
+        items.append(GameMenuItem(title: "Settings", id: "menu_settings") { settingsOpen = true })
+        return items
     }
 
     private func newPuzzle(_ model: TwoToneGameModel) {

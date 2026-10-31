@@ -168,18 +168,20 @@ struct SightlinesGameView: View {
     }
 
     private var menu: some View {
-        Menu {
-            Button("Restart this puzzle") { model.onRestart() }.disabled(model.solved).accessibilityIdentifier("restart")
-            Button("New puzzle", action: newPuzzle).accessibilityIdentifier("new_puzzle")
-            if allowReveal && !model.solved {
-                Button("Show solution") { revealing = true }.accessibilityIdentifier("menu_solution")
-            }
-            Button("Settings") { settingsOpen = true }.accessibilityIdentifier("menu_settings")
-        } label: {
-            PuzzleIcon.image("ellipsis").frame(width: 40, height: 40)
+        GameMenu(key: ObjectIdentifier(model), items: menuItems)
+            .equatable()
+    }
+
+    private var menuItems: [GameMenuItem] {
+        var items = [
+            GameMenuItem(title: "Restart this puzzle", id: "restart", disabled: model.solved) { model.onRestart() },
+            GameMenuItem(title: "New puzzle", id: "new_puzzle", action: newPuzzle),
+        ]
+        if allowReveal && !model.solved {
+            items.append(GameMenuItem(title: "Show solution", id: "menu_solution") { revealing = true })
         }
-        .accessibilityLabel("More")
-        .accessibilityIdentifier("game_menu")
+        items.append(GameMenuItem(title: "Settings", id: "menu_settings") { settingsOpen = true })
+        return items
     }
 
     private var revealDialog: some View {
