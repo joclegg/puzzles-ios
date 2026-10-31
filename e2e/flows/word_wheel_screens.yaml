@@ -6,7 +6,6 @@ name: Word Wheel - rules, settings and the walkthrough
 - scrollUntilVisible:
     element:
       id: "game_word_wheel"
-    centerElement: true
 - tapOn:
     id: "game_word_wheel"
 - tapOn:
