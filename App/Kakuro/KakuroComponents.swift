@@ -114,7 +114,7 @@ struct KakuroScreenTitle: View {
     var body: some View {
         HStack(spacing: 4) {
             KakuroBackButton(action: onBack)
-            Text(title).font(.largeTitle.weight(.regular))
+            Text(title).font(.title)
             Spacer()
         }
     }

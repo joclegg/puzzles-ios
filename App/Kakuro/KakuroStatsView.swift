@@ -83,7 +83,7 @@ struct KakuroHistoryView: View {
             KakuroScreenTitle(title: "History", onBack: onBack)
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
-                    chip("All", value: nil, tag: "filter_all")
+                    chip("All", value: nil, tag: nil)
                     ForEach(sizes, id: \.self) { size in
                         chip("\(size)", value: size, tag: "filter_\(size)")
                     }
@@ -122,7 +122,7 @@ struct KakuroHistoryView: View {
         .overlay(RoundedRectangle(cornerRadius: 24).stroke(Color.primary.opacity(0.12), lineWidth: 1))
     }
 
-    private func chip(_ label: String, value: Int?, tag: String) -> some View {
+    private func chip(_ label: String, value: Int?, tag: String?) -> some View {
         let selected = filter == value
         return Button {
             filter = value
@@ -136,7 +136,7 @@ struct KakuroHistoryView: View {
                 .overlay(Capsule().stroke(selected ? accent : Color.primary.opacity(0.12), lineWidth: 1))
         }
         .buttonStyle(.plain)
-        .accessibilityIdentifier(tag)
+        .accessibilityIdentifier(tag ?? label)
         .accessibilityAddTraits(selected ? .isSelected : [])
     }
 
