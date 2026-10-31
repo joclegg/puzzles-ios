@@ -61,13 +61,20 @@ enum FiveLettersSetting: String, CaseIterable, Identifiable {
 
 struct FiveLettersSettingsView: View {
     var body: some View {
-        Form {
-            ForEach(FiveLettersSetting.allCases) { setting in
-                FiveLettersSettingRow(setting: setting)
+        ScrollView {
+            VStack(spacing: 12) {
+                ForEach(FiveLettersSetting.allCases) { setting in
+                    FiveLettersSettingRow(setting: setting)
+                }
             }
+            .padding(16)
+            .frame(maxWidth: .infinity)
+            .overlay {
+                RoundedRectangle(cornerRadius: 12).stroke(Color.primary.opacity(0.2))
+            }
+            .padding(16)
         }
-        .navigationTitle("Settings")
-        .navigationBarTitleDisplayMode(.inline)
+        .fiveLettersHeader("Settings")
     }
 }
 

@@ -28,8 +28,7 @@ struct FiveLettersStatsView: View {
             }
             .padding(16)
         }
-        .navigationTitle("Stats")
-        .navigationBarTitleDisplayMode(.inline)
+        .fiveLettersHeader("Stats")
     }
 
     private func figure(_ value: Int, label: String, id: String) -> some View {
@@ -69,9 +68,9 @@ extension View {
         padding(.horizontal, 16)
             .padding(.vertical, 12)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: 24))
+            .background(Color.primary.opacity(0.05), in: .rect(cornerRadius: 24))
             .overlay {
-                RoundedRectangle(cornerRadius: 24).stroke(accent.opacity(0.25))
+                RoundedRectangle(cornerRadius: 24).stroke(Color.primary.opacity(0.12))
             }
     }
 }

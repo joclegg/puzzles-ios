@@ -81,6 +81,7 @@ struct FiveLettersResultDialog: View {
     let onNewPractice: () -> Void
 
     private let theme = FiveLettersTheme()
+    @State private var popScale = 0.6
 
     var body: some View {
         FiveLettersDialogCard(onDismiss: onClose) {
@@ -91,6 +92,12 @@ struct FiveLettersResultDialog: View {
                         .foregroundStyle(Color(.systemBackground))
                         .frame(width: 64, height: 64)
                         .background(theme.accent, in: .circle)
+                        .scaleEffect(popScale)
+                        .onAppear {
+                            withAnimation(.spring(response: 0.5, dampingFraction: 0.5)) {
+                                popScale = 1
+                            }
+                        }
                     Text(game.resultTitle)
                         .font(.title2.bold())
                         .multilineTextAlignment(.center)
@@ -117,6 +124,7 @@ struct FiveLettersResultDialog: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 20)
                 HStack(spacing: 24) {
+                    Spacer()
                     if isDated {
                         Button("Close", action: onClose)
                             .accessibilityIdentifier("result_close")
@@ -128,9 +136,12 @@ struct FiveLettersResultDialog: View {
                         .labelStyle(.titleOnly)
                         .accessibilityIdentifier("result_share")
                 }
-                .padding(.vertical, 16)
+                .padding(16)
             }
             .clipShape(.rect(cornerRadius: 28))
+            .overlay {
+                RoundedRectangle(cornerRadius: 28).stroke(theme.accent.opacity(0.3))
+            }
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("result_dialog")
         }
