@@ -6,15 +6,19 @@ Written 2026-10-31, straight after [PR #2](https://github.com/joclegg/puzzles-io
 
 All eight games, the launcher, shared settings, medal calendars, bank download and sign-in with sync are on `main`.
 
-PR #2 was merged without waiting for its pipeline. When this was written:
+PR #2 was merged without waiting for its pipeline. Since then:
 
-- On the last commit, `4ef113f`: lint, unit tests and build passed in CI. The three Maestro jobs had not finished.
-- On `main`: the first CI and Release runs were still in progress. **Check them first.** `release.yml` has never finished a run.
-- Locally: 63 of 71 flows passed in the one full run. The other 8 were fixed and pass when run alone, but all 71 have not been run together since.
+- Release passed on `main` and published the first simulator build.
+- On PR #2's last commit, `4ef113f`, lint, unit tests and build passed, but 9 of 71 Maestro flows failed. They had three causes, all fixed in the PR that added this file:
+  - `BankStore` checked for banks with `URL.path()`, which percent-encodes the space in `Application Support`, so it never found them. Every launch needed the network, so the app didn't play offline, and e2e runs ignored the seeded banks and sat on "Downloading puzzles" until CI's TLS let the download through.
+  - The launcher's `settings` button stayed in the accessibility hierarchy while a game's Home was pushed, so `tapOn: settings` could hit it and land on that game's calendar button. The launcher is now hidden from accessibility while anything is pushed.
+  - The Word Wheel card is last on the launcher, so `scrollUntilVisible` with `centerElement` could never centre it.
+- Those fixes were made without a Mac, so the e2e jobs on that PR are their only test. If any flow still fails, start there.
 
 ## Not verified
 
 - **Real sign-in and sync.** Sign-in was opened on a simulator, but no sync against the real Supabase project has been confirmed. Sync is tested only against a fake server.
+- **Offline play on a device.** Launch once online, then in airplane mode. Before the `BankStore` fix this always showed "Couldn't download the puzzles".
 - **Sync formats per game.** They were matched to Android by reading `app/.../<Game>Sync.kt`, with no tests. Test first with an account that already has Android or web saves.
 - **The back swipe.** `App/BackSwipe.swift` is an app-wide fix, but Maestro's simulated edge swipe never triggered it, so try it by hand.
 - **Other games' settings rows.** Word Wheel's row tap didn't change the setting until it was fixed. Check the rest.
@@ -49,18 +53,15 @@ Restore these:
 **Sync**
 
 - Data pulled by sync may not appear on a screen that's already open until it's reopened.
-- A synced Sudoku best time overwrites the local one rather than keeping the lower.
+- A synced Sudoku past best overwrites the local one rather than keeping the lower. Android's `SudokuSync.kt` does the same through `upsertPastBest`, so change both apps, and web, together.
 - Solitaire syncs `allowReveal`, but iOS doesn't use it.
 - Settings are stamped when a change is detected, through `UserDefaults.didChangeNotification`, not on the edit itself.
 
 **Sign-in screen.** The user saw a Supabase logo during sign-in. Which screen was never established. A Supabase custom domain costs money, so try the free Google and Microsoft branding settings first. If it's the iOS "wants to use supabase.co" prompt, `prefersEphemeralWebBrowserSession` removes it, but the player then logs in each time.
 
-**App icon.** `icon-1024.png` still has an alpha channel, and needs flattening before any App Store upload.
+## Infra
 
-## Infra and docs still to do
-
-- `joclegg-infra/github/repositories.tf`: add `required_checks` for `puzzles-ios`, using the job names `Lint, unit tests, build` and `Maestro e2e (part N of 3)`. No Supabase change is needed, because the redirect is already allowed.
-- `puzzles/README.md` and `puzzles/AGENTS.md` still say iOS isn't started.
+No repository rules or required checks yet: this is the initial build. When they're wanted, add `required_checks` for `puzzles-ios` in `joclegg-infra/github/repositories.tf`, using the job names `Lint, unit tests, build` and `Maestro e2e (part N of 3)`. No Supabase change is needed, because the redirect is already allowed.
 
 ## Possible Android bugs
 
