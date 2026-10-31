@@ -220,30 +220,9 @@ struct SlideOutDialog<Content: View, Buttons: View>: View {
     }
 }
 
-struct SlideOutBackSwipe: UIViewControllerRepresentable {
-    final class Controller: UIViewController, UIGestureRecognizerDelegate {
-        override func viewDidAppear(_ animated: Bool) {
-            super.viewDidAppear(animated)
-            navigationController?.interactivePopGestureRecognizer?.isEnabled = true
-            navigationController?.interactivePopGestureRecognizer?.delegate = self
-        }
-
-        func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-            (navigationController?.viewControllers.count ?? 0) > 1
-        }
-    }
-
-    func makeUIViewController(context: Context) -> Controller {
-        Controller()
-    }
-
-    func updateUIViewController(_ controller: Controller, context: Context) {}
-}
-
 extension View {
     func slideOutScreen() -> some View {
         toolbar(.hidden, for: .navigationBar)
             .navigationBarBackButtonHidden()
-            .background(SlideOutBackSwipe().frame(width: 0, height: 0))
     }
 }

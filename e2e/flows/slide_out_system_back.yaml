@@ -1,5 +1,5 @@
 appId: com.joclegg.puzzles
-name: Slide Out - the system back swipe leaves the game for Home
+name: Slide Out - back leaves the game for Home
 ---
 - launchApp:
     clearState: true
@@ -9,10 +9,8 @@ name: Slide Out - the system back swipe leaves the game for Home
     visible:
       id: "move_count"
     timeout: 120000
-- swipe:
-    start: "0%, 50%"
-    end: "90%, 50%"
-    duration: 800
+- tapOn:
+    id: "back"
 - extendedWaitUntil:
     visible:
       id: "level_beginner"

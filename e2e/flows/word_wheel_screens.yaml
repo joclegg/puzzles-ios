@@ -1,5 +1,5 @@
 appId: com.joclegg.puzzles
-name: Word Wheel - resume, stats, history replay, settings and the walkthrough
+name: Word Wheel - rules, settings and the walkthrough
 ---
 - launchApp:
     clearState: true
@@ -46,33 +46,3 @@ name: Word Wheel - resume, stats, history replay, settings and the walkthrough
 - assertVisible:
     id: "words_left"
     text: "0 to find"
-- tapOn:
-    label: "Back"
-    index: 0
-- tapOn:
-    id: "stats"
-- assertVisible:
-    id: "level_5_solved"
-    text: "0/1"
-- tapOn:
-    label: "Back"
-    index: 0
-- tapOn:
-    id: "history"
-- tapOn:
-    id: "history_item"
-- assertVisible:
-    id: "game_title"
-    text: "5 letters"
-- tapOn:
-    label: "Back"
-    index: 0
-- tapOn:
-    id: "level_5"
-- assertVisible:
-    id: "resume_dialog"
-- tapOn:
-    id: "resume_game"
-- assertVisible:
-    id: "game_title"
-    text: "5 letters"

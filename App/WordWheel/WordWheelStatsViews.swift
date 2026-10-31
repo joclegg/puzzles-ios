@@ -151,14 +151,17 @@ struct WordWheelSettingsView: View {
     }
 
     private func row(_ value: Binding<Bool>, _ tag: String, _ title: String, detail: String? = nil) -> some View {
-        Toggle(isOn: value) {
+        HStack {
             VStack(alignment: .leading) {
                 Text(title)
                 if let detail {
                     Text(detail).font(.caption).foregroundStyle(.secondary)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            Toggle(title, isOn: value)
+                .labelsHidden()
+                .accessibilityIdentifier("setting_\(tag)")
         }
-        .accessibilityIdentifier("setting_\(tag)")
     }
 }
