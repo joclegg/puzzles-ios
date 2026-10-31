@@ -19,7 +19,8 @@ actor BankStore {
     }
 
     var isReady: Bool {
-        FileManager.default.fileExists(atPath: directory.appending(path: "manifest.json").path())
+        seedFromHost()
+        return FileManager.default.fileExists(atPath: directory.appending(path: "manifest.json").path())
     }
 
     func update() async throws {
@@ -35,6 +36,18 @@ actor BankStore {
     func lines(_ path: String) throws -> [String] {
         let text = try String(contentsOf: directory.appending(path: path), encoding: .utf8)
         return text.split(whereSeparator: \.isNewline).map(String.init)
+    }
+
+    private func seedFromHost() {
+        #if DEBUG && targetEnvironment(simulator)
+            let source = URL(filePath: "/tmp/puzzles-e2e-banks")
+            let manager = FileManager.default
+            guard manager.fileExists(atPath: source.path()), !manager.fileExists(atPath: directory.path()) else {
+                return
+            }
+            try? manager.createDirectory(at: directory.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try? manager.copyItem(at: source, to: directory)
+        #endif
     }
 
     private func download(path: String, sha256: String) async throws {

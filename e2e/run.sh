@@ -47,6 +47,8 @@ fi
 xcrun simctl boot "$UDID" 2>/dev/null || true
 xcrun simctl bootstatus "$UDID" -b >/dev/null
 
+e2e/fetch-banks.sh
+
 xcodebuild -project Puzzles.xcodeproj -scheme PuzzlesApp \
   -destination "platform=iOS Simulator,id=$UDID" -derivedDataPath build build -quiet
 xcrun simctl install "$UDID" build/Build/Products/Debug-iphonesimulator/Puzzles.app
