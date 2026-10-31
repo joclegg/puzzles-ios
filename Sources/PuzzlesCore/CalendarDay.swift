@@ -26,3 +26,20 @@ public struct CalendarDay: Hashable, Comparable, Sendable {
         lhs.daysSinceEpoch < rhs.daysSinceEpoch
     }
 }
+
+extension CalendarDay {
+    public var isoString: String {
+        let shifted = daysSinceEpoch + 719_468
+        let era = (shifted >= 0 ? shifted : shifted - 146_096) / 146_097
+        let dayOfEra = shifted - era * 146_097
+        let yearOfEra = (dayOfEra - dayOfEra / 1460 + dayOfEra / 36524 - dayOfEra / 146_096) / 365
+        let dayOfYear = dayOfEra - (365 * yearOfEra + yearOfEra / 4 - yearOfEra / 100)
+        let shiftedMonth = (5 * dayOfYear + 2) / 153
+        let day = dayOfYear - (153 * shiftedMonth + 2) / 5 + 1
+        let month = shiftedMonth < 10 ? shiftedMonth + 3 : shiftedMonth - 9
+        let year = yearOfEra + era * 400 + (month <= 2 ? 1 : 0)
+        let monthText = month < 10 ? "0\(month)" : "\(month)"
+        let dayText = day < 10 ? "0\(day)" : "\(day)"
+        return "\(year)-\(monthText)-\(dayText)"
+    }
+}
