@@ -1,0 +1,28 @@
+appId: com.joclegg.puzzles
+name: Five Letters - a guess fills the first row
+tags:
+  - fast
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "game_five_letters"
+    timeout: 120000
+- tapOn:
+    id: "game_five_letters"
+- tapOn:
+    id: "key_A"
+- tapOn:
+    id: "key_D"
+- tapOn:
+    id: "key_I"
+- tapOn:
+    id: "key_E"
+- tapOn:
+    id: "key_U"
+- tapOn:
+    id: "key_enter"
+- assertVisible:
+    id: "letter_r1c1"
+    text: "A"

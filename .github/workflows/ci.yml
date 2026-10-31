@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Lint, unit tests, build
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v7
+      - run: xcrun swift-format lint --strict --recursive App Sources Tests Package.swift
+      - run: scripts/verify-no-comments.sh
+      - run: swift test -c release -Xswiftc -enable-testing
+      - run: xcodebuild -project Puzzles.xcodeproj -scheme PuzzlesApp -destination 'generic/platform=iOS Simulator' -derivedDataPath build build -quiet
+
+  e2e:
+    name: Maestro e2e (part ${{ matrix.part }} of 3)
+    runs-on: macos-26
+    needs: check
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [1, 2, 3]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Install Maestro
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+      - run: e2e/run.sh --part ${{ matrix.part }}/3
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: e2e-part-${{ matrix.part }}
+          path: ~/.maestro/tests
