@@ -30,7 +30,8 @@ struct SolitaireGameView: View {
     private static let tutorial = [
         TourStep(
             target: "table",
-            text: "Tap the stock to turn cards over. Build the columns down in alternating colours, and the foundations up from Ace to King."
+            text:
+                "Tap the stock to turn cards over. Build the columns down in alternating colours, and the foundations up from Ace to King."
         ),
         TourStep(target: "hint", text: "Stuck? The bulb suggests a move."),
         TourStep(target: "menu", text: "Restart, deal again and settings live in this menu."),
