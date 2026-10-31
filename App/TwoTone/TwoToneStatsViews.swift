@@ -148,7 +148,6 @@ struct TwoToneSettingsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
-                Text("Settings").font(.largeTitle.bold())
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Filling in").font(.headline)
                     HStack(spacing: 0) {

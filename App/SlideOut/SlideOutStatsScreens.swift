@@ -182,10 +182,6 @@ struct SlideOutSettingsScreen: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
-                HStack(spacing: 0) {
-                    SlideOutBackButton(action: onBack)
-                    Text("Settings").font(.title)
-                }
                 VStack(spacing: 12) {
                     row("Show the timer", nil, $showTimer, "setting_show_timer")
                     row("Show par", "The fewest moves the puzzle can be solved in.", $showPar, "setting_show_par")

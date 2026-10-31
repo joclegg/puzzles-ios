@@ -224,7 +224,7 @@ struct SlideOutHomeScreen: View {
         case .history:
             SlideOutHistoryScreen(onOpenGame: { route = .game($0) }, onBack: { route = nil })
         case .settings:
-            SlideOutSettingsScreen { route = nil }
+            SettingsHubView(initial: .slideOut) { route = nil }
         }
     }
 

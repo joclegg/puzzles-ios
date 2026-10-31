@@ -56,7 +56,7 @@ struct SightlinesHomeView: View {
             case .history:
                 SightlinesHistoryView { screen = .game($0) }
             case .settings:
-                SightlinesSettingsView()
+                SettingsHubView(initial: .sightlines)
             case .game(let id):
                 SightlinesGameView(id: id, onOpenGame: { screen = .game($0) }, onHome: { screen = nil }).id(id)
             }

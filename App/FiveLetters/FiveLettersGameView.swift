@@ -123,7 +123,7 @@ struct FiveLettersGameView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $settingsOpen) {
-            FiveLettersSettingsView()
+            SettingsHubView(initial: .fiveLetters)
         }
         .task {
             if model.game == nil {

@@ -69,7 +69,7 @@ struct SolitaireHomeView: View {
         case .history:
             SolitaireHistoryView(store: store, onOpenGame: { self.route = .game($0) }) { self.route = nil }
         case .settings:
-            SolitaireSettingsView { self.route = nil }
+            SettingsHubView(initial: .solitaire) { self.route = nil }
         case .game(let id):
             SolitaireGameView(id: id, onOpenGame: { self.route = .game($0) }) { self.route = nil }
                 .id(id)
@@ -436,10 +436,6 @@ struct SolitaireSettingsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
-                HStack(spacing: 0) {
-                    SolitaireBackButton(action: onBack)
-                    Text("Settings").font(.largeTitle)
-                }
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Play").font(.title2)
                     drawChoice

@@ -107,7 +107,7 @@ struct KakuroRootView: View {
         case .history:
             KakuroHistoryView(navigator: navigator, onBack: back)
         case .settings:
-            KakuroSettingsView(onBack: back)
+            SettingsHubView(initial: .kakuro, onBack: back)
         case nil:
             KakuroHomeView(navigator: navigator, onBack: back)
         }

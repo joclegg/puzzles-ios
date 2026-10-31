@@ -62,7 +62,7 @@ struct TwoToneHomeView: View {
             case .history:
                 TwoToneHistoryView(store: store, onOpen: open)
             case .settings:
-                TwoToneSettingsView()
+                SettingsHubView(initial: .twoTone)
             }
         }
         .task {

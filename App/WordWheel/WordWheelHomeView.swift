@@ -42,7 +42,7 @@ struct WordWheelHomeView: View {
                 }
             }
             .navigationDestination(isPresented: $showSettings) {
-                WordWheelSettingsView()
+                SettingsHubView(initial: .wordWheel)
             }
             .overlay {
                 if let saved = resumeChoice {

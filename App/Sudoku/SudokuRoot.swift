@@ -73,7 +73,7 @@ struct SudokuRootView: View {
             case .daily:
                 SudokuDailyView()
             case .settings(let mode):
-                SudokuSettingsHubView(mode: mode)
+                SettingsHubView(initial: .sudoku, sudokuMode: mode, onBack: navigator.back)
             }
         }
         .environment(navigator)

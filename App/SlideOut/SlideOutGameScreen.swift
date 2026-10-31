@@ -84,7 +84,7 @@ private struct SlideOutGameContent: View {
         }
         .overlay { dialogs }
         .navigationDestination(isPresented: $showSettings) {
-            SlideOutSettingsScreen { showSettings = false }
+            SettingsHubView(initial: .slideOut) { showSettings = false }
         }
         .onAppear { model.onVisible() }
         .onDisappear { model.onHidden() }

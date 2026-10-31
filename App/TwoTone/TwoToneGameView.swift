@@ -68,7 +68,7 @@ struct TwoToneGameView: View {
         .tint(TwoToneColors.accent)
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $settingsOpen) {
-            TwoToneSettingsView()
+            SettingsHubView(initial: .twoTone)
         }
         .task {
             if model == nil {

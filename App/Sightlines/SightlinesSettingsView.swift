@@ -61,7 +61,6 @@ struct SightlinesSettingsView: View {
             .overlay(RoundedRectangle(cornerRadius: 16).stroke(SightlinesColors.tileBorder))
             .padding(16)
         }
-        .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
     }
 

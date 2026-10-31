@@ -49,7 +49,7 @@ struct FiveLettersHomeView: View {
                 }
                 .accessibilityIdentifier("stats")
                 NavigationLink {
-                    FiveLettersSettingsView()
+                    SettingsHubView(initial: .fiveLetters)
                 } label: {
                     Label("Settings", systemImage: "gearshape")
                 }

@@ -92,6 +92,17 @@ struct LauncherView: View {
                     .padding()
                 }
                 .navigationTitle("Puzzles")
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        NavigationLink {
+                            SettingsHubView()
+                        } label: {
+                            Image(systemName: "gearshape")
+                        }
+                        .accessibilityLabel("Settings")
+                        .accessibilityIdentifier("settings")
+                    }
+                }
             }
         }
     }

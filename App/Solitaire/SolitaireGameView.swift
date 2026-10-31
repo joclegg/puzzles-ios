@@ -93,7 +93,7 @@ struct SolitaireGameView: View {
             tour(anchors)
         }
         .navigationDestination(isPresented: $settingsOpen) {
-            SolitaireSettingsView { settingsOpen = false }
+            SettingsHubView(initial: .solitaire) { settingsOpen = false }
         }
         .onAppear {
             onScreen = true

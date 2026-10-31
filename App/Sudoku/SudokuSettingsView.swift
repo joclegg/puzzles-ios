@@ -1,38 +1,7 @@
 import SudokuEngine
 import SwiftUI
 
-struct SudokuSettingsHubView: View {
-    let mode: GameMode
-    @State private var showGeneral = false
-    @Environment(SudokuNavigator.self) private var navigator
-    @Environment(\.sudokuPalette) private var palette
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 0) {
-                SudokuBackButton(action: navigator.back)
-                Text("Settings").font(.title.weight(.regular))
-            }
-            .padding(.horizontal, 16)
-            SudokuSegments(
-                options: [true, false], selected: showGeneral, label: { $0 ? "General" : "Sudoku" },
-                id: { $0 ? "settings_tab_general" : "settings_tab_sudoku" }, onSelect: { showGeneral = $0 }
-            )
-            .padding(.horizontal, 16)
-            Group {
-                if showGeneral {
-                    SudokuGeneralSettings()
-                } else {
-                    SudokuSettingsView(initialMode: mode)
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .background(LinearGradient(colors: [palette.accent.opacity(0.1), .clear], startPoint: .top, endPoint: .bottom))
-        }
-    }
-}
-
-private struct SudokuGeneralSettings: View {
+struct SudokuGeneralSettings: View {
     @AppStorage(SettingKeys.theme) private var theme = ThemeMode.system.rawValue
 
     var body: some View {

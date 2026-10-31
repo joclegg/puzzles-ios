@@ -1,3 +1,4 @@
+import SudokuEngine
 import SwiftUI
 
 struct RootView: View {
@@ -8,6 +9,18 @@ struct RootView: View {
     }
 
     @State private var phase = Phase.loading
+    @AppStorage(SettingKeys.theme) private var theme = ThemeMode.system.rawValue
+
+    private var colorScheme: ColorScheme? {
+        switch ThemeMode(rawValue: theme) {
+        case .light:
+            .light
+        case .dark:
+            .dark
+        default:
+            nil
+        }
+    }
 
     var body: some View {
         Group {
@@ -29,6 +42,7 @@ struct RootView: View {
                 }
             }
         }
+        .preferredColorScheme(colorScheme)
         .task { await load() }
     }
 

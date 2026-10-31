@@ -17,7 +17,6 @@ struct KakuroSettingsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
-                KakuroScreenTitle(title: "Settings", onBack: onBack)
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Entering numbers").font(.headline)
                     choice(

@@ -35,7 +35,7 @@ struct WordWheelGameView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $showSettings) {
-            WordWheelSettingsView()
+            SettingsHubView(initial: .wordWheel)
         }
         .task { await model.load() }
         .onAppear { model.onVisible() }

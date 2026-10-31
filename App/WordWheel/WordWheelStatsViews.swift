@@ -148,7 +148,6 @@ struct WordWheelSettingsView: View {
             )
             row($allowReveal, "allow_reveal", "Show solution", detail: "Offer Show solution in the game menu.")
         }
-        .navigationTitle("Settings")
     }
 
     private func row(_ value: Binding<Bool>, _ tag: String, _ title: String, detail: String? = nil) -> some View {

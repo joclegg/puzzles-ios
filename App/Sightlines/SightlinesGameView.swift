@@ -106,7 +106,7 @@ struct SightlinesGameView: View {
             MainActor.assumeIsolated { bounds = value }
         }
         .navigationBarTitleDisplayMode(.inline)
-        .navigationDestination(isPresented: $settingsOpen) { SightlinesSettingsView() }
+        .navigationDestination(isPresented: $settingsOpen) { SettingsHubView(initial: .sightlines) }
         .onAppear { model.onVisible() }
         .onDisappear { model.onHidden() }
         .onChange(of: scenePhase) { _, phase in

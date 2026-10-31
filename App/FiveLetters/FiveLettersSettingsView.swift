@@ -74,7 +74,6 @@ struct FiveLettersSettingsView: View {
             }
             .padding(16)
         }
-        .fiveLettersHeader("Settings")
     }
 }
 
