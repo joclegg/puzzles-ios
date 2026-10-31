@@ -1,4 +1,5 @@
 import PuzzlesCore
+import SlideOutEngine
 import SwiftData
 import SwiftUI
 
@@ -10,7 +11,7 @@ enum SlideOutRoute: Hashable {
 }
 
 struct SlideOutHomeScreen: View {
-    var fixture: SlideOutPuzzleRef?
+    var fixture: PuzzleRef?
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var scheme
@@ -78,7 +79,7 @@ struct SlideOutHomeScreen: View {
                     .background(colors.accent, in: Circle())
                 VStack(alignment: .leading) {
                     Text("Continue").font(.headline)
-                    Text("\(game.title) · \(SlideOutFormatDuration(game.elapsedMs))")
+                    Text("\(game.title) · \(formatDuration(game.elapsedMs))")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
@@ -99,14 +100,14 @@ struct SlideOutHomeScreen: View {
         let left = Set(SlideOutStore.dailiesLeft(today: today))
         return SlideOutSection(title: "Today", aside: today.slideOutDayMonth) {
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: 8) {
-                ForEach(SlideOutLevel.allCases, id: \.self) { level in
+                ForEach(Level.allCases, id: \.self) { level in
                     dailyTile(level, done: !left.contains(level), today: today)
                 }
             }
         }
     }
 
-    private func dailyTile(_ level: SlideOutLevel, done: Bool, today: CalendarDay) -> some View {
+    private func dailyTile(_ level: Level, done: Bool, today: CalendarDay) -> some View {
         Button {
             openDaily(level, today: today)
         } label: {
@@ -132,14 +133,14 @@ struct SlideOutHomeScreen: View {
     private var levelSection: some View {
         SlideOutSection(title: "New puzzle") {
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 8) {
-                ForEach(Array(SlideOutLevel.allCases.enumerated()), id: \.element) { rank, level in
+                ForEach(Array(Level.allCases.enumerated()), id: \.element) { rank, level in
                     levelTile(level, rank: rank)
                 }
             }
         }
     }
 
-    private func levelTile(_ level: SlideOutLevel, rank: Int) -> some View {
+    private func levelTile(_ level: Level, rank: Int) -> some View {
         let saved = inProgress.first { $0.ref?.isDaily == false && $0.level == level.name }
         return Button {
             if let saved {
@@ -148,21 +149,31 @@ struct SlideOutHomeScreen: View {
                 begin { try await SlideOutBank.shared.random(level) }
             }
         } label: {
-            VStack(alignment: .leading, spacing: 6) {
-                Text(level.label).font(.headline)
-                if let saved {
-                    Text("In progress · \(SlideOutFormatDuration(saved.elapsedMs))").font(.caption).foregroundStyle(.secondary)
-                }
-                HStack(spacing: 4) {
-                    ForEach(0..<SlideOutLevel.allCases.count, id: \.self) { index in
-                        Capsule()
-                            .fill(index <= rank ? colors.accent : Color.primary.opacity(0.14))
-                            .frame(width: 12, height: 6)
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(level.label).font(.headline)
+                    HStack(spacing: 4) {
+                        ForEach(0..<Level.allCases.count, id: \.self) { index in
+                            Capsule()
+                                .fill(index <= rank ? colors.accent : Color.primary.opacity(0.14))
+                                .frame(width: 12, height: 6)
+                        }
+                    }
+                    if let saved {
+                        HStack(spacing: 6) {
+                            Circle().fill(colors.accent).frame(width: 6, height: 6)
+                            Text("In progress · \(formatDuration(saved.elapsedMs))")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
                     }
                 }
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.right").foregroundStyle(.secondary)
             }
-            .padding(12)
-            .frame(maxWidth: .infinity, minHeight: 72, alignment: .leading)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .frame(maxWidth: .infinity, minHeight: 64, alignment: .leading)
             .background(Color.primary.opacity(0.05), in: RoundedRectangle(cornerRadius: 16))
             .overlay(
                 RoundedRectangle(cornerRadius: 16).stroke(
@@ -180,10 +191,10 @@ struct SlideOutHomeScreen: View {
         if let saved = resumeChoice {
             SlideOutDialog(id: "resume_dialog", onDismiss: { resumeChoice = nil }) {
                 Text(saved.title).font(.title2)
-                Text("You have a puzzle in progress (\(SlideOutFormatDuration(saved.elapsedMs))).")
+                Text("You have a puzzle in progress (\(formatDuration(saved.elapsedMs))).")
             } buttons: {
                 Button("New puzzle") {
-                    let level = SlideOutLevel.named(saved.level)
+                    let level = Level.named(saved.level)
                     resumeChoice = nil
                     begin { try await SlideOutBank.shared.random(level) }
                 }
@@ -217,8 +228,8 @@ struct SlideOutHomeScreen: View {
         }
     }
 
-    private func openDaily(_ level: SlideOutLevel, today: CalendarDay) {
-        let id = SlideOutPuzzleRef.dailyId(date: today, level: level)
+    private func openDaily(_ level: Level, today: CalendarDay) {
+        let id = PuzzleRef.dailyId(date: today, level: level)
         if let open = inProgress.first(where: { $0.puzzleId == id }) {
             route = .game(open.id)
         } else {
@@ -226,7 +237,7 @@ struct SlideOutHomeScreen: View {
         }
     }
 
-    private func begin(_ make: @escaping () async throws -> SlideOutPuzzleRef) {
+    private func begin(_ make: @escaping () async throws -> PuzzleRef) {
         guard !starting else {
             return
         }

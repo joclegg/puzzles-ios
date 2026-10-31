@@ -1,5 +1,6 @@
 import Foundation
 import PuzzlesCore
+import SlideOutEngine
 import SwiftData
 
 @Model
@@ -18,7 +19,7 @@ final class SlideOutGameRecord {
     var startedAt: Int64
     var finishedAt: Int64?
 
-    init(id: Int64, ref: SlideOutPuzzleRef, now: Int64) {
+    init(id: Int64, ref: PuzzleRef, now: Int64) {
         self.id = id
         uuid = UUID().uuidString.lowercased()
         updatedAt = now
@@ -29,26 +30,26 @@ final class SlideOutGameRecord {
         moveCount = 0
         elapsedMs = 0
         hints = 0
-        status = SlideOutGameStatus.inProgress.rawValue
+        status = GameStatus.inProgress.rawValue
         startedAt = now
         finishedAt = nil
     }
 
-    var ref: SlideOutPuzzleRef? {
-        (try? SlideOutPuzzle.decode(puzzle)).map { SlideOutPuzzleRef(id: puzzleId, level: SlideOutLevel.named(level), puzzle: $0) }
+    var ref: PuzzleRef? {
+        (try? Puzzle.decode(puzzle)).map { PuzzleRef(id: puzzleId, level: Level.named(level), puzzle: $0) }
     }
 
-    var gameStatus: SlideOutGameStatus {
-        SlideOutGameStatus(rawValue: status) ?? .abandoned
+    var gameStatus: GameStatus {
+        GameStatus(rawValue: status) ?? .abandoned
     }
 
     var title: String {
-        ref?.title ?? SlideOutLevel.named(level).label
+        ref?.title ?? Level.named(level).label
     }
 
-    var finishedGame: SlideOutFinishedGame {
-        SlideOutFinishedGame(
-            level: SlideOutLevel.named(level),
+    var finishedGame: FinishedGame {
+        FinishedGame(
+            level: Level.named(level),
             status: gameStatus,
             moveCount: moveCount,
             par: ref?.puzzle.par ?? 0,
@@ -91,12 +92,12 @@ enum SlideOutStore {
         return try? context.fetch(descriptor).first
     }
 
-    static func start(_ ref: SlideOutPuzzleRef) -> Int64 {
+    static func start(_ ref: PuzzleRef) -> Int64 {
         let now = nowMs()
-        let inProgress = SlideOutGameStatus.inProgress.rawValue
+        let inProgress = GameStatus.inProgress.rawValue
         let open = FetchDescriptor<SlideOutGameRecord>(predicate: #Predicate { $0.status == inProgress })
         for game in (try? context.fetch(open)) ?? [] where game.ref?.slot == ref.slot {
-            game.status = SlideOutGameStatus.abandoned.rawValue
+            game.status = GameStatus.abandoned.rawValue
             game.updatedAt = now
         }
         var last = FetchDescriptor<SlideOutGameRecord>(sortBy: [SortDescriptor(\.id, order: .reverse)])
@@ -107,50 +108,50 @@ enum SlideOutStore {
         return id
     }
 
-    static func save(id: Int64, moves: [SlideOutMove], elapsedMs: Int64, hints: Int) {
+    static func save(id: Int64, moves: [Move], elapsedMs: Int64, hints: Int) {
         guard let game = get(id), game.gameStatus == .inProgress else {
             return
         }
         write(game, moves: moves, elapsedMs: elapsedMs, hints: hints, status: .inProgress)
     }
 
-    static func reveal(id: Int64, moves: [SlideOutMove], elapsedMs: Int64, hints: Int) {
+    static func reveal(id: Int64, moves: [Move], elapsedMs: Int64, hints: Int) {
         guard let game = get(id) else {
             return
         }
         write(game, moves: moves, elapsedMs: elapsedMs, hints: hints, status: .revealed)
     }
 
-    static func solve(id: Int64, moves: [SlideOutMove], elapsedMs: Int64, hints: Int) -> Bool {
+    static func solve(id: Int64, moves: [Move], elapsedMs: Int64, hints: Int) -> Bool {
         guard let game = get(id) else {
             return false
         }
         write(game, moves: moves, elapsedMs: elapsedMs, hints: hints, status: .solved)
-        let solved = SlideOutGameStatus.solved.rawValue
+        let solved = GameStatus.solved.rawValue
         let level = game.level
         let others = FetchDescriptor<SlideOutGameRecord>(
             predicate: #Predicate { $0.status == solved && $0.level == level && $0.id != id }
         )
         let previous = ((try? context.fetch(others)) ?? []).map(\.elapsedMs).min()
-        return SlideOutIsNewBest(elapsedMs: elapsedMs, previousBestMs: previous)
+        return isNewBest(elapsedMs: elapsedMs, previousBestMs: previous)
     }
 
-    static func dailiesLeft(today: CalendarDay) -> [SlideOutLevel] {
-        let solved = SlideOutGameStatus.solved.rawValue
+    static func dailiesLeft(today: CalendarDay) -> [Level] {
+        let solved = GameStatus.solved.rawValue
         let finished = FetchDescriptor<SlideOutGameRecord>(predicate: #Predicate { $0.status == solved })
         let ids = Set(((try? context.fetch(finished)) ?? []).map(\.puzzleId))
-        return SlideOutLevel.allCases.filter { !ids.contains(SlideOutPuzzleRef.dailyId(date: today, level: $0)) }
+        return Level.allCases.filter { !ids.contains(PuzzleRef.dailyId(date: today, level: $0)) }
     }
 
     private static func write(
         _ game: SlideOutGameRecord,
-        moves: [SlideOutMove],
+        moves: [Move],
         elapsedMs: Int64,
         hints: Int,
-        status: SlideOutGameStatus
+        status: GameStatus
     ) {
         let now = nowMs()
-        game.moves = SlideOutMoveCodec.encode(moves)
+        game.moves = MoveCodec.encode(moves)
         game.moveCount = moves.count
         game.elapsedMs = elapsedMs
         game.hints = hints
@@ -166,24 +167,24 @@ enum SlideOutStore {
 actor SlideOutBank {
     static let shared = SlideOutBank()
 
-    private var loaded: [SlideOutLevel: [SlideOutPuzzle]] = [:]
+    private var loaded: [Level: [Puzzle]] = [:]
 
-    func puzzles(_ level: SlideOutLevel) async throws -> [SlideOutPuzzle] {
+    func puzzles(_ level: Level) async throws -> [Puzzle] {
         if let puzzles = loaded[level] {
             return puzzles
         }
         let lines = try await BankStore.shared.lines("slideout/\(level.name.lowercased()).txt")
-        let puzzles = try lines.map(SlideOutPuzzle.decode)
+        let puzzles = try lines.map(Puzzle.decode)
         loaded[level] = puzzles
         return puzzles
     }
 
-    func random(_ level: SlideOutLevel) async throws -> SlideOutPuzzleRef {
-        SlideOutPuzzleRef.random(puzzles: try await puzzles(level), level: level, seed: Int64.random(in: .min ... .max))
+    func random(_ level: Level) async throws -> PuzzleRef {
+        PuzzleRef.random(puzzles: try await puzzles(level), level: level, seed: Int64.random(in: .min ... .max))
     }
 
-    func daily(_ level: SlideOutLevel, date: CalendarDay) async throws -> SlideOutPuzzleRef {
-        SlideOutPuzzleRef.daily(puzzles: try await puzzles(level), date: date, level: level)
+    func daily(_ level: Level, date: CalendarDay) async throws -> PuzzleRef {
+        PuzzleRef.daily(puzzles: try await puzzles(level), date: date, level: level)
     }
 }
 
@@ -195,6 +196,6 @@ extension CalendarDay {
 
     var slideOutDayMonth: String {
         let parts = isoString.split(separator: "-").compactMap { Int($0) }
-        return SlideOutDayMonthLabel(month: parts[1], day: parts[2])
+        return dayMonthLabel(month: parts[1], day: parts[2])
     }
 }

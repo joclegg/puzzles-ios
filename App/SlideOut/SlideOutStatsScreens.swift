@@ -1,3 +1,4 @@
+import SlideOutEngine
 import SwiftData
 import SwiftUI
 
@@ -11,16 +12,16 @@ struct SlideOutStatsScreen: View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 0) {
                     SlideOutBackButton(action: onBack)
-                    Text("Stats").font(.largeTitle)
+                    Text("Stats").font(.title)
                 }
                 SlideOutPanel {
                     row("Level", "Solved", "At par", "Best", tag: nil).fontWeight(.semibold)
-                    ForEach(SlideOutLevelStats.of(games.map(\.finishedGame)), id: \.level) { stats in
+                    ForEach(LevelStats.of(games.map(\.finishedGame)), id: \.level) { stats in
                         row(
                             stats.level.label,
                             "\(stats.solved)/\(stats.played)",
                             "\(stats.atPar)",
-                            stats.bestMs.map(SlideOutFormatDuration) ?? "–",
+                            stats.bestMs.map(formatDuration) ?? "–",
                             tag: "level_\(stats.level.name.lowercased())"
                         )
                     }
@@ -55,7 +56,7 @@ struct SlideOutHistoryScreen: View {
     @Environment(\.colorScheme) private var scheme
     @Query(sort: [SortDescriptor(\SlideOutGameRecord.startedAt, order: .reverse), SortDescriptor(\.id, order: .reverse)])
     private var games: [SlideOutGameRecord]
-    @State private var filter: SlideOutLevel?
+    @State private var filter: Level?
 
     private var shown: [SlideOutGameRecord] {
         games.filter { filter == nil || $0.level == filter?.name }
@@ -65,12 +66,12 @@ struct SlideOutHistoryScreen: View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(spacing: 0) {
                 SlideOutBackButton(action: onBack)
-                Text("History").font(.largeTitle)
+                Text("History").font(.title)
             }
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
-                    chip("All", level: nil, id: "filter_all")
-                    ForEach(SlideOutLevel.allCases, id: \.self) { level in
+                    chip("All", level: nil, id: "")
+                    ForEach(Level.allCases, id: \.self) { level in
                         chip(String(level.label.prefix(1)), level: level, id: "filter_\(level.name.lowercased())")
                     }
                 }
@@ -107,7 +108,7 @@ struct SlideOutHistoryScreen: View {
         .overlay(RoundedRectangle(cornerRadius: 24).stroke(Color.primary.opacity(0.12)))
     }
 
-    private func chip(_ label: String, level: SlideOutLevel?, id: String) -> some View {
+    private func chip(_ label: String, level: Level?, id: String) -> some View {
         let accent = SlideColors.of(scheme).accent
         let selected = filter == level
         return Button {
@@ -138,7 +139,7 @@ struct SlideOutHistoryScreen: View {
                 }
                 Spacer()
                 VStack(alignment: .trailing) {
-                    Text(SlideOutFormatDuration(game.elapsedMs))
+                    Text(formatDuration(game.elapsedMs))
                     Text("\(game.gameStatus.label) · \(game.moveCount) moves")
                         .font(.caption)
                         .foregroundStyle(.secondary)
@@ -183,7 +184,7 @@ struct SlideOutSettingsScreen: View {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(spacing: 0) {
                     SlideOutBackButton(action: onBack)
-                    Text("Settings").font(.largeTitle)
+                    Text("Settings").font(.title)
                 }
                 VStack(spacing: 12) {
                     row("Show the timer", nil, $showTimer, "setting_show_timer")

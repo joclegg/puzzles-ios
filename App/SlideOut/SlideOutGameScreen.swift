@@ -1,4 +1,5 @@
 import PuzzlesCore
+import SlideOutEngine
 import SwiftUI
 
 struct SlideOutGameScreen: View {
@@ -55,6 +56,7 @@ private struct SlideOutGameContent: View {
     @State private var rulesOpen = false
     @State private var tourStep: Int?
     @State private var failed = false
+    @State private var trophyScale: CGFloat = 0.6
 
     private var colors: SlideColors { SlideColors.of(scheme) }
 
@@ -106,7 +108,7 @@ private struct SlideOutGameContent: View {
                     .accessibilityIdentifier("game_title")
                 HStack(spacing: 12) {
                     if showTimer {
-                        Text(SlideOutFormatDuration(model.elapsedMs)).monospacedDigit().accessibilityIdentifier("timer")
+                        Text(formatDuration(model.elapsedMs)).monospacedDigit().accessibilityIdentifier("timer")
                     }
                     Text("Moves \(model.moveCount)").accessibilityIdentifier("move_count")
                     if showPar {
@@ -207,6 +209,10 @@ private struct SlideOutGameContent: View {
                     .foregroundStyle(Color(uiColor: .systemBackground))
                     .frame(width: 64, height: 64)
                     .background(colors.accent, in: Circle())
+                    .scaleEffect(trophyScale)
+                    .onAppear {
+                        withAnimation(.spring(response: 0.5, dampingFraction: 0.5)) { trophyScale = 1 }
+                    }
                 Text("Solved!").font(.title2).bold()
                 if model.newBest {
                     Text("NEW BEST")
@@ -219,10 +225,10 @@ private struct SlideOutGameContent: View {
                         .accessibilityIdentifier("new_best")
                 }
                 HStack(spacing: 8) {
-                    stat("Moves", SlideOutSolvedMovesText(moveCount: model.moveCount, par: model.par), id: "solved_moves")
-                    stat("Time", SlideOutFormatDuration(model.elapsedMs), id: "solved_time")
+                    stat("Moves", solvedMovesText(moveCount: model.moveCount, par: model.par), id: "solved_moves")
+                    stat("Time", formatDuration(model.elapsedMs), id: "solved_time")
                     if model.hints > 0 {
-                        stat("Hints", "\(model.hints)", id: "solved_hints")
+                        stat("Hints", "\(model.hints)", id: "")
                     }
                 }
                 stillToPlay
@@ -254,12 +260,19 @@ private struct SlideOutGameContent: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
                         ForEach(left, id: \.self) { level in
-                            Button(level.label) { openDaily(level, today: today) }
-                                .font(.caption)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 6)
-                                .background(colors.accent.opacity(0.15), in: Capsule())
-                                .accessibilityIdentifier("still_to_play_\(level.name.lowercased())")
+                            Button {
+                                openDaily(level, today: today)
+                            } label: {
+                                HStack(spacing: 6) {
+                                    Text(level.label)
+                                    Image(systemName: "chevron.right").foregroundStyle(colors.accent)
+                                }
+                            }
+                            .font(.caption)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(colors.accent.opacity(0.15), in: Capsule())
+                            .accessibilityIdentifier("still_to_play_\(level.name.lowercased())")
                         }
                     }
                 }
@@ -283,7 +296,7 @@ private struct SlideOutGameContent: View {
 
     private func tourOverlay(step: Int, rect: CGRect?) -> some View {
         ZStack(alignment: .bottom) {
-            Color.black.opacity(0.4).ignoresSafeArea()
+            Color.black.opacity(0.4).ignoresSafeArea().onTapGesture { tourStep = nil }
             if let rect {
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(Color.accentColor, lineWidth: 4)
@@ -325,7 +338,7 @@ private struct SlideOutGameContent: View {
         }
     }
 
-    private func openDaily(_ level: SlideOutLevel, today: CalendarDay) {
+    private func openDaily(_ level: Level, today: CalendarDay) {
         Task {
             do {
                 onOpenGame(SlideOutStore.start(try await SlideOutBank.shared.daily(level, date: today)))
