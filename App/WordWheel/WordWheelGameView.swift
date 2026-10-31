@@ -34,13 +34,6 @@ struct WordWheelGameView: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                Text(model.title)
-                    .font(.headline)
-                    .accessibilityIdentifier("game_title")
-            }
-        }
         .navigationDestination(isPresented: $showSettings) {
             WordWheelSettingsView()
         }
@@ -92,17 +85,24 @@ struct WordWheelGameView: View {
     }
 
     private var header: some View {
-        HStack(spacing: 12) {
-            if showTimer {
-                Text(formatDuration(model.elapsedMs))
-                    .monospacedDigit()
-                    .accessibilityIdentifier("timer")
-            }
-            Text("\(model.wordsLeft) to find")
-                .accessibilityIdentifier("words_left")
-            if showBonusCount {
-                Text("Bonus \(model.game?.bonus.count ?? 0)")
-                    .accessibilityIdentifier("bonus_count")
+        HStack(spacing: 4) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(model.title)
+                    .font(.headline)
+                    .accessibilityIdentifier("game_title")
+                HStack(spacing: 12) {
+                    if showTimer {
+                        Text(formatDuration(model.elapsedMs))
+                            .monospacedDigit()
+                            .accessibilityIdentifier("timer")
+                    }
+                    Text("\(model.wordsLeft) to find")
+                        .accessibilityIdentifier("words_left")
+                    if showBonusCount {
+                        Text("Bonus \(model.game?.bonus.count ?? 0)")
+                            .accessibilityIdentifier("bonus_count")
+                    }
+                }
             }
             Spacer(minLength: 0)
             if showHints {
@@ -215,9 +215,29 @@ struct WordWheelGameView: View {
                 }
             }
             .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .background(
+                LinearGradient(
+                    colors: [WheelColors.accent.opacity(0.3), WheelColors.accent.opacity(0.08), .clear],
+                    startPoint: .top,
+                    endPoint: .bottom
+                ),
+                in: RoundedRectangle(cornerRadius: 16)
+            )
             HStack(spacing: 8) {
                 stat("Time", formatDuration(model.elapsedMs))
                 stat("Bonus words", "\(model.game?.bonus.count ?? 0)")
+            }
+            let dailies = dailiesLeft
+            if !dailies.isEmpty {
+                Text("STILL TO PLAY TODAY")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                HStack(spacing: 8) {
+                    ForEach(dailies, id: \.self) { level in
+                        dailyChip(level)
+                    }
+                }
             }
             HStack(spacing: 16) {
                 Spacer()
@@ -230,6 +250,33 @@ struct WordWheelGameView: View {
             }
             .tint(WheelColors.accent)
         }
+    }
+
+    private var dailiesLeft: [Level] {
+        let solved = WordWheelRepository.shared.dailySolved(on: WordWheelDates.today)
+        return Level.allCases.filter { !solved.contains($0) }
+    }
+
+    private func dailyChip(_ level: Level) -> some View {
+        Button {
+            Task {
+                if let id = try? await WordWheelRepository.shared.openDaily(level) {
+                    onOpenGame(id)
+                }
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Text(level.label).font(.caption.weight(.medium))
+                Image(systemName: "chevron.right")
+                    .font(.caption2)
+                    .foregroundStyle(WheelColors.accent)
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 5)
+            .background(WheelColors.accent.opacity(0.15), in: Capsule())
+            .overlay { Capsule().stroke(WheelColors.accent.opacity(0.35), lineWidth: 1) }
+        }
+        .buttonStyle(.plain)
     }
 
     private func stat(_ label: String, _ value: String) -> some View {
@@ -314,6 +361,10 @@ struct WordWheelLetterWheel: View {
                 }
             }
             .contentShape(Circle())
+            .onDisappear {
+                swiping = false
+                finger = nil
+            }
             .gesture(drag(centres: centres, hit: letterSize / 2))
         }
     }

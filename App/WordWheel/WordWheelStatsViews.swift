@@ -9,10 +9,10 @@ struct WordWheelStatsView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Grid(alignment: .leading, verticalSpacing: 8) {
                     GridRow {
-                        Text("Letters")
-                        Text("Solved")
-                        Text("Bonus")
-                        Text("Best")
+                        Text("Letters").frame(maxWidth: .infinity, alignment: .leading)
+                        Text("Solved").frame(maxWidth: .infinity, alignment: .leading)
+                        Text("Bonus").frame(maxWidth: .infinity, alignment: .leading)
+                        Text("Best").frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .fontWeight(.semibold)
                     ForEach(repository.stats, id: \.level) { stats in
@@ -30,6 +30,7 @@ struct WordWheelStatsView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(16)
                 .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16))
+                .overlay { RoundedRectangle(cornerRadius: 16).stroke(WheelColors.accent.opacity(0.2), lineWidth: 1) }
                 Text("Solved out of played. Bonus counts every extra word you found.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
