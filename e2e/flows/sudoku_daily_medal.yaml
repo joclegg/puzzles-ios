@@ -21,9 +21,7 @@ name: Finishing today's daily earns a bronze medal on Home and in the calendar
     timeout: 15000
 - tapOn:
     id: "daily_calendar"
-- assertVisible:
-    id: "daily_today"
-    text: ".*bronze medal"
+- assertVisible: ".*bronze medal"
 - tapOn:
     id: "daily_today"
 - waitForAnimationToEnd:

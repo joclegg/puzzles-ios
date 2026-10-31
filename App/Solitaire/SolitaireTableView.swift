@@ -255,13 +255,13 @@ struct SolitaireTableView: View {
         }
         .frame(width: metrics.cardWidth, height: metrics.cardHeight)
         .modifier(SolitaireLanding(celebrate: model.finishing && isFoundation(placed.pile)))
+        .contentShape(Rectangle())
         .accessibilityIdentifier(placed.id)
         .offset(x: placed.position.x, y: placed.position.y)
         .offset(lifted ? (drag?.offset ?? .zero) : .zero)
         .zIndex(lifted ? 1000 + placed.layer : placed.layer)
         if placed.interactive {
             base
-                .contentShape(Rectangle())
                 .onTapGesture { model.onCardClick(placed.pile, placed.index) }
                 .gesture(dragGesture(placed, metrics))
         } else {

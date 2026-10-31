@@ -5,12 +5,12 @@ tags:
 ---
 - launchApp:
     clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "game_sudoku"
+    timeout: 120000
 - waitForAnimationToEnd:
     timeout: 1500
-- scrollUntilVisible:
-    element:
-      id: "game_sudoku"
-    centerElement: true
 - tapOn:
     id: "game_sudoku"
 - waitForAnimationToEnd:

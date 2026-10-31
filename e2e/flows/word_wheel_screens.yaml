@@ -3,6 +3,10 @@ name: Word Wheel - resume, stats, history replay, settings and the walkthrough
 ---
 - launchApp:
     clearState: true
+- scrollUntilVisible:
+    element:
+      id: "game_word_wheel"
+    centerElement: true
 - tapOn:
     id: "game_word_wheel"
 - tapOn:
@@ -30,8 +34,7 @@ name: Word Wheel - resume, stats, history replay, settings and the walkthrough
 - tapOn:
     id: "setting_show_hints"
 - tapOn:
-    label: "Back"
-    index: 0
+    id: "back"
 - assertNotVisible:
     id: "hint"
 - tapOn:

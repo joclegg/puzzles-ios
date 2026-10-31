@@ -15,7 +15,7 @@ name: Slide Out - turning Hints off hides the hint button
     id: "menu_settings"
 - extendedWaitUntil:
     visible:
-      id: "move_count"
+      id: "settings_tab_slide_out"
     timeout: 120000
 - scrollUntilVisible:
     element:

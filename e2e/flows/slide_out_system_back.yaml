@@ -10,8 +10,9 @@ name: Slide Out - the system back swipe leaves the game for Home
       id: "move_count"
     timeout: 120000
 - swipe:
-    start: "1%, 50%"
+    start: "0%, 50%"
     end: "90%, 50%"
+    duration: 800
 - extendedWaitUntil:
     visible:
       id: "level_beginner"
