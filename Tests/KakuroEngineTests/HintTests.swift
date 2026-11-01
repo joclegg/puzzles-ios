@@ -12,6 +12,20 @@ struct HintTests {
         #expect(hint == Hint(cell: 4, digit: 1, message: "Only 1 fits here: 3 in 2 across and 4 in 2 down leave no other digit."))
     }
 
+    @Test("given no cell that can be worked out when a hint is asked for then it names the cell's runs and candidates")
+    func fallbackNamesCandidates() {
+        // Arrange
+        let game = GameState(puzzle: puzzle(3, "000 013 031"))
+
+        // Act
+        let hint = game.findHint()
+
+        // Assert
+        #expect(
+            hint == Hint(cell: 4, digit: 1, message: "This cell's across run (4 in 2) and down run (4 in 2) only allow 1 or 3."))
+        #expect(hint?.message.contains("first empty") == false)
+    }
+
     @Test("given a wrong digit when a hint is asked for then it points at that cell first")
     func wrongFirst() {
         // Arrange
