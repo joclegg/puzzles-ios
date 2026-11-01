@@ -29,7 +29,7 @@ struct TwoToneHomeView: View {
                 if let latest = inProgress.first {
                     continueCard(latest)
                 }
-                section("Today", aside: dayMonth(isoDate: today.isoString)) {
+                section("Today", aside: dayMonthLabel(iso: today.isoString)) {
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: 12) {
                         ForEach(sizes, id: \.self) { size in
                             dailyTile(size, done: solved.contains(size), today: today)

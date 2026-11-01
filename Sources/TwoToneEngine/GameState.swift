@@ -14,22 +14,11 @@ public struct Change: Sendable, Equatable {
 
 public enum ChangeCodec {
     public static func encode(_ changes: [Change]) -> String {
-        changes.map { "\($0.cell)\($0.from.code)\($0.to.code)" }.joined(separator: ",")
+        CellChangeCodec.encode(changes.map { (cell: $0.cell, from: $0.from, to: $0.to) })
     }
 
     public static func decode(_ text: String) -> [Change]? {
-        var changes: [Change] = []
-        for part in text.split(separator: ",") {
-            guard part.count >= 2,
-                let cell = Int(part.dropLast(2)),
-                let from = Tile(rawValue: part[part.index(part.endIndex, offsetBy: -2)]),
-                let to = Tile(rawValue: part[part.index(before: part.endIndex)])
-            else {
-                return nil
-            }
-            changes.append(Change(cell: cell, from: from, to: to))
-        }
-        return changes
+        CellChangeCodec.decode(text, as: Tile.self)?.map { Change(cell: $0.cell, from: $0.from, to: $0.to) }
     }
 }
 

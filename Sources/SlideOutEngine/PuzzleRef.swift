@@ -1,27 +1,9 @@
 import PuzzlesCore
 
-public enum GameStatus: String, CaseIterable, Sendable {
-    case inProgress = "IN_PROGRESS"
-    case solved = "SOLVED"
-    case abandoned = "ABANDONED"
-    case revealed = "REVEALED"
-
-    public var label: String {
-        switch self {
-        case .inProgress:
-            "In progress"
-        case .solved:
-            "Solved"
-        case .abandoned:
-            "Abandoned"
-        case .revealed:
-            "Solution shown"
-        }
-    }
-}
+public typealias GameStatus = PuzzleStatus
 
 public struct PuzzleRef: Hashable, Sendable {
-    public static let dailyPrefix = "daily_"
+    public static let dailyPrefix = DailyId.prefix
     private static let firstDay = CalendarDay(year: 2026, month: 10, day: 25)
 
     public let id: String
@@ -35,7 +17,7 @@ public struct PuzzleRef: Hashable, Sendable {
     }
 
     public var isDaily: Bool {
-        id.hasPrefix(Self.dailyPrefix)
+        DailyId.isDaily(id)
     }
 
     public var slot: String {
@@ -46,7 +28,7 @@ public struct PuzzleRef: Hashable, Sendable {
         guard isDaily else {
             return level.label
         }
-        let date = id.dropFirst(Self.dailyPrefix.count).prefix { $0 != "_" }
+        let date = DailyId.isoDate(of: id)
         let parts = date.split(separator: "-").compactMap { Int($0) }
         guard parts.count == 3 else {
             return level.label
@@ -61,7 +43,7 @@ public struct PuzzleRef: Hashable, Sendable {
     }
 
     public static func dailyId(date: CalendarDay, level: Level) -> String {
-        "\(dailyPrefix)\(date.isoString)_\(level.name.lowercased())"
+        DailyId.make(date: date, suffix: "\(level.name.lowercased())")
     }
 
     public static func daily(puzzles: [Puzzle], date: CalendarDay, level: Level) -> PuzzleRef {
@@ -123,9 +105,4 @@ public func solvedMovesText(moveCount: Int, par: Int) -> String {
 
 public func isNewBest(elapsedMs: Int64, previousBestMs: Int64?) -> Bool {
     previousBestMs.map { elapsedMs < $0 } ?? true
-}
-
-public func dayMonthLabel(month: Int, day: Int) -> String {
-    let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-    return "\(day) \(months[month - 1])"
 }

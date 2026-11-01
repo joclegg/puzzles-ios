@@ -86,7 +86,7 @@ struct WordWheelHomeView: View {
                 if let latest = repository.inProgress.first {
                     continueCard(latest)
                 }
-                section("Today", aside: dayLabel(iso: CalendarDay.today.isoString)) {
+                section("Today", aside: dayMonthLabel(iso: CalendarDay.today.isoString)) {
                     let solved = repository.dailySolved(on: CalendarDay.today)
                     HStack(spacing: 8) {
                         ForEach(Level.allCases, id: \.self) { level in

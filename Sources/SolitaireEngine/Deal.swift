@@ -133,11 +133,7 @@ public struct DealRef: Hashable, Sendable {
     }
 
     public static func dayLabel(iso: String) -> String {
-        let parts = iso.split(separator: "-")
-        guard parts.count == 3, let month = Int(parts[1]), let day = Int(parts[2]), months.indices.contains(month - 1) else {
-            return iso
-        }
-        return "\(day) \(months[month - 1])"
+        dayMonthLabel(iso: iso)
     }
 
     public static func random(seed: Int64, drawMode: DrawMode, order: BuildOrder = .down, winnableSeeds: [Int64]? = nil) -> DealRef {

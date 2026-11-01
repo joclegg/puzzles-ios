@@ -28,7 +28,7 @@ struct SightlinesHomeView: View {
                 if let latest = store.games.inProgress.first {
                     continueCard(latest)
                 }
-                section("Today", aside: dayLabel(iso: CalendarDay.today.isoString)) {
+                section("Today", aside: dayMonthLabel(iso: CalendarDay.today.isoString)) {
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
                         ForEach(sizes, id: \.self, content: dailyTile)
                     }

@@ -1,14 +1,9 @@
 import PuzzlesCore
 
-public enum GameStatus: String, Sendable, CaseIterable {
-    case inProgress = "IN_PROGRESS"
-    case solved = "SOLVED"
-    case abandoned = "ABANDONED"
-    case revealed = "REVEALED"
-}
+public typealias GameStatus = PuzzleStatus
 
 public struct PuzzleRef: Sendable, Equatable {
-    public static let dailyPrefix = "daily_"
+    public static let dailyPrefix = DailyId.prefix
     private static let firstDay = CalendarDay(year: 2026, month: 10, day: 25)
 
     public let id: String
@@ -24,7 +19,7 @@ public struct PuzzleRef: Sendable, Equatable {
     }
 
     public var isDaily: Bool {
-        id.hasPrefix(Self.dailyPrefix)
+        DailyId.isDaily(id)
     }
 
     public var slot: String {
@@ -35,7 +30,7 @@ public struct PuzzleRef: Sendable, Equatable {
         guard isDaily else {
             return sizeLabel(size)
         }
-        let date = id.dropFirst(Self.dailyPrefix.count).prefix { $0 != "_" }
+        let date = DailyId.isoDate(of: id)
         return "Daily · \(dayMonthLabel(iso: String(date))) · \(sizeLabel(size))"
     }
 
@@ -46,7 +41,7 @@ public struct PuzzleRef: Sendable, Equatable {
     }
 
     public static func dailyId(date: CalendarDay, size: Int) -> String {
-        "\(dailyPrefix)\(date.isoString)_\(size)"
+        DailyId.make(date: date, suffix: "\(size)")
     }
 
     public static func daily(puzzles: [Puzzle], date: CalendarDay, size: Int) -> PuzzleRef {
@@ -188,17 +183,4 @@ extension GameState {
         }
         return Set(values.indices.filter { values[$0] == activeDigit })
     }
-}
-
-public func sizeLabel(_ size: Int) -> String {
-    "\(size) x \(size)"
-}
-
-public func dayMonthLabel(iso: String) -> String {
-    let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-    let parts = iso.split(separator: "-")
-    guard parts.count == 3, let month = Int(parts[1]), let day = Int(parts[2]), months.indices.contains(month - 1) else {
-        return iso
-    }
-    return "\(day) \(months[month - 1])"
 }
