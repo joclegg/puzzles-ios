@@ -17,9 +17,9 @@ enum FiveLettersSetting: String, CaseIterable, Identifiable {
 
     var defaultValue: Bool {
         switch self {
-        case .hardMode, .highContrast:
+        case .hardMode, .highContrast, .showHints, .allowReveal:
             false
-        case .showHints, .showTutorial, .allowReveal:
+        case .showTutorial:
             true
         }
     }

@@ -4,6 +4,7 @@ name: Kakuro - Show solution fills the grid and ends the puzzle
 - launchApp:
     clearState: true
     arguments:
+      helpers: "on"
       fixture: "kakuro_empty"
 - waitForAnimationToEnd:
     timeout: 1500

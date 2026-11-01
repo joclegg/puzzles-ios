@@ -4,6 +4,7 @@ name: Slide Out - show solution ends the puzzle without a solved dialog
 - launchApp:
     clearState: true
     arguments:
+      helpers: "on"
       fixture: "slide_out_two_moves"
 - extendedWaitUntil:
     visible:

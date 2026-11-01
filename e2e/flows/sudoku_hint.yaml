@@ -4,6 +4,7 @@ name: A Sudoku hint points at a cell and says why
 - launchApp:
     clearState: true
     arguments:
+      helpers: "on"
       fixture: "classic_easy"
 - waitForAnimationToEnd:
     timeout: 1500

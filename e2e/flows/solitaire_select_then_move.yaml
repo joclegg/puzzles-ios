@@ -3,6 +3,8 @@ name: With one tap move off, a card moves by tapping it and then its target
 ---
 - launchApp:
     clearState: true
+    arguments:
+      helpers: "on"
 - waitForAnimationToEnd:
     timeout: 1500
 - scrollUntilVisible:

@@ -68,6 +68,7 @@ struct KakuroGameView: View {
     var body: some View {
         VStack(spacing: 0) {
             header
+            HelpersButton { navigator.path.append(.settings) }
             KakuroBoardView(
                 game: game,
                 highlightRuns: settings.isOn(.highlightRuns),

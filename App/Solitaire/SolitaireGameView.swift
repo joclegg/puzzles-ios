@@ -49,10 +49,10 @@ struct SolitaireGameView: View {
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage(SolitaireSettingKey.showTimer) private var showTimer = true
     @AppStorage(SolitaireSettingKey.showMoveCount) private var showMoveCount = true
-    @AppStorage(SolitaireSettingKey.showHints) private var showHints = true
+    @AppStorage(SolitaireSettingKey.showHints) private var showHints = false
     @AppStorage(SolitaireSettingKey.showTutorial) private var showTutorial = true
     @AppStorage(SolitaireSettingKey.oneTapMove) private var oneTapMove = true
-    @AppStorage(SolitaireSettingKey.warnUnwinnable) private var warnUnwinnable = true
+    @AppStorage(SolitaireSettingKey.warnUnwinnable) private var warnUnwinnable = false
 
     init(id: Int64, onOpenGame: @escaping (Int64) -> Void, onHome: @escaping () -> Void) {
         _model = State(initialValue: SolitaireGameModel(id: id))
@@ -63,6 +63,7 @@ struct SolitaireGameView: View {
     var body: some View {
         VStack(spacing: 0) {
             header
+            HelpersButton { settingsOpen = true }
             if let state = model.game {
                 SolitaireTableView(model: model, state: state)
                     .tourTarget("table")

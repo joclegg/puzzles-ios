@@ -3,6 +3,8 @@ name: Custom killer - draw cages with sums, then play it
 ---
 - launchApp:
     clearState: true
+    arguments:
+      helpers: "on"
 - waitForAnimationToEnd:
     timeout: 1500
 - scrollUntilVisible:

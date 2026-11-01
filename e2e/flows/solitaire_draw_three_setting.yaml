@@ -3,6 +3,8 @@ name: Choosing Draw 3 in settings deals Draw 3 games
 ---
 - launchApp:
     clearState: true
+    arguments:
+      helpers: "on"
 - waitForAnimationToEnd:
     timeout: 1500
 - scrollUntilVisible:

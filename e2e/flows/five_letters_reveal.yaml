@@ -4,6 +4,7 @@ name: Five Letters - Show the word ends the game
 - launchApp:
     clearState: true
     arguments:
+      helpers: "on"
       fixture: "five_letters_crane"
 - extendedWaitUntil:
     visible:

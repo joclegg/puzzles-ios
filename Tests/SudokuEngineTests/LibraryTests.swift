@@ -111,7 +111,7 @@ import Testing
         #expect(times[1] == BestTime(mode: .killer, difficulty: .evil, bestMs: 70, averageMs: 0, completed: 0))
     }
 
-    @Test("given nothing stored when settings load then defaults apply, grey cells off in killer")
+    @Test("given nothing stored when settings load then helpers are off, grey cells off in killer")
     func settingDefaults() {
         // Act
         let classic = ModeSettings(mode: .classic, bool: { _ in nil }, string: { _ in nil })
@@ -121,7 +121,15 @@ import Testing
         #expect(classic.isOn(.greyGivenCells))
         #expect(!killer.isOn(.greyGivenCells))
         #expect(killer.isOn(.showTimer))
-        #expect(classic.mistakeCheck == .showWrong)
+        #expect(classic.mistakeCheck == .off)
+        #expect(classic.digitCounts == .off)
+        #expect(classic.sameNumberStyle == .off)
+        #expect(classic.notesStyle == .off)
+        #expect(!classic.isOn(.showHints))
+        #expect(!classic.isOn(.allowReveal))
+        #expect(!classic.isOn(.highlightHouses))
+        #expect(!classic.isOn(.showMistakeCount))
+        #expect(classic.isOn(.showTutorial))
     }
 
     @Test("given stored values when settings load then they are read under prefixed keys")

@@ -233,7 +233,7 @@ struct SolitairePreferences {
             order: flag(SolitaireSettingKey.reverse, false) ? .up : .down,
             oneTapMove: flag(SolitaireSettingKey.oneTapMove, true),
             winnableOnly: flag(SolitaireSettingKey.winnableOnly, true),
-            warnUnwinnable: flag(SolitaireSettingKey.warnUnwinnable, true),
+            warnUnwinnable: flag(SolitaireSettingKey.warnUnwinnable, false),
             hintFill: flag(SolitaireSettingKey.hintFill, false)
         )
     }

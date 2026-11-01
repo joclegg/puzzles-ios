@@ -45,12 +45,12 @@ struct TwoToneGameView: View {
     @State private var tourStep: Int?
     @State private var settingsOpen = false
 
-    @AppStorage(TwoToneSettingKey.markBrokenRules) private var markBrokenRules = true
+    @AppStorage(TwoToneSettingKey.markBrokenRules) private var markBrokenRules = false
     @AppStorage(TwoToneSettingKey.showTimer) private var showTimer = true
-    @AppStorage(TwoToneSettingKey.showProgress) private var showProgress = true
-    @AppStorage(TwoToneSettingKey.showHints) private var showHints = true
+    @AppStorage(TwoToneSettingKey.showProgress) private var showProgress = false
+    @AppStorage(TwoToneSettingKey.showHints) private var showHints = false
     @AppStorage(TwoToneSettingKey.showTutorial) private var showTutorial = true
-    @AppStorage(TwoToneSettingKey.allowReveal) private var allowReveal = true
+    @AppStorage(TwoToneSettingKey.allowReveal) private var allowReveal = false
 
     var body: some View {
         Group {
@@ -85,6 +85,7 @@ struct TwoToneGameView: View {
     private func content(_ model: TwoToneGameModel) -> some View {
         VStack(spacing: 0) {
             topBar(model)
+            HelpersButton { settingsOpen = true }
             TwoToneBoardView(
                 grid: model.game.grid,
                 marks: model.game.boardMarks(markBrokenRules: markBrokenRules),

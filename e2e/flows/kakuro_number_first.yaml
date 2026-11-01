@@ -3,6 +3,8 @@ name: Kakuro - with Number first on, picking a digit then a cell fills it
 ---
 - launchApp:
     clearState: true
+    arguments:
+      helpers: "on"
 - extendedWaitUntil:
     visible:
       id: "game_kakuro"

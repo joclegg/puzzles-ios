@@ -6,7 +6,7 @@ struct KakuroSettingsView: View {
 
     @Environment(\.colorScheme) private var scheme
     @AppStorage(KakuroKeys.inputMode) private var inputMode = InputMode.cellFirst.rawValue
-    @AppStorage(KakuroKeys.mistakeCheck) private var mistakeCheck = MistakeCheck.showWrong.rawValue
+    @AppStorage(KakuroKeys.mistakeCheck) private var mistakeCheck = MistakeCheck.off.rawValue
     @AppStorage(KakuroKeys.hintFill) private var hintFill = false
     @AppStorage(KakuroToggle.showHints.key) private var showHints = KakuroToggle.showHints.defaultValue
     @AppStorage(KakuroToggle.showCombinations.key) private var showCombinations = KakuroToggle.showCombinations.defaultValue

@@ -3,6 +3,8 @@ name: Settings open on the Home mode and apply to that mode
 ---
 - launchApp:
     clearState: true
+    arguments:
+      helpers: "on"
 - waitForAnimationToEnd:
     timeout: 1500
 - scrollUntilVisible:

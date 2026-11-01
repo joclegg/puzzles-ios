@@ -53,6 +53,9 @@ enum PuzzleIcon {
         "questionmark.circle": Glyph(
             filled: false,
             paths: ["M12 21a9 9 0 1 0 0-18a9 9 0 1 0 0 18z", "M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6", "M12 17h.01"]),
+        "slider.horizontal.3": Glyph(
+            filled: false,
+            paths: ["M21 4h-7", "M10 4H3", "M21 12h-9", "M8 12H3", "M21 20h-5", "M12 20H3", "M14 2v4", "M8 10v4", "M16 18v4"]),
         "square.and.arrow.up": Glyph(filled: false, paths: ["M12 3v12", "M7 8l5-5 5 5", "M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"]),
         "trophy": Glyph(
             filled: false,

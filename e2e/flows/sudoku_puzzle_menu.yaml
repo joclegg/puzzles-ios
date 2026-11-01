@@ -4,6 +4,7 @@ name: Puzzle menu - restart clears entries, show solution fills the board and en
 - launchApp:
     clearState: true
     arguments:
+      helpers: "on"
       fixture: "classic_easy"
 - waitForAnimationToEnd:
     timeout: 1500

@@ -4,6 +4,7 @@ name: Slide Out - turning Hints off hides the hint button
 - launchApp:
     clearState: true
     arguments:
+      helpers: "on"
       fixture: "slide_out_two_moves"
 - extendedWaitUntil:
     visible:

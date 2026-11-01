@@ -137,12 +137,12 @@ struct TwoToneHistoryView: View {
 }
 
 struct TwoToneSettingsView: View {
-    @AppStorage(TwoToneSettingKey.markBrokenRules) private var markBrokenRules = true
+    @AppStorage(TwoToneSettingKey.markBrokenRules) private var markBrokenRules = false
     @AppStorage(TwoToneSettingKey.showTimer) private var showTimer = true
-    @AppStorage(TwoToneSettingKey.showProgress) private var showProgress = true
-    @AppStorage(TwoToneSettingKey.showHints) private var showHints = true
+    @AppStorage(TwoToneSettingKey.showProgress) private var showProgress = false
+    @AppStorage(TwoToneSettingKey.showHints) private var showHints = false
     @AppStorage(TwoToneSettingKey.showTutorial) private var showTutorial = true
-    @AppStorage(TwoToneSettingKey.allowReveal) private var allowReveal = true
+    @AppStorage(TwoToneSettingKey.allowReveal) private var allowReveal = false
 
     var body: some View {
         ScrollView {

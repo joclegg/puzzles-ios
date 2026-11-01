@@ -48,9 +48,9 @@ private struct SlideOutGameContent: View {
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage(SlideOutSettingKey.showTimer) private var showTimer = true
     @AppStorage(SlideOutSettingKey.showPar) private var showPar = true
-    @AppStorage(SlideOutSettingKey.showHints) private var showHints = true
+    @AppStorage(SlideOutSettingKey.showHints) private var showHints = false
     @AppStorage(SlideOutSettingKey.showTutorial) private var showTutorial = true
-    @AppStorage(SlideOutSettingKey.allowReveal) private var allowReveal = true
+    @AppStorage(SlideOutSettingKey.allowReveal) private var allowReveal = false
     @State private var showSettings = false
     @State private var revealing = false
     @State private var rulesOpen = false
@@ -61,7 +61,10 @@ private struct SlideOutGameContent: View {
 
     var body: some View {
         VStack(spacing: 24) {
-            header
+            VStack(spacing: 0) {
+                header
+                HelpersButton { showSettings = true }
+            }
             if let game = model.game {
                 SlideOutBoardView(board: game.board, hint: game.hint) { block, position in
                     model.slide(block: block, to: position)

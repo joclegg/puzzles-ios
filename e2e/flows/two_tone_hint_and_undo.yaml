@@ -4,6 +4,7 @@ name: Two Tone - a hint points out a wrong tile, and undo clears it
 - launchApp:
     clearState: true
     arguments:
+      helpers: "on"
       fixture: "two_tone_two_left"
 - waitForAnimationToEnd:
     timeout: 1500

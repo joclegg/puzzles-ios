@@ -269,6 +269,7 @@ struct SudokuGameView: View {
             VStack(spacing: 8) {
                 header(model, saved, state)
                     .padding(.horizontal, 8)
+                HelpersButton { navigator.push(.settings(saved.ref.mode)) }
                 SudokuBoardView(board: board) { cell in
                     model.move { $0.tapCell(cell) }
                 }

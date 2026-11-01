@@ -3,6 +3,8 @@ name: Word Wheel - rules, settings and the walkthrough
 ---
 - launchApp:
     clearState: true
+    arguments:
+      helpers: "on"
 - extendedWaitUntil:
     visible:
       id: "game_sudoku"

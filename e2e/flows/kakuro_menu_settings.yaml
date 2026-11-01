@@ -4,6 +4,7 @@ name: Kakuro - Settings in the game menu opens Kakuro's settings
 - launchApp:
     clearState: true
     arguments:
+      helpers: "on"
       fixture: "kakuro_empty"
 - waitForAnimationToEnd:
     timeout: 1500

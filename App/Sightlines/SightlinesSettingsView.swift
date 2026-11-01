@@ -12,13 +12,13 @@ enum SightlinesSettings {
 }
 
 struct SightlinesSettingsView: View {
-    @AppStorage(SightlinesSettings.markBrokenRules) private var markBrokenRules = true
+    @AppStorage(SightlinesSettings.markBrokenRules) private var markBrokenRules = false
     @AppStorage(SightlinesSettings.showTimer) private var showTimer = true
-    @AppStorage(SightlinesSettings.showProgress) private var showProgress = true
-    @AppStorage(SightlinesSettings.showSeenCount) private var showSeenCount = true
-    @AppStorage(SightlinesSettings.showHints) private var showHints = true
+    @AppStorage(SightlinesSettings.showProgress) private var showProgress = false
+    @AppStorage(SightlinesSettings.showSeenCount) private var showSeenCount = false
+    @AppStorage(SightlinesSettings.showHints) private var showHints = false
     @AppStorage(SightlinesSettings.showTutorial) private var showTutorial = true
-    @AppStorage(SightlinesSettings.allowReveal) private var allowReveal = true
+    @AppStorage(SightlinesSettings.allowReveal) private var allowReveal = false
 
     var body: some View {
         ScrollView {

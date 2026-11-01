@@ -131,9 +131,9 @@ struct WordWheelHistoryView: View {
 struct WordWheelSettingsView: View {
     @AppStorage(WordWheelSetting.showTimer) private var showTimer = true
     @AppStorage(WordWheelSetting.showBonusCount) private var showBonusCount = true
-    @AppStorage(WordWheelSetting.showHints) private var showHints = true
+    @AppStorage(WordWheelSetting.showHints) private var showHints = false
     @AppStorage(WordWheelSetting.showTutorial) private var showTutorial = true
-    @AppStorage(WordWheelSetting.allowReveal) private var allowReveal = true
+    @AppStorage(WordWheelSetting.allowReveal) private var allowReveal = false
 
     var body: some View {
         Form {

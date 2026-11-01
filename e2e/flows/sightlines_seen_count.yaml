@@ -4,6 +4,7 @@ name: Sightlines - a number shows how many blue dots it sees now
 - launchApp:
     clearState: true
     arguments:
+      helpers: "on"
       fixture: "sightlines_two_left"
 - assertVisible:
     id: "dot_r1c1_seen"
