@@ -167,6 +167,13 @@ extension SettingsTab {
     }
 }
 
+enum AllGolds {
+    @MainActor
+    static var held: Bool {
+        SettingsTab.games.allSatisfy { $0.dailyDayMap[.today]?.medal == .gold }
+    }
+}
+
 enum TodaysDailies {
     @MainActor
     static func left(group: String) -> [DailyLeft] {

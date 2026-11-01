@@ -1,0 +1,25 @@
+appId: com.joclegg.puzzles
+name: Launcher - History next to Settings lists games from every puzzle, newest first
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "two_tone_two_left"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "tile_r1c2"
+- launchApp:
+    stopApp: true
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "all_history"
+- waitForAnimationToEnd:
+    timeout: 1500
+- assertVisible:
+    id: "all_history_item"
+- tapOn:
+    id: "back"
+- assertVisible:
+    id: "settings"

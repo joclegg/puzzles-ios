@@ -1,3 +1,4 @@
+import PuzzlesCore
 import SwiftUI
 import UIKit
 
@@ -130,10 +131,19 @@ struct LauncherView: View {
 
     private var header: some View {
         HStack(spacing: 8) {
-            Text("Puzzles")
-                .font(.largeTitle)
-                .lineLimit(1)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            HStack(spacing: 8) {
+                Text("Puzzles")
+                    .font(.largeTitle)
+                    .lineLimit(1)
+                if AllGolds.held {
+                    PuzzleIcon.image("trophy.fill")
+                        .font(.title2)
+                        .foregroundStyle(medalColour(.gold))
+                        .accessibilityLabel("Gold in every puzzle today")
+                        .accessibilityIdentifier("all_golds_trophy")
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
             Group {
                 if SyncCenter.shared.signedIn {
                     Button("Sign out") { SyncCenter.shared.signOut() }
@@ -148,6 +158,14 @@ struct LauncherView: View {
             .font(.subheadline)
             .lineLimit(1)
             .fixedSize()
+            NavigationLink {
+                AllHistoryView()
+            } label: {
+                PuzzleIcon.image("clock.arrow.circlepath").frame(width: 44, height: 44)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("History")
+            .accessibilityIdentifier("all_history")
             NavigationLink {
                 SettingsHubView()
             } label: {
@@ -170,6 +188,7 @@ struct LauncherView: View {
                 Text(entry.detail).font(.subheadline).foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+            medal(entry)
             PuzzleIcon.image("chevron.right").foregroundStyle(entry.accent)
         }
         .padding()
@@ -182,6 +201,20 @@ struct LauncherView: View {
             in: .rect(cornerRadius: 24)
         )
         .overlay(RoundedRectangle(cornerRadius: 24).stroke(entry.accent.opacity(0.25)))
+    }
+
+    @ViewBuilder
+    private func medal(_ entry: Entry) -> some View {
+        let medal = entry.tab.dailyDayMap[.today]?.medal ?? Medal.none
+        if medal != .none {
+            Circle()
+                .fill(medalColour(medal))
+                .frame(width: 18, height: 18)
+                .overlay(Circle().stroke(Color.primary.opacity(0.2)))
+                .accessibilityElement()
+                .accessibilityLabel("Today's \(medal.rawValue) medal")
+                .accessibilityIdentifier("home_medal_\(entry.id)_\(medal.rawValue)")
+        }
     }
 
     private var fixtureView: AnyView? {
