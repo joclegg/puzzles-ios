@@ -172,16 +172,7 @@ struct TwoToneHomeView: View {
     }
 
     private func section<Content: View>(_ title: String, aside: String?, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text(title).font(.headline)
-                Spacer()
-                if let aside {
-                    Text(aside).font(.subheadline).foregroundStyle(.secondary)
-                }
-            }
-            content()
-        }
+        HomeSection(title, aside: aside, style: .headline(spacing: 12), content: content)
     }
 
     private func tileBackground(highlighted: Bool) -> some View {

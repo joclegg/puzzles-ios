@@ -112,18 +112,7 @@ struct KakuroHomeView: View {
     }
 
     private func section<Content: View>(_ title: String, aside: String?, @ViewBuilder content: () -> Content) -> some View {
-        VStack(spacing: 8) {
-            HStack {
-                Text(title.uppercased()).font(.caption.weight(.semibold)).kerning(1.2)
-                Spacer()
-                if let aside {
-                    Text(aside).font(.caption)
-                }
-            }
-            .foregroundStyle(.secondary)
-            .padding(.horizontal, 4)
-            content()
-        }
+        HomeSection(title, aside: aside, style: .caps, content: content)
     }
 
     private func isDailySolved(_ size: Int) -> Bool {

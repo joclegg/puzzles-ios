@@ -220,16 +220,7 @@ struct WordWheelHomeView: View {
         aside: String? = nil,
         @ViewBuilder content: () -> Content
     ) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text(title).font(.headline)
-                Spacer()
-                if let aside {
-                    Text(aside).font(.subheadline).foregroundStyle(.secondary)
-                }
-            }
-            content()
-        }
+        HomeSection(title, aside: aside, style: .headline(spacing: 8), content: content)
     }
 
     private func toolbarButton(
