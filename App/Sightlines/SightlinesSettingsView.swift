@@ -14,6 +14,7 @@ enum SightlinesSettings {
 }
 
 struct SightlinesSettingsView: View {
+    @AppStorage(SightlinesSettings.inputMode) private var inputMode = SightlinesSettings.tapToCycle
     @AppStorage(SightlinesSettings.markBrokenRules) private var markBrokenRules = false
     @AppStorage(SightlinesSettings.showTimer) private var showTimer = true
     @AppStorage(SightlinesSettings.showProgress) private var showProgress = false
@@ -25,6 +26,19 @@ struct SightlinesSettingsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
+                Text("Filling in").font(.headline)
+                HStack(spacing: 0) {
+                    segment("Tap to cycle", SightlinesSettings.tapToCycle, tag: "setting_tap_to_cycle")
+                    segment("Pick a colour", SightlinesSettings.pickColour, tag: "setting_pick_colour")
+                }
+                .clipShape(Capsule())
+                .overlay(Capsule().stroke(SightlinesColors.tileBorder))
+                Text(
+                    "Tap to cycle steps a spot through the colours. Pick a colour shows colour buttons under the board: "
+                        + "pick one, then tap spots to fill them."
+                )
+                .font(.footnote)
+                .foregroundStyle(.secondary)
                 row(
                     $markBrokenRules,
                     "Mark broken rules",
@@ -48,6 +62,21 @@ struct SightlinesSettingsView: View {
             .padding(16)
         }
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func segment(_ title: String, _ value: String, tag: String) -> some View {
+        Button {
+            inputMode = value
+        } label: {
+            Text(title)
+                .lineLimit(1)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
+                .foregroundStyle(inputMode == value ? Color(uiColor: .systemBackground) : Color.primary)
+                .background(inputMode == value ? SightlinesColors.accent : Color.clear)
+        }
+        .accessibilityIdentifier(tag)
+        .accessibilityAddTraits(inputMode == value ? .isSelected : [])
     }
 
     private func row(_ value: Binding<Bool>, _ title: String, _ detail: String?, tag: String) -> some View {
