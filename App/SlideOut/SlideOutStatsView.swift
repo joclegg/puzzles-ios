@@ -3,7 +3,7 @@ import SlideOutEngine
 import SwiftData
 import SwiftUI
 
-struct SlideOutStatsScreen: View {
+struct SlideOutStatsView: View {
     let onBack: () -> Void
 
     @Query private var games: [SlideOutGameRecord]
@@ -50,7 +50,7 @@ struct SlideOutStatsScreen: View {
     }
 }
 
-struct SlideOutHistoryScreen: View {
+struct SlideOutHistoryView: View {
     let onOpenGame: (Int64) -> Void
     let onBack: () -> Void
 
@@ -171,7 +171,7 @@ struct SlideOutHistoryScreen: View {
     }
 }
 
-struct SlideOutSettingsScreen: View {
+struct SlideOutSettingsView: View {
     let onBack: () -> Void
 
     @AppStorage(SlideOutSettingKey.showTimer) private var showTimer = true

@@ -110,8 +110,8 @@ final class WordWheelGameEntity {
 
 @MainActor
 @Observable
-final class WordWheelRepository {
-    static let shared = WordWheelRepository()
+final class WordWheelStore {
+    static let shared = WordWheelStore()
 
     private(set) var history: [SavedGame] = []
     @ObservationIgnored private var entities: [WordWheelGameEntity] = []

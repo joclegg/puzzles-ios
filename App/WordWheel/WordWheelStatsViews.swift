@@ -3,7 +3,7 @@ import SwiftUI
 import WordWheelEngine
 
 struct WordWheelStatsView: View {
-    private let repository = WordWheelRepository.shared
+    private let store = WordWheelStore.shared
 
     var body: some View {
         ScrollView {
@@ -16,7 +16,7 @@ struct WordWheelStatsView: View {
                         Text("Best").frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .fontWeight(.semibold)
-                    ForEach(repository.stats, id: \.level) { stats in
+                    ForEach(store.stats, id: \.level) { stats in
                         let tag = "level_\(stats.level.letters)"
                         GridRow {
                             Text(stats.level.label)
@@ -48,7 +48,7 @@ struct WordWheelHistoryView: View {
 
     @State private var filter: Level?
 
-    private let repository = WordWheelRepository.shared
+    private let store = WordWheelStore.shared
 
     private static let dateFormat: DateFormatter = {
         let formatter = DateFormatter()
@@ -57,7 +57,7 @@ struct WordWheelHistoryView: View {
     }()
 
     var body: some View {
-        let games = repository.history.filter { filter == nil || $0.ref.level == filter }
+        let games = store.history.filter { filter == nil || $0.ref.level == filter }
         VStack(alignment: .leading, spacing: 16) {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
@@ -93,7 +93,7 @@ struct WordWheelHistoryView: View {
         if game.status == .inProgress {
             onOpenGame(game.id)
         } else {
-            onOpenGame(repository.start(game.ref))
+            onOpenGame(store.start(game.ref))
         }
     }
 

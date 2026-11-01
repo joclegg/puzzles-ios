@@ -40,7 +40,7 @@ enum SlideOutGame: GameDefinition {
 
     @MainActor
     static func home() -> AnyView {
-        AnyView(SlideOutHomeScreen().modelContainer(SlideOutStore.container))
+        AnyView(SlideOutHomeView().modelContainer(SlideOutStore.container))
     }
 
     @MainActor
@@ -49,7 +49,7 @@ enum SlideOutGame: GameDefinition {
             guard let ref = SlideOutFixtures.puzzle(name) else {
                 return nil
             }
-            return AnyView(SlideOutHomeScreen(fixture: ref).modelContainer(SlideOutStore.container))
+            return AnyView(SlideOutHomeView(fixture: ref).modelContainer(SlideOutStore.container))
         #else
             return nil
         #endif

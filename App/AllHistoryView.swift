@@ -106,7 +106,7 @@ enum AllHistory {
     }
 
     private static var wordWheel: [HistoryEntry] {
-        WordWheelRepository.shared.history.map { game in
+        WordWheelStore.shared.history.map { game in
             HistoryEntry(
                 id: "word_wheel_\(game.id)", tab: .wordWheel, title: game.ref.title, startedAt: game.startedAt,
                 time: time(game.elapsedMs), result: "\(game.status.label) · \(game.found.count) words, \(game.bonus.count) bonus")

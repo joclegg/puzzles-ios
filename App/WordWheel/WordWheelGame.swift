@@ -10,7 +10,7 @@ enum WordWheelGame: GameDefinition {
     static let syncKey = "wordWheel"
 
     static var context: ModelContext {
-        WordWheelRepository.shared.context
+        WordWheelStore.shared.context
     }
 
     @MainActor
@@ -18,16 +18,16 @@ enum WordWheelGame: GameDefinition {
         tab: .wordWheel, group: { _ in "WORD_WHEEL" }, options: Level.allCases, label: { $0.label },
         tag: { "daily_play_word_wheel_\($0.name.lowercased())" },
         results: {
-            WordWheelRepository.shared.history.filter { $0.status == .solved }.compactMap {
+            WordWheelStore.shared.history.filter { $0.status == .solved }.compactMap {
                 dailyResult(id: $0.ref.id, finishedAt: $0.finishedAt)
             }
         },
         solved: { date in
-            let solved = WordWheelRepository.shared.dailySolved(on: date)
+            let solved = WordWheelStore.shared.dailySolved(on: date)
             return { solved.contains($0) }
         },
         open: { date, level in
-            (try? await WordWheelRepository.shared.openDaily(level, date: date)).map(String.init)
+            (try? await WordWheelStore.shared.openDaily(level, date: date)).map(String.init)
         }
     )
 

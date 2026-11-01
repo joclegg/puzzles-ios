@@ -206,7 +206,7 @@ struct WordWheelGameView: View {
                 WinStat(label: "Bonus words", value: "\(model.game?.bonus.count ?? 0)"),
             ],
             tag: "solved_dialog",
-            newLabel: WordWheelRepository.shared.game(id: gameId)?.ref.level.label,
+            newLabel: WordWheelStore.shared.game(id: gameId)?.ref.level.label,
             newTag: "solved_new_puzzle",
             onNew: {
                 Task { onOpenGame(await model.newPuzzle()) }
