@@ -1,8 +1,18 @@
 import PuzzlesCore
 import SlideOutEngine
+import SwiftData
 import SwiftUI
 
-enum SlideOutGame {
+enum SlideOutGame: GameDefinition {
+    typealias Record = SlideOutGameRecord
+
+    static let tab = SettingsTab.slideOut
+    static let syncKey = "slideOut"
+
+    static var context: ModelContext {
+        SlideOutStore.context
+    }
+
     @MainActor
     static let dailies = DailyProvider<Level>(
         tab: .slideOut, group: { _ in "SLIDE_OUT" }, options: Level.allCases, label: { $0.label },

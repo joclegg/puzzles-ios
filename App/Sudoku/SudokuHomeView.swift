@@ -24,7 +24,7 @@ struct SudokuHomeView: View {
                     SudokuSegments(
                         options: GameMode.allCases, selected: mode, label: \.label, id: { "mode_\($0.slug)" },
                         onSelect: { mode = $0 })
-                    section("Today", aside: sudokuToday().shortLabel) {
+                    section("Today", aside: CalendarDay.today.shortLabel) {
                         today
                     }
                     section("New game", aside: nil) {
@@ -118,7 +118,7 @@ struct SudokuHomeView: View {
     }
 
     private var today: some View {
-        let date = sudokuToday()
+        let date = CalendarDay.today
         let solved = Set(store.completedDailies.map(\.id))
         return LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
             ForEach(mode.levels, id: \.self) { level in

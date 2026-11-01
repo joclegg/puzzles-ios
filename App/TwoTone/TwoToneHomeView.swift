@@ -19,7 +19,7 @@ struct TwoToneHomeView: View {
     @State private var resumeChoice: TwoToneGameRecord?
 
     var body: some View {
-        let today = TwoToneStore.today()
+        let today = CalendarDay.today
         let inProgress = store.inProgress
         let solved = store.dailySolved(date: today)
         ScrollView {

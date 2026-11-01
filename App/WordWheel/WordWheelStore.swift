@@ -156,7 +156,7 @@ final class WordWheelRepository {
         return id
     }
 
-    func openDaily(_ level: Level, date: CalendarDay = WordWheelDates.today) async throws -> Int64 {
+    func openDaily(_ level: Level, date: CalendarDay = CalendarDay.today) async throws -> Int64 {
         let id = PuzzleRef.dailyId(date: date, level: level)
         if let existing = inProgress.first(where: { $0.ref.id == id }) {
             return existing.id
@@ -194,7 +194,7 @@ final class WordWheelRepository {
     }
 
     private var now: Int64 {
-        Int64(Date().timeIntervalSince1970 * 1000)
+        GameClock.nowMs()
     }
 
     private func write(_ game: SavedGame, time: Int64) {
@@ -261,9 +261,8 @@ final class WordWheelBank {
     }
 }
 
-enum WordWheelDates {
-    static var today: CalendarDay {
-        let parts = Calendar.current.dateComponents([.year, .month, .day], from: Date())
-        return CalendarDay(year: parts.year ?? 1970, month: parts.month ?? 1, day: parts.day ?? 1)
+extension WordWheelGameEntity: SyncedRecord {
+    static func fromSync(_ fields: SyncFields, uuid: String, updatedAt: Int64, existing: [WordWheelGameEntity]) -> WordWheelGameEntity? {
+        WordWheelGameEntity(sync: fields, id: (existing.map(\.id).max() ?? 0) + 1, uuid: uuid, updatedAt: updatedAt)
     }
 }

@@ -114,7 +114,7 @@ final class SightlinesStore {
     }
 
     private static var nowMs: Int64 {
-        Int64(Date().timeIntervalSince1970 * 1000)
+        GameClock.nowMs()
     }
 
     func game(id: Int64) -> SavedGame? {
@@ -179,9 +179,8 @@ final class SightlinesStore {
     }
 }
 
-enum SightlinesToday {
-    static var date: CalendarDay {
-        let parts = Calendar.current.dateComponents([.year, .month, .day], from: Date())
-        return CalendarDay(year: parts.year ?? 1970, month: parts.month ?? 1, day: parts.day ?? 1)
+extension SightlinesGameRecord: SyncedRecord {
+    static func fromSync(_ fields: SyncFields, uuid: String, updatedAt: Int64, existing: [SightlinesGameRecord]) -> SightlinesGameRecord? {
+        SightlinesGameRecord(sync: fields, id: (existing.map(\.id).max() ?? 0) + 1, uuid: uuid, updatedAt: updatedAt)
     }
 }

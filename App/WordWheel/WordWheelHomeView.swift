@@ -85,8 +85,8 @@ struct WordWheelHomeView: View {
                 if let latest = repository.inProgress.first {
                     continueCard(latest)
                 }
-                section("Today", aside: dayLabel(iso: WordWheelDates.today.isoString)) {
-                    let solved = repository.dailySolved(on: WordWheelDates.today)
+                section("Today", aside: dayLabel(iso: CalendarDay.today.isoString)) {
+                    let solved = repository.dailySolved(on: CalendarDay.today)
                     HStack(spacing: 8) {
                         ForEach(Level.allCases, id: \.self) { level in
                             dailyTile(level, done: solved.contains(level))

@@ -169,15 +169,6 @@ struct SudokuSavedGame: Identifiable {
     }
 }
 
-func sudokuToday() -> CalendarDay {
-    sudokuDay(Date())
-}
-
-func sudokuDay(_ date: Date) -> CalendarDay {
-    let parts = Calendar.current.dateComponents([.year, .month, .day], from: date)
-    return CalendarDay(year: parts.year ?? 1970, month: parts.month ?? 1, day: parts.day ?? 1)
-}
-
 func sudokuDate(_ day: CalendarDay) -> Date {
     let parts = day.isoString.split(separator: "-").compactMap { Int($0) }
     let components = DateComponents(year: parts[0], month: parts[1], day: parts[2])
@@ -185,7 +176,7 @@ func sudokuDate(_ day: CalendarDay) -> Date {
 }
 
 func sudokuNowMs() -> Int64 {
-    Int64(Date().timeIntervalSince1970 * 1000)
+    GameClock.nowMs()
 }
 
 @MainActor
@@ -464,5 +455,11 @@ final class SudokuStore {
             }
             return nil
         }.value
+    }
+}
+
+extension SudokuGameRecord: SyncedRecord {
+    static func fromSync(_ fields: SyncFields, uuid: String, updatedAt: Int64, existing: [SudokuGameRecord]) -> SudokuGameRecord? {
+        SudokuGameRecord(sync: fields, id: (existing.map(\.id).max() ?? 0) + 1, uuid: uuid, updatedAt: updatedAt)
     }
 }

@@ -100,7 +100,7 @@ struct SlideOutHomeScreen: View {
     }
 
     private var dailySection: some View {
-        let today = CalendarDay.slideOutToday
+        let today = CalendarDay.today
         let left = Set(SlideOutStore.dailiesLeft(today: today))
         return SlideOutSection(title: "Today", aside: today.slideOutDayMonth) {
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: 8) {

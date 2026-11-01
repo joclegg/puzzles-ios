@@ -60,6 +60,6 @@
     }
 
     struct CalendarDayToday {
-        let day = sudokuToday()
+        let day = CalendarDay.today
     }
 #endif

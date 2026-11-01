@@ -167,7 +167,7 @@ final class KakuroStore {
     }
 
     static func nowMs() -> Int64 {
-        Int64(Date().timeIntervalSince1970 * 1000)
+        GameClock.nowMs()
     }
 
     private func write(_ game: SavedGame, now: Int64) {
@@ -221,9 +221,9 @@ enum KakuroBank {
     }
 }
 
-extension CalendarDay {
-    static var today: CalendarDay {
-        let parts = Calendar.current.dateComponents([.year, .month, .day], from: Date())
-        return CalendarDay(year: parts.year ?? 1970, month: parts.month ?? 1, day: parts.day ?? 1)
+
+extension KakuroGameEntity: SyncedRecord {
+    static func fromSync(_ fields: SyncFields, uuid: String, updatedAt: Int64, existing: [KakuroGameEntity]) -> KakuroGameEntity? {
+        KakuroGameEntity(sync: fields, id: (existing.map(\.id).max() ?? 0) + 1, uuid: uuid, updatedAt: updatedAt)
     }
 }

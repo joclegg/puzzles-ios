@@ -28,7 +28,7 @@ struct SightlinesHomeView: View {
                 if let latest = store.games.inProgress.first {
                     continueCard(latest)
                 }
-                section("Today", aside: dayLabel(iso: SightlinesToday.date.isoString)) {
+                section("Today", aside: dayLabel(iso: CalendarDay.today.isoString)) {
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
                         ForEach(sizes, id: \.self, content: dailyTile)
                     }
@@ -154,7 +154,7 @@ struct SightlinesHomeView: View {
     }
 
     private func dailyTile(_ size: Int) -> some View {
-        let done = store.games.dailySolved(date: SightlinesToday.date).contains(size)
+        let done = store.games.dailySolved(date: CalendarDay.today).contains(size)
         return Button {
             launch {
                 await openDaily(size: size)
@@ -256,7 +256,7 @@ struct SightlinesHomeView: View {
     }
 
     private func openDaily(size: Int) async -> Int64 {
-        let date = SightlinesToday.date
+        let date = CalendarDay.today
         if let existing = store.games.dailyInProgress(date: date, size: size) {
             return existing.id
         }

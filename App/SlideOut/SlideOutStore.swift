@@ -114,7 +114,7 @@ enum SlideOutStore {
     }
 
     static func nowMs() -> Int64 {
-        Int64(Date().timeIntervalSince1970 * 1000)
+        GameClock.nowMs()
     }
 
     static func get(_ id: Int64) -> SlideOutGameRecord? {
@@ -231,13 +231,14 @@ actor SlideOutBank {
 }
 
 extension CalendarDay {
-    static var slideOutToday: CalendarDay {
-        let parts = Calendar.current.dateComponents([.year, .month, .day], from: Date())
-        return CalendarDay(year: parts.year ?? 1970, month: parts.month ?? 1, day: parts.day ?? 1)
-    }
-
     var slideOutDayMonth: String {
         let parts = isoString.split(separator: "-").compactMap { Int($0) }
         return dayMonthLabel(month: parts[1], day: parts[2])
+    }
+}
+
+extension SlideOutGameRecord: SyncedRecord {
+    static func fromSync(_ fields: SyncFields, uuid: String, updatedAt: Int64, existing: [SlideOutGameRecord]) -> SlideOutGameRecord? {
+        SlideOutGameRecord(sync: fields, id: (existing.map(\.id).max() ?? 0) + 1, uuid: uuid, updatedAt: updatedAt)
     }
 }

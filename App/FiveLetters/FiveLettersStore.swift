@@ -190,3 +190,9 @@ enum FiveLettersDaily2 {
         return daily2Word(json: String(decoding: data, as: UTF8.self))
     }
 }
+
+extension FiveLettersGameRecord: SyncedRecord {
+    static func fromSync(_ fields: SyncFields, uuid: String, updatedAt: Int64, existing: [FiveLettersGameRecord]) -> FiveLettersGameRecord? {
+        FiveLettersGameRecord(sync: fields, uuid: uuid, updatedAt: updatedAt)
+    }
+}

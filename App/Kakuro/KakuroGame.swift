@@ -1,8 +1,18 @@
 import KakuroEngine
 import PuzzlesCore
+import SwiftData
 import SwiftUI
 
-enum KakuroGame {
+enum KakuroGame: GameDefinition {
+    typealias Record = KakuroGameEntity
+
+    static let tab = SettingsTab.kakuro
+    static let syncKey = "kakuro"
+
+    static var context: ModelContext {
+        KakuroStore.shared.context
+    }
+
     @MainActor
     static let dailies = DailyProvider<Int>(
         tab: .kakuro, group: { _ in "KAKURO" }, options: sizes, label: sizeLabel, tag: { "daily_play_kakuro_\($0)" },

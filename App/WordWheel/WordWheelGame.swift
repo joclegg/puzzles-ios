@@ -1,8 +1,18 @@
 import PuzzlesCore
+import SwiftData
 import SwiftUI
 import WordWheelEngine
 
-enum WordWheelGame {
+enum WordWheelGame: GameDefinition {
+    typealias Record = WordWheelGameEntity
+
+    static let tab = SettingsTab.wordWheel
+    static let syncKey = "wordWheel"
+
+    static var context: ModelContext {
+        WordWheelRepository.shared.context
+    }
+
     @MainActor
     static let dailies = DailyProvider<Level>(
         tab: .wordWheel, group: { _ in "WORD_WHEEL" }, options: Level.allCases, label: { $0.label },

@@ -1,8 +1,18 @@
 import PuzzlesCore
 import SudokuEngine
+import SwiftData
 import SwiftUI
 
-enum SudokuGame {
+enum SudokuGame: GameDefinition {
+    typealias Record = SudokuGameRecord
+
+    static let tab = SettingsTab.sudoku
+    static let syncKey = "sudoku"
+
+    static var context: ModelContext {
+        SudokuStore.shared.context
+    }
+
     @MainActor
     static let dailies = DailyProvider<(mode: GameMode, level: Difficulty)>(
         tab: .sudoku, group: { "SUDOKU_\($0.mode.rawValue)" },

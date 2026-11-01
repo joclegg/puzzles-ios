@@ -93,7 +93,7 @@ final class SolitaireStore {
     @ObservationIgnored let context: ModelContext
     @ObservationIgnored private let now: () -> Int64
 
-    init(now: @escaping () -> Int64 = { Int64(Date().timeIntervalSince1970 * 1000) }) {
+    init(now: @escaping () -> Int64 = { GameClock.nowMs() }) {
         self.now = now
         let folder = URL.applicationSupportDirectory.appending(path: "solitaire")
         try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
@@ -249,5 +249,11 @@ enum SolitaireDealer {
             return nil
         }
         return WinnableDeals.seeds(lines: lines)
+    }
+}
+
+extension SolitaireGameRecord: SyncedRecord {
+    static func fromSync(_ fields: SyncFields, uuid: String, updatedAt: Int64, existing: [SolitaireGameRecord]) -> SolitaireGameRecord? {
+        SolitaireGameRecord(sync: fields, id: (existing.map(\.id).max() ?? 0) + 1, uuid: uuid, updatedAt: updatedAt)
     }
 }

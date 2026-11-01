@@ -1,8 +1,18 @@
 import FiveLettersEngine
 import PuzzlesCore
+import SwiftData
 import SwiftUI
 
-enum FiveLettersGame {
+enum FiveLettersGame: GameDefinition {
+    typealias Record = FiveLettersGameRecord
+
+    static let tab = SettingsTab.fiveLetters
+    static let syncKey = "fiveLetters"
+
+    static var context: ModelContext {
+        FiveLettersStore.shared.context
+    }
+
     enum Daily {
         case word
         case daily2

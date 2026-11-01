@@ -1,8 +1,18 @@
 import PuzzlesCore
+import SwiftData
 import SwiftUI
 import TwoToneEngine
 
-enum TwoToneGame {
+enum TwoToneGame: GameDefinition {
+    typealias Record = TwoToneGameRecord
+
+    static let tab = SettingsTab.twoTone
+    static let syncKey = "twoTone"
+
+    static var context: ModelContext {
+        TwoToneStore.shared.context
+    }
+
     @MainActor
     static let dailies = DailyProvider<Int>(
         tab: .twoTone, group: { _ in "TWO_TONE" }, options: sizes, label: sizeLabel, tag: { "daily_play_two_tone_\($0)" },

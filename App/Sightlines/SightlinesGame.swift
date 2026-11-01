@@ -1,8 +1,18 @@
 import PuzzlesCore
 import SightlinesEngine
+import SwiftData
 import SwiftUI
 
-enum SightlinesGame {
+enum SightlinesGame: GameDefinition {
+    typealias Record = SightlinesGameRecord
+
+    static let tab = SettingsTab.sightlines
+    static let syncKey = "sightlines"
+
+    static var context: ModelContext {
+        SightlinesStore.shared.context
+    }
+
     @MainActor
     static let dailies = DailyProvider<Int>(
         tab: .sightlines, group: { _ in "SIGHTLINES" }, options: sizes, label: sizeLabel, tag: { "daily_play_sightlines_\($0)" },

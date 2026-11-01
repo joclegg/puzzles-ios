@@ -1,8 +1,18 @@
 import PuzzlesCore
 import SolitaireEngine
+import SwiftData
 import SwiftUI
 
-enum SolitaireGame {
+enum SolitaireGame: GameDefinition {
+    typealias Record = SolitaireGameRecord
+
+    static let tab = SettingsTab.solitaire
+    static let syncKey = "solitaire"
+
+    static var context: ModelContext {
+        SolitaireStore.shared.context
+    }
+
     @MainActor
     static let dailies = DailyProvider<Void>(
         tab: .solitaire, group: { _ in "SOLITAIRE" }, options: [()], label: { _ in "Deal" }, tag: { _ in "daily_play_solitaire" },

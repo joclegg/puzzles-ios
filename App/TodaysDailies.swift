@@ -97,24 +97,7 @@ extension SettingsTab {
 
     @MainActor
     var dailySource: any DailySource {
-        switch self {
-        case .general, .sudoku:
-            SudokuGame.dailies
-        case .solitaire:
-            SolitaireGame.dailies
-        case .twoTone:
-            TwoToneGame.dailies
-        case .sightlines:
-            SightlinesGame.dailies
-        case .fiveLetters:
-            FiveLettersGame.dailies
-        case .kakuro:
-            KakuroGame.dailies
-        case .slideOut:
-            SlideOutGame.dailies
-        case .wordWheel:
-            WordWheelGame.dailies
-        }
+        Games.definition(for: self).dailySource
     }
 
     @MainActor
@@ -163,5 +146,5 @@ func dailyResult(id: String, finishedAt: Int64?) -> DailyResult? {
 }
 
 func finishedDay(_ finishedAt: Int64?) -> CalendarDay? {
-    finishedAt.map { sudokuDay(Date(timeIntervalSince1970: Double($0) / 1000)) }
+    finishedAt.map { GameClock.day(of: Date(timeIntervalSince1970: Double($0) / 1000)) }
 }

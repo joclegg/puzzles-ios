@@ -36,7 +36,7 @@ struct SolitaireHomeView: View {
                 if let latest = store.inProgress.first {
                     continueCard(latest)
                 }
-                section("Today", aside: DealRef.dayLabel(iso: Self.today.isoString)) {
+                section("Today", aside: DealRef.dayLabel(iso: CalendarDay.today.isoString)) {
                     dailyTile
                 }
                 section("New game", aside: nil) {
@@ -57,11 +57,6 @@ struct SolitaireHomeView: View {
                 route = .game(store.start(startDeal).id)
             }
         }
-    }
-
-    private static var today: CalendarDay {
-        let parts = Calendar.current.dateComponents([.year, .month, .day], from: Date())
-        return CalendarDay(year: parts.year ?? 1970, month: parts.month ?? 1, day: parts.day ?? 1)
     }
 
     @ViewBuilder
@@ -157,7 +152,7 @@ struct SolitaireHomeView: View {
     }
 
     private var dailyTile: some View {
-        let won = store.dailyWon(DealRef.dailyId(Self.today))
+        let won = store.dailyWon(DealRef.dailyId(CalendarDay.today))
         return tile(
             label: dealing == .daily ? "Dealing…" : "Daily deal",
             detail: won ? "Won" : nil,
@@ -260,7 +255,7 @@ struct SolitaireHomeView: View {
     }
 
     private func openDaily() {
-        let day = Self.today
+        let day = CalendarDay.today
         if let existing = store.inProgress.first(where: { $0.deal.id == DealRef.dailyId(day) }) {
             route = .game(existing.id)
             return
