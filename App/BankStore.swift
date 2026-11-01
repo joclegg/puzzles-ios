@@ -44,6 +44,7 @@ actor BankStore {
     }
 
     func refresh() async throws {
+        seedFromHost()
         if let updating {
             return try await updating.value
         }
@@ -64,6 +65,7 @@ actor BankStore {
     }
 
     func lines(_ path: String) throws -> [String] {
+        seedFromHost()
         let text = try String(contentsOf: directory.appending(path: path), encoding: .utf8)
         return text.split(whereSeparator: \.isNewline).map(String.init)
     }
