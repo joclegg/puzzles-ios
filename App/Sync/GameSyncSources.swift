@@ -177,6 +177,7 @@ enum GameSyncSources {
                 ]) + [
                     .camel("inputMode", "kakuro_input_mode", "cellFirst"), .camel("mistakeCheck", "kakuro_mistake_check", "off"),
                     .hintFill("kakuro_hint_fill"),
+                    .camel("combinationOrder", KakuroKeys.combinationOrder, "increasing"),
                 ]
         ),
         SettingsBridge(

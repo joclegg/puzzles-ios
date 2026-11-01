@@ -166,7 +166,7 @@ struct KakuroGameView: View {
 
     private var combinations: some View {
         VStack(spacing: 2) {
-            ForEach(Array(game.combinationLines().enumerated()), id: \.offset) { _, line in
+            ForEach(Array(game.combinationLines(order: settings.combinationOrder).enumerated()), id: \.offset) { _, line in
                 combinationText(line)
                     .font(.subheadline)
                     .padding(.horizontal, 16)
