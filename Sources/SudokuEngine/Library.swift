@@ -216,7 +216,15 @@ public enum SettingToggle: String, Sendable, CaseIterable {
     case allowReveal = "allow_reveal"
 
     public func defaultFor(_ mode: GameMode) -> Bool {
-        !(self == .greyGivenCells && mode == .killer)
+        switch self {
+        case .showTimer, .boldPlacedDigits, .showTutorial:
+            true
+        case .greyGivenCells:
+            mode != .killer
+        case .showMistakeCount, .highlightHouses, .highlightCage, .autoRemoveNotes, .disableCompletedDigits,
+            .highlightLastPlaced, .showHints, .allowReveal:
+            false
+        }
     }
 
     public func key(_ mode: GameMode) -> String {
@@ -251,20 +259,24 @@ public enum SettingKeys {
 }
 
 public struct ModeSettings: Sendable, Equatable {
-    public var mistakeCheck: MistakeCheck = .showWrong
-    public var sameNumberStyle: HighlightStyle = .cell
-    public var notesStyle: HighlightStyle = .cell
-    public var digitCounts: DigitCounts = .countUp
+    public static let defaultMistakeCheck = MistakeCheck.off
+    public static let defaultHighlightStyle = HighlightStyle.off
+    public static let defaultDigitCounts = DigitCounts.off
+
+    public var mistakeCheck: MistakeCheck = Self.defaultMistakeCheck
+    public var sameNumberStyle: HighlightStyle = Self.defaultHighlightStyle
+    public var notesStyle: HighlightStyle = Self.defaultHighlightStyle
+    public var digitCounts: DigitCounts = Self.defaultDigitCounts
     public var hintStyle: HintStyle = .point
     public var toggles: [SettingToggle: Bool] = [:]
 
     public init() {}
 
     public init(mode: GameMode, bool: (String) -> Bool?, string: (String) -> String?) {
-        mistakeCheck = string(SettingKeys.mistakes(mode)).flatMap(MistakeCheck.init(rawValue:)) ?? .showWrong
-        sameNumberStyle = string(SettingKeys.sameNumber(mode)).flatMap(HighlightStyle.init(rawValue:)) ?? .cell
-        notesStyle = string(SettingKeys.notes(mode)).flatMap(HighlightStyle.init(rawValue:)) ?? .cell
-        digitCounts = string(SettingKeys.digitCounts(mode)).flatMap(DigitCounts.init(rawValue:)) ?? .countUp
+        mistakeCheck = string(SettingKeys.mistakes(mode)).flatMap(MistakeCheck.init(rawValue:)) ?? Self.defaultMistakeCheck
+        sameNumberStyle = string(SettingKeys.sameNumber(mode)).flatMap(HighlightStyle.init(rawValue:)) ?? Self.defaultHighlightStyle
+        notesStyle = string(SettingKeys.notes(mode)).flatMap(HighlightStyle.init(rawValue:)) ?? Self.defaultHighlightStyle
+        digitCounts = string(SettingKeys.digitCounts(mode)).flatMap(DigitCounts.init(rawValue:)) ?? Self.defaultDigitCounts
         hintStyle = string(SettingKeys.hintStyle(mode)).flatMap(HintStyle.init(rawValue:)) ?? .point
         for toggle in SettingToggle.allCases {
             toggles[toggle] = bool(toggle.key(mode)) ?? toggle.defaultFor(mode)
@@ -272,7 +284,7 @@ public struct ModeSettings: Sendable, Equatable {
     }
 
     public func isOn(_ toggle: SettingToggle) -> Bool {
-        toggles[toggle] ?? true
+        toggles[toggle] ?? toggle.defaultFor(.classic)
     }
 
     public var playOptions: PlayOptions {

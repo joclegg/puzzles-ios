@@ -4,6 +4,7 @@ name: Sudoku - Settings in the puzzle menu opens Sudoku's settings
 - launchApp:
     clearState: true
     arguments:
+      helpers: "on"
       fixture: "classic_easy"
 - waitForAnimationToEnd:
     timeout: 1500

@@ -78,7 +78,7 @@ private struct SudokuModeSettingsForm: View {
         VStack(alignment: .leading, spacing: 12) {
             sudokuSection("Mistakes")
             SudokuStoredChoice(
-                key: SettingKeys.mistakes(mode), fallback: MistakeCheck.showWrong, options: MistakeCheck.allCases,
+                key: SettingKeys.mistakes(mode), fallback: ModeSettings.defaultMistakeCheck, options: MistakeCheck.allCases,
                 label: { level in
                     switch level {
                     case .off:
@@ -111,7 +111,7 @@ private struct SudokuModeSettingsForm: View {
             row(.autoRemoveNotes, "Clear pencil marks automatically", detail: "When you place a number")
             Text("Number counts")
             SudokuStoredChoice(
-                key: SettingKeys.digitCounts(mode), fallback: DigitCounts.countUp, options: DigitCounts.allCases,
+                key: SettingKeys.digitCounts(mode), fallback: ModeSettings.defaultDigitCounts, options: DigitCounts.allCases,
                 label: { counts in
                     switch counts {
                     case .countUp:
@@ -142,7 +142,7 @@ private struct SudokuModeSettingsForm: View {
         VStack(alignment: .leading, spacing: 6) {
             Text(title)
             SudokuStoredChoice(
-                key: key, fallback: HighlightStyle.cell, options: HighlightStyle.allCases,
+                key: key, fallback: ModeSettings.defaultHighlightStyle, options: HighlightStyle.allCases,
                 label: { $0.rawValue.capitalized }, tag: { "setting_\(tag)_\($0.rawValue.lowercased())" })
         }
     }
@@ -155,14 +155,14 @@ private struct SudokuHintsRows: View {
 
     init(mode: GameMode) {
         self.mode = mode
-        _hints = AppStorage(wrappedValue: true, SettingToggle.showHints.key(mode))
+        _hints = AppStorage(wrappedValue: SettingToggle.showHints.defaultFor(mode), SettingToggle.showHints.key(mode))
         _style = AppStorage(wrappedValue: HintStyle.point.rawValue, SettingKeys.hintStyle(mode))
     }
 
     var body: some View {
         SudokuToggleRow(
-            key: SettingToggle.showHints.key(mode), fallback: true, title: "Hints", detail: "Show the hint button.",
-            id: "setting_show_hints")
+            key: SettingToggle.showHints.key(mode), fallback: SettingToggle.showHints.defaultFor(mode), title: "Hints",
+            detail: "Show the hint button.", id: "setting_show_hints")
         if hints {
             HStack {
                 VStack(alignment: .leading) {

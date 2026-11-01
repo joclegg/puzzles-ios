@@ -3,6 +3,8 @@ name: Finishing a number by hand disables its button
 ---
 - launchApp:
     clearState: true
+    arguments:
+      helpers: "on"
 - waitForAnimationToEnd:
     timeout: 1500
 - scrollUntilVisible:

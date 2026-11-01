@@ -175,9 +175,9 @@ struct SlideOutSettingsScreen: View {
 
     @AppStorage(SlideOutSettingKey.showTimer) private var showTimer = true
     @AppStorage(SlideOutSettingKey.showPar) private var showPar = true
-    @AppStorage(SlideOutSettingKey.showHints) private var showHints = true
+    @AppStorage(SlideOutSettingKey.showHints) private var showHints = false
     @AppStorage(SlideOutSettingKey.showTutorial) private var showTutorial = true
-    @AppStorage(SlideOutSettingKey.allowReveal) private var allowReveal = true
+    @AppStorage(SlideOutSettingKey.allowReveal) private var allowReveal = false
 
     var body: some View {
         ScrollView {

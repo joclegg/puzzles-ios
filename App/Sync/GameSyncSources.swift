@@ -131,9 +131,9 @@ enum GameSyncSources {
                 "solitaire_",
                 [
                     ("reverse", "reverse", false), ("oneTapMove", "one_tap_move", true), ("winnableOnly", "winnable_only", true),
-                    ("warnUnwinnable", "warn_unwinnable", true), ("showTimer", "show_timer", true),
-                    ("showMoveCount", "show_move_count", true), ("showHints", "show_hints", true),
-                    ("showTutorial", "show_tutorial", true), ("allowReveal", "allow_reveal", true),
+                    ("warnUnwinnable", "warn_unwinnable", false), ("showTimer", "show_timer", true),
+                    ("showMoveCount", "show_move_count", true), ("showHints", "show_hints", false),
+                    ("showTutorial", "show_tutorial", true), ("allowReveal", "allow_reveal", false),
                 ]) + [.upper("drawMode", "solitaire_draw_mode", "DRAW_ONE"), .hintFill("solitaire_hint_fill")]
         ),
         SettingsBridge(
@@ -141,9 +141,9 @@ enum GameSyncSources {
             fields: prefixed(
                 "two_tone_",
                 [
-                    ("markBrokenRules", "mark_broken_rules", true), ("showTimer", "show_timer", true),
-                    ("showProgress", "show_progress", true), ("showHints", "show_hints", true),
-                    ("showTutorial", "show_tutorial", true), ("allowReveal", "allow_reveal", true),
+                    ("markBrokenRules", "mark_broken_rules", false), ("showTimer", "show_timer", true),
+                    ("showProgress", "show_progress", false), ("showHints", "show_hints", false),
+                    ("showTutorial", "show_tutorial", true), ("allowReveal", "allow_reveal", false),
                 ]) + [.upper("inputMode", "two_tone_input_mode", "TAP_TO_CYCLE")]
         ),
         SettingsBridge(
@@ -151,9 +151,9 @@ enum GameSyncSources {
             fields: prefixed(
                 "sightlines_",
                 [
-                    ("markBrokenRules", "mark_broken_rules", true), ("showTimer", "show_timer", true),
-                    ("showProgress", "show_progress", true), ("showSeenCount", "show_seen_count", true),
-                    ("showHints", "show_hints", true), ("showTutorial", "show_tutorial", true), ("allowReveal", "allow_reveal", true),
+                    ("markBrokenRules", "mark_broken_rules", false), ("showTimer", "show_timer", true),
+                    ("showProgress", "show_progress", false), ("showSeenCount", "show_seen_count", false),
+                    ("showHints", "show_hints", false), ("showTutorial", "show_tutorial", true), ("allowReveal", "allow_reveal", false),
                 ]) + [.upper("inputMode", "sightlines_input_mode", "TAP_TO_CYCLE")]
         ),
         SettingsBridge(
@@ -161,8 +161,8 @@ enum GameSyncSources {
             fields: prefixed(
                 "fiveLetters.",
                 [
-                    ("hardMode", "hard_mode", false), ("highContrast", "high_contrast", false), ("showHints", "show_hints", true),
-                    ("showTutorial", "show_tutorial", true), ("allowReveal", "allow_reveal", true),
+                    ("hardMode", "hard_mode", false), ("highContrast", "high_contrast", false), ("showHints", "show_hints", false),
+                    ("showTutorial", "show_tutorial", true), ("allowReveal", "allow_reveal", false),
                 ])
         ),
         SettingsBridge(
@@ -170,13 +170,14 @@ enum GameSyncSources {
             fields: prefixed(
                 "kakuro_",
                 [
-                    ("showMistakeCount", "show_mistake_count", true), ("autoRemoveNotes", "auto_remove_notes", true),
-                    ("highlightRuns", "highlight_runs", true), ("showTimer", "show_timer", true),
-                    ("showCombinations", "show_combinations", false), ("greyUsedDigits", "grey_used_digits", true),
-                    ("showHints", "show_hints", true), ("showTutorial", "show_tutorial", true), ("allowReveal", "allow_reveal", true),
+                    ("showMistakeCount", "show_mistake_count", false), ("autoRemoveNotes", "auto_remove_notes", false),
+                    ("highlightRuns", "highlight_runs", false), ("showTimer", "show_timer", true),
+                    ("showCombinations", "show_combinations", false), ("greyUsedDigits", "grey_used_digits", false),
+                    ("showHints", "show_hints", false), ("showTutorial", "show_tutorial", true), ("allowReveal", "allow_reveal", false),
                 ]) + [
                     .camel("inputMode", "kakuro_input_mode", "cellFirst"), .camel("mistakeCheck", "kakuro_mistake_check", "off"),
                     .hintFill("kakuro_hint_fill"),
+                    .camel("combinationOrder", KakuroKeys.combinationOrder, "increasing"),
                 ]
         ),
         SettingsBridge(
@@ -184,8 +185,8 @@ enum GameSyncSources {
             fields: prefixed(
                 "slideout_",
                 [
-                    ("showTimer", "show_timer", true), ("showPar", "show_par", true), ("showHints", "show_hints", true),
-                    ("showTutorial", "show_tutorial", true), ("allowReveal", "allow_reveal", true),
+                    ("showTimer", "show_timer", true), ("showPar", "show_par", true), ("showHints", "show_hints", false),
+                    ("showTutorial", "show_tutorial", true), ("allowReveal", "allow_reveal", false),
                 ])
         ),
         SettingsBridge(
@@ -193,8 +194,8 @@ enum GameSyncSources {
             fields: prefixed(
                 "word_wheel_",
                 [
-                    ("showTimer", "show_timer", true), ("showBonusCount", "show_bonus_count", true), ("showHints", "show_hints", true),
-                    ("showTutorial", "show_tutorial", true), ("allowReveal", "allow_reveal", true),
+                    ("showTimer", "show_timer", true), ("showBonusCount", "show_bonus_count", true), ("showHints", "show_hints", false),
+                    ("showTutorial", "show_tutorial", true), ("allowReveal", "allow_reveal", false),
                 ])
         ),
     ]
@@ -206,10 +207,10 @@ enum GameSyncSources {
                 SettingField.bool(jsonName(fromEnum: toggle.rawValue), toggle.key(mode), toggle.defaultFor(mode))
             }
             return toggles + [
-                .upper("mistakeCheck", SettingKeys.mistakes(mode), MistakeCheck.showWrong.rawValue),
-                .upper("sameNumberStyle", SettingKeys.sameNumber(mode), HighlightStyle.cell.rawValue),
-                .upper("notesStyle", SettingKeys.notes(mode), HighlightStyle.cell.rawValue),
-                .upper("digitCounts", SettingKeys.digitCounts(mode), DigitCounts.countUp.rawValue),
+                .upper("mistakeCheck", SettingKeys.mistakes(mode), ModeSettings.defaultMistakeCheck.rawValue),
+                .upper("sameNumberStyle", SettingKeys.sameNumber(mode), ModeSettings.defaultHighlightStyle.rawValue),
+                .upper("notesStyle", SettingKeys.notes(mode), ModeSettings.defaultHighlightStyle.rawValue),
+                .upper("digitCounts", SettingKeys.digitCounts(mode), ModeSettings.defaultDigitCounts.rawValue),
             ]
         }
         let top: [SettingField] =

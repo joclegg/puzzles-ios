@@ -6,6 +6,7 @@ tags:
 - launchApp:
     clearState: true
     arguments:
+      helpers: "on"
       fixture: "classic_easy"
 - waitForAnimationToEnd:
     timeout: 1500
@@ -18,6 +19,8 @@ tags:
     text: "Mistakes: 1"
 - launchApp:
     clearState: true
+    arguments:
+      helpers: "on"
 - waitForAnimationToEnd:
     timeout: 1500
 - scrollUntilVisible:

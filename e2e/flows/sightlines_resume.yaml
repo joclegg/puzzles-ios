@@ -4,6 +4,7 @@ name: Sightlines - a puzzle in progress survives the app being closed
 - launchApp:
     clearState: true
     arguments:
+      helpers: "on"
       fixture: "sightlines_two_left"
 - tapOn:
     id: "dot_r1c2"

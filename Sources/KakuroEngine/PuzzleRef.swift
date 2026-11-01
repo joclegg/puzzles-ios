@@ -130,6 +130,11 @@ public struct CombinationDigit: Sendable, Equatable {
     }
 }
 
+public enum CombinationOrder: String, Sendable, CaseIterable {
+    case increasing
+    case decreasing
+}
+
 public struct CombinationLine: Sendable, Equatable {
     public let header: String
     public let sets: [[CombinationDigit]]
@@ -141,16 +146,28 @@ public struct CombinationLine: Sendable, Equatable {
 }
 
 extension GameState {
-    public func combinationLines() -> [CombinationLine] {
+    public func combinationLines(order: CombinationOrder = .increasing) -> [CombinationLine] {
         selectedCombinations().map { run, masks in
             let placed = Set(run.cells.map { values[$0] }.filter { $0 != 0 })
             let direction = run.isAcross ? "Across" : "Down"
             return CombinationLine(
                 header: "\(direction) \(run.sum) in \(run.cells.count): ",
-                sets: masks.map { mask in
-                    Combinations.digitsOf(mask).map { CombinationDigit(digit: $0, placed: placed.contains($0)) }
-                }
+                sets: Self.ordered(
+                    masks.map { mask in
+                        Combinations.digitsOf(mask).map { CombinationDigit(digit: $0, placed: placed.contains($0)) }
+                    },
+                    order
+                )
             )
+        }
+    }
+
+    private static func ordered(_ sets: [[CombinationDigit]], _ order: CombinationOrder) -> [[CombinationDigit]] {
+        switch order {
+        case .increasing:
+            sets
+        case .decreasing:
+            sets.map { Array($0.reversed()) }.reversed()
         }
     }
 

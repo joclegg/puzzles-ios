@@ -37,13 +37,18 @@ extension GameState {
                 }
             }
         }
-        guard let solution, let empty = values.firstIndex(of: 0) else {
+        guard let solution, let first = values.firstIndex(of: 0) else {
             return nil
         }
+        let open = values.indices.filter { values[$0] == 0 && candidates[$0] != 0 }
+        let cell = open.min { candidates[$0].nonzeroBitCount < candidates[$1].nonzeroBitCount } ?? first
+        let allowed = (1...grid.size).filter { candidates[cell] & digitBit($0) != 0 }.map(String.init)
+        let list =
+            allowed.count > 1 ? allowed.dropLast().joined(separator: ", ") + " or " + allowed[allowed.count - 1] : allowed.first ?? ""
         return Hint(
-            cell: empty,
-            digit: solution[empty],
-            message: "No cell can be worked out yet, so here is the first empty one."
+            cell: cell,
+            digit: solution[cell],
+            message: "This cell can only be \(list): everything else is in its row, column or box."
         )
     }
 }

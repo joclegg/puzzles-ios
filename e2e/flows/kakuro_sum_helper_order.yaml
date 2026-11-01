@@ -1,0 +1,48 @@
+appId: com.joclegg.puzzles
+name: Kakuro - the sum helper starts increasing and can list combinations in decreasing order
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "game_kakuro"
+    timeout: 120000
+- tapOn:
+    id: "game_kakuro"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "settings"
+- waitForAnimationToEnd:
+    timeout: 1500
+- assertNotVisible:
+    id: "setting_combination_order_increasing"
+- scrollUntilVisible:
+    element:
+      id: "setting_show_combinations"
+    centerElement: true
+- tapOn:
+    id: "setting_show_combinations"
+- waitForAnimationToEnd:
+    timeout: 1500
+- scrollUntilVisible:
+    element:
+      id: "setting_combination_order_increasing"
+    centerElement: true
+- assertVisible:
+    id: "setting_combination_order_increasing"
+    selected: true
+- tapOn:
+    id: "setting_combination_order_decreasing"
+- assertVisible:
+    id: "setting_combination_order_decreasing"
+    selected: true
+- launchApp:
+    arguments:
+      fixture: "kakuro_empty"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "cell_r2c2"
+- assertVisible:
+    id: "combinations"

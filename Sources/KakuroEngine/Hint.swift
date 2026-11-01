@@ -43,10 +43,16 @@ extension GameState {
                 }
             }
         }
+        let open = empty.filter { candidates[$0] != 0 }
+        let cell = open.min { candidates[$0].nonzeroBitCount < candidates[$1].nonzeroBitCount } ?? first
+        let allowed = Combinations.digitsOf(candidates[cell] == 0 ? allDigits : candidates[cell])
+        let runs = (puzzle.runsOf[cell] ?? []).sorted { $0.isAcross && !$1.isAcross }
+            .map { "\($0.isAcross ? "across" : "down") run (\($0.sum) in \($0.cells.count))" }
+            .joined(separator: " and ")
         return Hint(
-            cell: first,
-            digit: puzzle.solution[first],
-            message: "No cell can be worked out yet, so here is the first empty one."
+            cell: cell,
+            digit: puzzle.solution[cell],
+            message: "This cell's \(runs) only allow \(listDigits(allowed))."
         )
     }
 
@@ -126,6 +132,14 @@ extension GameState {
         }
         return masks.reduce(allDigits) { $0 & $1 } & ~placedMask(run: run)
     }
+}
+
+private func listDigits(_ digits: [Int]) -> String {
+    let words = digits.map(String.init)
+    guard let last = words.last, words.count > 1 else {
+        return words.first ?? ""
+    }
+    return words.dropLast().joined(separator: ", ") + " or " + last
 }
 
 extension Run {

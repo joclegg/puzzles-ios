@@ -68,6 +68,7 @@ struct KakuroGameView: View {
     var body: some View {
         VStack(spacing: 0) {
             header
+            HelpersButton { navigator.path.append(.settings) }
             KakuroBoardView(
                 game: game,
                 highlightRuns: settings.isOn(.highlightRuns),
@@ -166,7 +167,7 @@ struct KakuroGameView: View {
 
     private var combinations: some View {
         VStack(spacing: 2) {
-            ForEach(Array(game.combinationLines().enumerated()), id: \.offset) { _, line in
+            ForEach(Array(game.combinationLines(order: settings.combinationOrder).enumerated()), id: \.offset) { _, line in
                 combinationText(line)
                     .font(.subheadline)
                     .padding(.horizontal, 16)

@@ -3,6 +3,8 @@ name: Turning on Reverse deals reverse games
 ---
 - launchApp:
     clearState: true
+    arguments:
+      helpers: "on"
 - waitForAnimationToEnd:
     timeout: 1500
 - scrollUntilVisible:

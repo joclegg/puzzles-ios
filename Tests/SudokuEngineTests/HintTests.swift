@@ -14,6 +14,22 @@ struct HintTests {
         #expect(easyPuzzle.solution?[hint.cell] == hint.digit)
     }
 
+    @Test("given no cell that can be worked out when a hint is asked for then it names the cell's candidates")
+    func fallbackNamesCandidates() throws {
+        // Arrange
+        let solution = try #require(easyPuzzle.solution)
+        let empty = GameState(puzzle: Puzzle(givens: Array(repeating: 0, count: 81), solution: solution))
+
+        // Act
+        let hint = try #require(empty.findHint())
+
+        // Assert
+        #expect(hint.cell == 0)
+        #expect(hint.digit == solution[0])
+        #expect(hint.message == "This cell can only be 1, 2, 3, 4, 5, 6, 7, 8 or 9: everything else is in its row, column or box.")
+        #expect(!hint.message.contains("first empty"))
+    }
+
     @Test("given a wrong digit when a hint is asked for then it points at that cell first")
     func wrongDigitHint() throws {
         // Arrange

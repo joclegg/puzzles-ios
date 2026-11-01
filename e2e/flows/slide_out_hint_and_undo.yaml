@@ -4,6 +4,7 @@ name: Slide Out - undo takes a move back, and a hint is shown
 - launchApp:
     clearState: true
     arguments:
+      helpers: "on"
       fixture: "slide_out_two_moves"
 - extendedWaitUntil:
     visible:

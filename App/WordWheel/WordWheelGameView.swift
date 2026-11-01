@@ -15,9 +15,9 @@ struct WordWheelGameView: View {
 
     @AppStorage(WordWheelSetting.showTimer) private var showTimer = true
     @AppStorage(WordWheelSetting.showBonusCount) private var showBonusCount = true
-    @AppStorage(WordWheelSetting.showHints) private var showHints = true
+    @AppStorage(WordWheelSetting.showHints) private var showHints = false
     @AppStorage(WordWheelSetting.showTutorial) private var showTutorial = true
-    @AppStorage(WordWheelSetting.allowReveal) private var allowReveal = true
+    @AppStorage(WordWheelSetting.allowReveal) private var allowReveal = false
     @Environment(\.scenePhase) private var scenePhase
 
     init(id: Int64, onOpenGame: @escaping (Int64) -> Void, onHome: @escaping () -> Void) {
@@ -55,6 +55,7 @@ struct WordWheelGameView: View {
     private func content(_ game: GameState) -> some View {
         VStack(spacing: 0) {
             header
+            HelpersButton { showSettings = true }
             WordWheelGrid(
                 crossword: game.puzzle.crossword,
                 found: model.foundCells,

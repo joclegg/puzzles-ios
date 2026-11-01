@@ -105,6 +105,9 @@ struct SettingsHubView: View {
             }
             .padding(.horizontal, 8)
             tabs
+            if tab != .general {
+                HelpersNote().padding(.horizontal, 16)
+            }
             content
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 .background(LinearGradient(colors: [tab.accent.opacity(0.1), .clear], startPoint: .top, endPoint: .center))

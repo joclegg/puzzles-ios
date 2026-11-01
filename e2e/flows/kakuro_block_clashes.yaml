@@ -3,6 +3,8 @@ name: Kakuro - with Block clashes on, a digit already in the run is refused and 
 ---
 - launchApp:
     clearState: true
+    arguments:
+      helpers: "on"
 - extendedWaitUntil:
     visible:
       id: "game_kakuro"

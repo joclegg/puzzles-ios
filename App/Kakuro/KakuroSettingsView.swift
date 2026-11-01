@@ -6,9 +6,11 @@ struct KakuroSettingsView: View {
 
     @Environment(\.colorScheme) private var scheme
     @AppStorage(KakuroKeys.inputMode) private var inputMode = InputMode.cellFirst.rawValue
-    @AppStorage(KakuroKeys.mistakeCheck) private var mistakeCheck = MistakeCheck.showWrong.rawValue
+    @AppStorage(KakuroKeys.mistakeCheck) private var mistakeCheck = MistakeCheck.off.rawValue
     @AppStorage(KakuroKeys.hintFill) private var hintFill = false
-    @AppStorage(KakuroToggle.showHints.key) private var showHints = true
+    @AppStorage(KakuroToggle.showHints.key) private var showHints = KakuroToggle.showHints.defaultValue
+    @AppStorage(KakuroToggle.showCombinations.key) private var showCombinations = KakuroToggle.showCombinations.defaultValue
+    @AppStorage(KakuroKeys.combinationOrder) private var combinationOrder = CombinationOrder.increasing.rawValue
 
     private var accent: Color {
         KakuroColors.of(scheme).accent
@@ -45,6 +47,14 @@ struct KakuroSettingsView: View {
                     KakuroToggleRow(
                         toggle: .showCombinations, title: "Sum helper",
                         detail: "List the digit combinations that still fit the selected cell's runs.")
+                    if showCombinations {
+                        choice(
+                            [
+                                ("Increasing", CombinationOrder.increasing.rawValue, "setting_combination_order_increasing"),
+                                ("Decreasing", CombinationOrder.decreasing.rawValue, "setting_combination_order_decreasing"),
+                            ], selection: $combinationOrder)
+                        hint("The order the sum helper lists its numbers in.")
+                    }
                     KakuroToggleRow(
                         toggle: .greyUsedDigits, title: "Grey out used-up numbers",
                         detail: "Dim a number on the pad once every cell that needs it has it.")
@@ -122,6 +132,9 @@ private struct KakuroToggleRow: View {
                     Text(detail).font(.caption).foregroundStyle(.secondary)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
+            .onTapGesture { isOn.toggle() }
         }
         .tint(KakuroColors.of(scheme).accent)
         .accessibilityIdentifier("setting_\(toggle.rawValue)")

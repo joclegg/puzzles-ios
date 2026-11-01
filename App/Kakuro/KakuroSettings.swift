@@ -17,7 +17,12 @@ enum KakuroToggle: String, CaseIterable {
     }
 
     var defaultValue: Bool {
-        self != .showCombinations
+        switch self {
+        case .showTimer, .showTutorial:
+            true
+        case .showMistakeCount, .autoRemoveNotes, .highlightRuns, .showCombinations, .greyUsedDigits, .showHints, .allowReveal:
+            false
+        }
     }
 }
 
@@ -25,18 +30,22 @@ enum KakuroKeys {
     static let inputMode = "kakuro_input_mode"
     static let mistakeCheck = "kakuro_mistake_check"
     static let hintFill = "kakuro_hint_fill"
+    static let combinationOrder = "kakuro_combination_order"
 }
 
 struct KakuroSettings {
     let inputMode: InputMode
     let mistakeCheck: MistakeCheck
     let hintFill: Bool
+    let combinationOrder: CombinationOrder
     private let toggles: [KakuroToggle: Bool]
 
     init(defaults: UserDefaults = .standard) {
         inputMode = defaults.string(forKey: KakuroKeys.inputMode).flatMap(InputMode.init(rawValue:)) ?? .cellFirst
-        mistakeCheck = defaults.string(forKey: KakuroKeys.mistakeCheck).flatMap(MistakeCheck.init(rawValue:)) ?? .showWrong
+        mistakeCheck = defaults.string(forKey: KakuroKeys.mistakeCheck).flatMap(MistakeCheck.init(rawValue:)) ?? .off
         hintFill = defaults.bool(forKey: KakuroKeys.hintFill)
+        combinationOrder =
+            defaults.string(forKey: KakuroKeys.combinationOrder).flatMap(CombinationOrder.init(rawValue:)) ?? .increasing
         var read: [KakuroToggle: Bool] = [:]
         for toggle in KakuroToggle.allCases {
             read[toggle] = defaults.object(forKey: toggle.key) as? Bool ?? toggle.defaultValue

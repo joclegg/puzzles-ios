@@ -1,0 +1,25 @@
+appId: com.joclegg.puzzles
+name: Launcher - finishing today's daily shows a bronze medal on that game's card
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "daily_classic_one_left"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "cell_r1c3"
+- tapOn:
+    id: "digit_4"
+- assertVisible:
+    id: "solved_screen"
+- assertNotVisible:
+    id: "all_golds_dialog"
+- launchApp:
+    stopApp: true
+- extendedWaitUntil:
+    visible:
+      id: "home_medal_sudoku_bronze"
+    timeout: 15000
+- assertNotVisible:
+    id: "all_golds_trophy"

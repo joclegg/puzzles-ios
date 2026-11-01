@@ -4,6 +4,7 @@ name: Two Tone - a puzzle in progress survives the app being closed
 - launchApp:
     clearState: true
     arguments:
+      helpers: "on"
       fixture: "two_tone_two_left"
 - waitForAnimationToEnd:
     timeout: 1500

@@ -1,3 +1,4 @@
+import PuzzlesCore
 import SwiftUI
 
 struct WinStat: Identifiable {
@@ -33,6 +34,8 @@ struct WinDialog<Buttons: View>: View {
 
     @State private var dailies: [DailyLeft] = []
     @State private var popScale: CGFloat = 0.6
+    @State private var allGolds = false
+    @AppStorage("all_golds_celebrated_day") private var celebratedDay = ""
 
     var body: some View {
         ZStack {
@@ -74,8 +77,51 @@ struct WinDialog<Buttons: View>: View {
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier(tag)
         }
+        .overlay {
+            if allGolds {
+                allGoldsCard
+            }
+        }
         .task(id: dailyGroup) {
             dailies = TodaysDailies.left(group: dailyGroup)
+            let today = CalendarDay.today.isoString
+            if !lost && celebratedDay != today && AllGolds.held {
+                celebratedDay = today
+                allGolds = true
+            }
+        }
+    }
+
+    private var allGoldsCard: some View {
+        ZStack {
+            Color.black.opacity(0.5)
+                .ignoresSafeArea()
+                .accessibilityHidden(true)
+                .onTapGesture { allGolds = false }
+            VStack(spacing: 12) {
+                PuzzleIcon.image("trophy.fill")
+                    .font(.largeTitle)
+                    .foregroundStyle(Color(.systemBackground))
+                    .frame(width: 80, height: 80)
+                    .background(medalColour(.gold), in: Circle())
+                    .accessibilityHidden(true)
+                Text("Gold in every puzzle").font(.title2.bold()).multilineTextAlignment(.center)
+                Text("You've earned today's gold medal in all eight games.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                Button("Brilliant") { allGolds = false }
+                    .buttonStyle(.borderedProminent)
+                    .tint(medalColour(.gold))
+                    .accessibilityIdentifier("all_golds_close")
+            }
+            .padding(24)
+            .frame(maxWidth: .infinity)
+            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 28))
+            .overlay(RoundedRectangle(cornerRadius: 28).stroke(medalColour(.gold), lineWidth: 2))
+            .padding(32)
+            .accessibilityElement(children: .contain)
+            .accessibilityIdentifier("all_golds_dialog")
         }
     }
 

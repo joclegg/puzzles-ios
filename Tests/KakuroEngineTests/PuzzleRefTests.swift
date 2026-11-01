@@ -130,6 +130,23 @@ struct PuzzleRefTests {
         #expect(lines[1].header == "Down 4 in 2: ")
     }
 
+    @Test("given the decreasing order when combination lines are made then digits and sets run high to low")
+    func combinationLinesDecreasing() {
+        // Arrange
+        let game = GameState(puzzle: small).tapCell(4)
+
+        // Act
+        let increasing = game.combinationLines()
+        let decreasing = game.combinationLines(order: .decreasing)
+
+        // Assert
+        #expect(decreasing.map(\.header) == increasing.map(\.header))
+        for (down, up) in zip(decreasing, increasing) {
+            #expect(down.sets == up.sets.reversed().map { Array($0.reversed()) })
+            #expect(down.sets.allSatisfy { set in zip(set, set.dropFirst()).allSatisfy { $0.digit > $1.digit } })
+        }
+    }
+
     @Test("given a selected cell when run cells are read then both runs are included")
     func runCells() {
         // Act

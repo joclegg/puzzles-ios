@@ -4,6 +4,7 @@ name: A Solitaire hint suggests a move
 - launchApp:
     clearState: true
     arguments:
+      helpers: "on"
       fixture: "simple"
 - waitForAnimationToEnd:
     timeout: 1500

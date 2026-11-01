@@ -422,10 +422,10 @@ struct SolitaireSettingsView: View {
     @AppStorage(SolitaireSettingKey.reverse) private var reverse = false
     @AppStorage(SolitaireSettingKey.oneTapMove) private var oneTapMove = true
     @AppStorage(SolitaireSettingKey.winnableOnly) private var winnableOnly = true
-    @AppStorage(SolitaireSettingKey.warnUnwinnable) private var warnUnwinnable = true
+    @AppStorage(SolitaireSettingKey.warnUnwinnable) private var warnUnwinnable = false
     @AppStorage(SolitaireSettingKey.showTimer) private var showTimer = true
     @AppStorage(SolitaireSettingKey.showMoveCount) private var showMoveCount = true
-    @AppStorage(SolitaireSettingKey.showHints) private var showHints = true
+    @AppStorage(SolitaireSettingKey.showHints) private var showHints = false
     @AppStorage(SolitaireSettingKey.showTutorial) private var showTutorial = true
     @AppStorage(SolitaireSettingKey.hintFill) private var hintFill = false
 

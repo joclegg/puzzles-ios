@@ -134,6 +134,7 @@ struct FiveLettersGameView: View {
 
     private func content(_ game: GameState) -> some View {
         VStack(spacing: 0) {
+            HelpersButton { settingsOpen = true }
             FiveLettersBoard(game: game)
                 .padding(.horizontal, 12)
                 .padding(.top, 12)

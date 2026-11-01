@@ -4,6 +4,7 @@ name: Sightlines - a hint points out a wrong dot, and undo clears it
 - launchApp:
     clearState: true
     arguments:
+      helpers: "on"
       fixture: "sightlines_two_left"
 - tapOn:
     id: "dot_r1c3"
