@@ -206,6 +206,16 @@ public final class SupabaseAuth {
         store.clear()
     }
 
+    public func deleteAccount() async -> Bool {
+        guard let token = await accessToken() else {
+            return false
+        }
+        let headers = ["apikey": SupabaseConfig.key, "Authorization": "Bearer \(token)", "Content-Type": "application/json"]
+        let response = try? await http.send(
+            method: "POST", url: "\(SupabaseConfig.url)/rest/v1/rpc/delete_account", headers: headers, body: "{}")
+        return response?.ok == true
+    }
+
     private func requestSession(grant: String, body: [String: Any]) async -> SessionResult {
         let response = await post("\(SupabaseConfig.url)/auth/v1/token?grant_type=\(grant)", body)
         if let response, Self.rejectedCodes.contains(response.code) {

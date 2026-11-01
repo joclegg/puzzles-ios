@@ -145,7 +145,12 @@ struct SettingsHubView: View {
     private var content: some View {
         switch tab {
         case .general:
-            SudokuGeneralSettings()
+            ScrollView {
+                VStack(spacing: 0) {
+                    SudokuGeneralSettings()
+                    AccountSettings()
+                }
+            }
         case .sudoku:
             SudokuSettingsView(initialMode: sudokuMode)
         case .solitaire:

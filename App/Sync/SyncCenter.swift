@@ -198,8 +198,17 @@ final class SyncCenter: NSObject {
     }
 
     func signOut() {
+        pending?.cancel()
         auth.signOut()
         refresh()
+    }
+
+    func deleteAccount() async -> Bool {
+        guard await auth.deleteAccount() else {
+            return false
+        }
+        signOut()
+        return true
     }
 
     private func refresh() {
