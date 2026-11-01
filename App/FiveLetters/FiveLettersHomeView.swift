@@ -103,7 +103,7 @@ struct FiveLettersHomeView: View {
         let date = CalendarDay.today
         let daily = store.existing(wordId: WordRef.dailyId(date))?.status
         let daily2 = store.existing(wordId: WordRef.daily2Id(date))?.status
-        return section("Today", aside: CalendarDay.todayLabel) {
+        return section("Today", aside: Self.todayLabel) {
             tile(
                 "Today's word · #\(dailyNumber)",
                 id: "daily",
