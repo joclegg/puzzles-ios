@@ -8,6 +8,7 @@ final class SightlinesGameModel {
     private static let saveAfterIdleMs = 400
 
     private(set) var game: GameState?
+    var colour = Dot.blue
     private(set) var title = ""
     private(set) var elapsedMs: Int64 = 0
     private(set) var hints = 0
@@ -55,8 +56,8 @@ final class SightlinesGameModel {
         game?.isSolved ?? false
     }
 
-    func onDot(_ cell: Int) {
-        move { $0.tap(cell) }
+    func onDot(_ cell: Int, pickColour: Bool) {
+        move { pickColour ? $0.paint(cell, colour: colour) : $0.tap(cell) }
     }
 
     func onUndo() {

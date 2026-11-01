@@ -36,6 +36,11 @@ enum TwoToneSettingKey {
     static let allowReveal = "two_tone_allow_reveal"
 }
 
+enum TwoToneInputMode {
+    static let tapToCycle = "TAP_TO_CYCLE"
+    static let pickColour = "PICK_COLOUR"
+}
+
 struct TwoToneDialog<Content: View, Buttons: View>: View {
     let title: String
     var tag: String?

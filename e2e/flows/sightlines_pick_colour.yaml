@@ -1,0 +1,24 @@
+appId: com.joclegg.puzzles
+name: Sightlines - with Pick a colour on, picking blue and tapping fills the last spot
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "sightlines_one_left"
+- scrollUntilVisible:
+    element:
+      id: "input_mode"
+- tapOn:
+    id: "input_mode"
+- scrollUntilVisible:
+    element:
+      id: "colour_blue"
+- tapOn:
+    id: "colour_blue"
+- scrollUntilVisible:
+    element:
+      id: "dot_r1c2"
+- tapOn:
+    id: "dot_r1c2"
+- assertVisible:
+    id: "solved_dialog"

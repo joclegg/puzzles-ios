@@ -9,6 +9,8 @@ enum SightlinesSettings {
     static let showHints = "sightlines_show_hints"
     static let showTutorial = "sightlines_show_tutorial"
     static let allowReveal = "sightlines_allow_reveal"
+    static let tapToCycle = "TAP_TO_CYCLE"
+    static let pickColour = "PICK_COLOUR"
 }
 
 struct SightlinesSettingsView: View {

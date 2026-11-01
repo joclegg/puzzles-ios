@@ -118,3 +118,33 @@ private struct TwoToneTileFace: View {
         .contentShape(Self.shape)
     }
 }
+
+struct TwoToneColourPicker: View {
+    @Binding var colour: Tile
+
+    var body: some View {
+        HStack(spacing: 20) {
+            option(.red, TwoToneColors.red, "Red", "colour_red")
+            option(.blue, TwoToneColors.blue, "Blue", "colour_blue")
+        }
+    }
+
+    private func option(_ tile: Tile, _ fill: Color, _ name: String, _ tag: String) -> some View {
+        Button {
+            colour = tile
+        } label: {
+            RoundedRectangle(cornerRadius: 10)
+                .fill(fill)
+                .frame(width: 56, height: 56)
+                .overlay {
+                    if colour == tile {
+                        RoundedRectangle(cornerRadius: 10).strokeBorder(.primary, lineWidth: 3)
+                    }
+                }
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(name)
+        .accessibilityIdentifier(tag)
+        .accessibilityAddTraits(colour == tile ? .isSelected : [])
+    }
+}
