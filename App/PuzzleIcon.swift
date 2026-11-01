@@ -11,6 +11,7 @@ enum PuzzleIcon {
         "arrow.clockwise": Glyph(filled: false, paths: ["M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", "M3 3v5h5"]),
         "arrow.uturn.backward": Glyph(filled: false, paths: ["M9 14L4 9l5-5", "M4 9h10.5a5.5 5.5 0 0 1 0 11H11"]),
         "arrow.uturn.forward": Glyph(filled: false, paths: ["M15 14l5-5-5-5", "M20 9H9.5a5.5 5.5 0 0 0 0 11H13"]),
+        "arrow.left.arrow.right": Glyph(filled: false, paths: ["M8 3 4 7l4 4", "M4 7h16", "m16 21 4-4-4-4", "M20 17H4"]),
         "book.fill": Glyph(
             filled: false, paths: ["M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z", "M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"]),
         "calendar": Glyph(
@@ -48,12 +49,6 @@ enum PuzzleIcon {
                 "M12 8.6a3.4 3.4 0 1 1 0 6.8a3.4 3.4 0 1 1 0-6.8z",
             ]),
         "lightbulb": Glyph(filled: false, paths: ["M9 18h6", "M10 21h4", "M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z"]),
-        "paintbrush.pointed": Glyph(
-            filled: true,
-            paths: [
-                "M7 14c-1.66 0-3 1.34-3 3 0 1.31-1.16 2-2 2 .92 1.22 2.49 2 4 2 2.21 0 4-1.79 4-4 0-1.66-1.34-3-3-3z",
-                "M20.71 4.63l-1.34-1.34c-.39-.39-1.02-.39-1.41 0L9 12.25 11.75 15l8.96-8.96c.39-.39.39-1.02 0-1.41z",
-            ]),
         "pencil": Glyph(filled: false, paths: ["M4 20l1-4L15.5 5.5a2.1 2.1 0 0 1 3 3L8 19z", "M13.5 7.5l3 3"]),
         "play.fill": Glyph(filled: true, paths: ["M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5z"]),
         "questionmark.circle": Glyph(

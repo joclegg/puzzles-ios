@@ -156,7 +156,7 @@ struct TwoToneGameView: View {
                 ) {
                     showGivens.toggle()
                 }
-                tool("paintbrush.pointed", pickColour ? "Pick a colour" : "Tap to cycle", "input_mode") {
+                tool("arrow.left.arrow.right", pickColour ? "Pick a colour" : "Tap to cycle", "input_mode") {
                     inputMode = pickColour ? TwoToneInputMode.tapToCycle : TwoToneInputMode.pickColour
                 }
                 if showHints {

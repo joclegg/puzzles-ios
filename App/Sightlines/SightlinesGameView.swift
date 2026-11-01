@@ -117,7 +117,7 @@ struct SightlinesGameView: View {
             }
             Spacer(minLength: 0)
             tool("arrow.uturn.backward", "Undo the last tap", tag: "undo", enabled: model.canUndo) { model.onUndo() }
-            tool("paintbrush.pointed", pickColour ? "Pick a colour" : "Tap to cycle", tag: "input_mode") {
+            tool("arrow.left.arrow.right", pickColour ? "Pick a colour" : "Tap to cycle", tag: "input_mode") {
                 inputMode = pickColour ? SightlinesSettings.tapToCycle : SightlinesSettings.pickColour
             }
             if showHints {
