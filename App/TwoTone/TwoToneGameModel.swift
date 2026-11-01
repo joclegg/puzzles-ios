@@ -10,6 +10,7 @@ final class TwoToneGameModel {
     private let store: TwoToneStore
     private let record: TwoToneGameRecord
     private(set) var game: GameState
+    var colour = Tile.red
     private(set) var hints: Int
     private(set) var newBest = false
     private(set) var resultSaved = false
@@ -50,8 +51,8 @@ final class TwoToneGameModel {
         Int64(ProcessInfo.processInfo.systemUptime * 1000)
     }
 
-    func onTile(_ cell: Int) {
-        move { $0.tap(cell) }
+    func onTile(_ cell: Int, pickColour: Bool) {
+        move { pickColour ? $0.paint(cell, colour: colour) : $0.tap(cell) }
     }
 
     func onUndo() {

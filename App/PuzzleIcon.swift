@@ -11,6 +11,7 @@ enum PuzzleIcon {
         "arrow.clockwise": Glyph(filled: false, paths: ["M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", "M3 3v5h5"]),
         "arrow.uturn.backward": Glyph(filled: false, paths: ["M9 14L4 9l5-5", "M4 9h10.5a5.5 5.5 0 0 1 0 11H11"]),
         "arrow.uturn.forward": Glyph(filled: false, paths: ["M15 14l5-5-5-5", "M20 9H9.5a5.5 5.5 0 0 0 0 11H13"]),
+        "arrow.left.arrow.right": Glyph(filled: false, paths: ["M8 3 4 7l4 4", "M4 7h16", "m16 21 4-4-4-4", "M20 17H4"]),
         "book.fill": Glyph(
             filled: false, paths: ["M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z", "M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"]),
         "calendar": Glyph(
