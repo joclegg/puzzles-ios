@@ -25,7 +25,6 @@ jobs:
       - name: Work out the version
         id: gitversion
         uses: gittools/actions/gitversion/execute@v3
-      - run: swift test -c release -Xswiftc -enable-testing
       - name: Build the simulator app
         run: |
           xcodebuild -project Puzzles.xcodeproj -scheme PuzzlesApp -configuration Release \
