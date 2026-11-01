@@ -11,6 +11,7 @@ struct LauncherView: View {
         let dark: UInt32
         let home: @MainActor () -> AnyView
         let fixture: @MainActor (String) -> AnyView?
+        var banks: [String] = []
 
         var tab: SettingsTab {
             SettingsTab.games.first { $0.tag == id } ?? .sudoku
@@ -39,7 +40,7 @@ struct LauncherView: View {
         Entry(
             id: "sudoku", name: "Sudoku", detail: "Classic and killer, from 6x6 to evil", icon: AnyView(SudokuGameIcon()), light: 0x1565D8,
             dark: 0x7DB5FF,
-            home: SudokuGame.home, fixture: SudokuGame.fixture
+            home: SudokuGame.home, fixture: SudokuGame.fixture, banks: ["sudoku/"]
         ),
         Entry(
             id: "solitaire", name: "Solitaire", detail: "Klondike, draw 1 or 3, or reverse", icon: AnyView(SolitaireGameIcon()),
@@ -61,22 +62,22 @@ struct LauncherView: View {
             id: "five_letters", name: "Five Letters", detail: "Guess the word in six tries, a new one every day",
             icon: AnyView(FiveLettersGameIcon()),
             light: 0x4F9A53, dark: 0x72BF6D,
-            home: FiveLettersGame.home, fixture: FiveLettersGame.fixture
+            home: FiveLettersGame.home, fixture: FiveLettersGame.fixture, banks: ["words/"]
         ),
         Entry(
             id: "kakuro", name: "Kakuro", detail: "Cross sums: runs of different digits that add up", icon: AnyView(KakuroGameIcon()),
             light: 0x7C5CD6, dark: 0xA993F2,
-            home: KakuroGame.home, fixture: KakuroGame.fixture
+            home: KakuroGame.home, fixture: KakuroGame.fixture, banks: ["kakuro/"]
         ),
         Entry(
             id: "slide_out", name: "Slide Out", detail: "Slide the blocks to free the red one", icon: AnyView(SlideOutGameIcon()),
             light: 0xC27A2C, dark: 0xE3A85C,
-            home: SlideOutGame.home, fixture: SlideOutGame.fixture
+            home: SlideOutGame.home, fixture: SlideOutGame.fixture, banks: ["slideout/"]
         ),
         Entry(
             id: "word_wheel", name: "Word Wheel", detail: "Swipe the letters to fill the crossword", icon: AnyView(WordWheelGameIcon()),
             light: 0x4F5BD5, dark: 0x939BFF,
-            home: WordWheelGame.home, fixture: WordWheelGame.fixture
+            home: WordWheelGame.home, fixture: WordWheelGame.fixture, banks: ["wordwheel/"]
         ),
     ]
 
@@ -115,7 +116,13 @@ struct LauncherView: View {
     private func destination(_ route: DailyRoute) -> some View {
         switch route {
         case .game(let tab):
-            entries.first { $0.tab == tab }?.home()
+            if let entry = entries.first(where: { $0.tab == tab }) {
+                if entry.banks.isEmpty {
+                    entry.home()
+                } else {
+                    BankGate(prefixes: entry.banks) { entry.home() }
+                }
+            }
         case .calendar(let tab):
             DailyCalendarView(tab: tab)
         }

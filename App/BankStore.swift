@@ -13,12 +13,17 @@ actor BankStore {
     private static let baseURL = URL(string: "https://joclegg.github.io/puzzles-data/")!
 
     private let directory: URL
+    private var updating: Task<Void, Error>?
 
     init(directory: URL = URL.applicationSupportDirectory.appending(path: "puzzles-data")) {
         self.directory = directory
     }
 
     var isReady: Bool {
+        isReady(prefixes: [""])
+    }
+
+    func isReady(prefixes: [String]) -> Bool {
         seedFromHost()
         let manifestURL = directory.appending(path: "manifest.json")
         guard let data = try? Data(contentsOf: manifestURL),
@@ -26,10 +31,29 @@ actor BankStore {
         else {
             return false
         }
-        return manifest.files.keys.allSatisfy { Self.exists(directory.appending(path: $0)) }
+        return manifest.files.keys
+            .filter { path in prefixes.contains { path.hasPrefix($0) } }
+            .allSatisfy { Self.exists(directory.appending(path: $0)) }
     }
 
-    func update() async throws {
+    func ensureReady(prefixes: [String] = [""]) async throws {
+        if isReady(prefixes: prefixes) {
+            return
+        }
+        try await refresh()
+    }
+
+    func refresh() async throws {
+        if let updating {
+            return try await updating.value
+        }
+        let task = Task { try await self.update() }
+        updating = task
+        defer { updating = nil }
+        try await task.value
+    }
+
+    private func update() async throws {
         let (manifestData, _) = try await URLSession.shared.data(from: Self.baseURL.appending(path: "manifest.json"))
         let manifest = try JSONDecoder().decode(Manifest.self, from: manifestData)
         for (path, entry) in manifest.files {
