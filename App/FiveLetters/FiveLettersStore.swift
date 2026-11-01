@@ -192,7 +192,8 @@ enum FiveLettersDaily2 {
 }
 
 extension FiveLettersGameRecord: SyncedRecord {
-    static func fromSync(_ fields: SyncFields, uuid: String, updatedAt: Int64, existing: [FiveLettersGameRecord]) -> FiveLettersGameRecord? {
+    static func fromSync(_ fields: SyncFields, uuid: String, updatedAt: Int64, existing: [FiveLettersGameRecord]) -> FiveLettersGameRecord?
+    {
         FiveLettersGameRecord(sync: fields, uuid: uuid, updatedAt: updatedAt)
     }
 }

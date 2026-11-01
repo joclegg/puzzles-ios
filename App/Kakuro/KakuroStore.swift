@@ -221,7 +221,6 @@ enum KakuroBank {
     }
 }
 
-
 extension KakuroGameEntity: SyncedRecord {
     static func fromSync(_ fields: SyncFields, uuid: String, updatedAt: Int64, existing: [KakuroGameEntity]) -> KakuroGameEntity? {
         KakuroGameEntity(sync: fields, id: (existing.map(\.id).max() ?? 0) + 1, uuid: uuid, updatedAt: updatedAt)

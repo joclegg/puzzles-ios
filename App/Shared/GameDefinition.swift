@@ -1,4 +1,5 @@
 import PuzzlesCore
+import PuzzlesSync
 import SwiftData
 import SwiftUI
 

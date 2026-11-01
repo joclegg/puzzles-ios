@@ -1,5 +1,6 @@
 #if DEBUG
     import Foundation
+    import PuzzlesCore
     import SudokuEngine
 
     enum SudokuFixtures {

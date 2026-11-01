@@ -246,9 +246,11 @@ enum SolitaireDealer {
 
     static func winnableSeeds(drawMode: DrawMode, order: BuildOrder, enabled: Bool) async -> [Int64]? {
         guard enabled,
-            let lines = await attempt("Solitaire winnable deals", {
-                try await BankStore.shared.lines(WinnableDeals.bankPath(drawMode: drawMode, order: order))
-            })
+            let lines = await attempt(
+                "Solitaire winnable deals",
+                {
+                    try await BankStore.shared.lines(WinnableDeals.bankPath(drawMode: drawMode, order: order))
+                })
         else {
             return nil
         }
