@@ -1,3 +1,5 @@
+import PuzzlesCore
+
 public enum Move: Hashable, Sendable {
     case draw
     case transfer(from: Pile, count: Int, to: Pile)
@@ -223,33 +225,5 @@ public struct GameState: Sendable, Equatable {
         var next = self
         next.selection = nil
         return next
-    }
-}
-
-public struct GameTimer: Sendable, Equatable {
-    public let accumulatedMs: Int64
-    public let runningSinceMs: Int64?
-
-    public init(accumulatedMs: Int64 = 0, runningSinceMs: Int64? = nil) {
-        self.accumulatedMs = accumulatedMs
-        self.runningSinceMs = runningSinceMs
-    }
-
-    public func start(nowMs: Int64) -> GameTimer {
-        if runningSinceMs != nil {
-            return self
-        }
-        return GameTimer(accumulatedMs: accumulatedMs, runningSinceMs: nowMs)
-    }
-
-    public func pause(nowMs: Int64) -> GameTimer {
-        guard let runningSinceMs else {
-            return self
-        }
-        return GameTimer(accumulatedMs: accumulatedMs + (nowMs - runningSinceMs), runningSinceMs: nil)
-    }
-
-    public func elapsedMs(nowMs: Int64) -> Int64 {
-        accumulatedMs + (runningSinceMs.map { nowMs - $0 } ?? 0)
     }
 }

@@ -1,5 +1,6 @@
 import Foundation
 import KakuroEngine
+import PuzzlesCore
 
 @MainActor
 @Observable
