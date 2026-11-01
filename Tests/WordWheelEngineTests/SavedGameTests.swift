@@ -110,15 +110,6 @@ struct SavedGameTests {
     }
 
     @Test(
-        "given a duration when formatted then it shows hours only when needed",
-        arguments: [(Int64(0), "0:00"), (65_000, "1:05"), (3_725_000, "1:02:05")]
-    )
-    func duration(ms: Int64, expected: String) {
-        // Assert
-        #expect(formatDuration(ms) == expected)
-    }
-
-    @Test(
         "given a guess result when its message is read then it matches the game's wording",
         arguments: [
             (Guess.found, "Nice!"), (.bonus, "Bonus word!"), (.already, "Already found"), (.notAWord, "Not a word"),

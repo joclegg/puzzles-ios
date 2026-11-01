@@ -105,17 +105,6 @@ struct PuzzleRefTests {
         #expect(stats == SizeStats(size: 3, played: 1, solved: 0, bestMs: nil, averageMs: nil))
     }
 
-    @Test(
-        "given a duration when it is formatted then it matches Android",
-        arguments: [(Int64(0), "0:00"), (65_000, "1:05"), (3_605_000, "1:00:05"), (36_610_999, "10:10:10")])
-    func duration(ms: Int64, text: String) {
-        // Act
-        let formatted = formatDuration(ms: ms)
-
-        // Assert
-        #expect(formatted == text)
-    }
-
     @Test("given a selected cell with a placed digit when combination lines are made then the placed digit is flagged")
     func combinationLines() {
         // Arrange

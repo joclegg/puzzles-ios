@@ -1,3 +1,4 @@
+import PuzzlesCore
 import SudokuEngine
 import SwiftUI
 

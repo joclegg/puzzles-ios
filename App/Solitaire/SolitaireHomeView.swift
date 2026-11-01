@@ -404,10 +404,7 @@ struct SolitaireHistoryView: View {
     }
 
     private static func date(_ ms: Int64) -> String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_GB")
-        formatter.dateFormat = "d MMM yyyy, HH:mm"
-        return formatter.string(from: Date(timeIntervalSince1970: Double(ms) / 1000))
+        Theme.historyDate(ms: ms)
     }
 }
 

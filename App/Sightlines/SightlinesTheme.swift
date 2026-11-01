@@ -1,22 +1,6 @@
 import SwiftUI
 import UIKit
 
-extension Color {
-    fileprivate init(light: UInt32, dark: UInt32) {
-        self.init(
-            uiColor: UIColor { traits in
-                let value = traits.userInterfaceStyle == .dark ? dark : light
-                return UIColor(
-                    red: CGFloat(value >> 16 & 0xFF) / 255,
-                    green: CGFloat(value >> 8 & 0xFF) / 255,
-                    blue: CGFloat(value & 0xFF) / 255,
-                    alpha: 1
-                )
-            }
-        )
-    }
-}
-
 enum SightlinesColors {
     static let emptyTile = Color(light: 0xE6E9EE, dark: 0x2A2E35)
     static let red = Color(light: 0xE0603F, dark: 0xD5583A)

@@ -1,3 +1,4 @@
+import PuzzlesCore
 import SwiftUI
 import TwoToneEngine
 
@@ -8,19 +9,14 @@ struct TwoToneStatsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Stats").font(.largeTitle.bold())
-                VStack(spacing: 8) {
-                    row("Size", "Solved", "Best", "Average", header: true, tag: nil)
-                    ForEach(store.stats, id: \.size) { stats in
-                        row(
-                            sizeLabel(stats.size),
-                            "\(stats.solved)/\(stats.played)",
-                            stats.bestMs.map(formatDuration) ?? "–",
-                            stats.averageMs.map(formatDuration) ?? "–",
-                            header: false,
-                            tag: "size_\(stats.size)"
-                        )
+                StatsTable(
+                    header: ["Size", "Solved", "Best", "Average"],
+                    rows: store.stats.map {
+                        StatsRow.size(
+                            $0.size, label: sizeLabel($0.size), solved: $0.solved, played: $0.played, bestMs: $0.bestMs,
+                            averageMs: $0.averageMs)
                     }
-                }
+                )
                 .padding(16)
                 .background(TwoToneColors.accent.opacity(0.08), in: .rect(cornerRadius: 16))
                 Text("Solved out of played. Abandoned puzzles count as played. Daily puzzles count under their size.")
@@ -31,26 +27,9 @@ struct TwoToneStatsView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
     }
-
-    private func row(_ size: String, _ solved: String, _ best: String, _ average: String, header: Bool, tag: String?) -> some View {
-        HStack {
-            Text(size).frame(maxWidth: .infinity, alignment: .leading)
-            Text(solved).frame(maxWidth: .infinity, alignment: .leading).accessibilityIdentifier(tag.map { "\($0)_solved" } ?? "")
-            Text(best).frame(maxWidth: .infinity, alignment: .leading).accessibilityIdentifier(tag.map { "\($0)_best" } ?? "")
-            Text(average).frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .fontWeight(header ? .semibold : .regular)
-    }
 }
 
 struct TwoToneHistoryView: View {
-    private static let dateFormat: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_GB")
-        formatter.dateFormat = "d MMM yyyy, HH:mm"
-        return formatter
-    }()
-
     let store: TwoToneStore
     let onOpen: (Int64) -> Void
 
@@ -107,7 +86,6 @@ struct TwoToneHistoryView: View {
 
     private func item(_ game: TwoToneGameRecord) -> some View {
         let status = game.gameStatus
-        let date = Date(timeIntervalSince1970: TimeInterval(game.startedAt) / 1000)
         return Button {
             if status == .inProgress {
                 onOpen(game.id)
@@ -118,7 +96,7 @@ struct TwoToneHistoryView: View {
             HStack {
                 VStack(alignment: .leading) {
                     Text(game.title).font(.subheadline.weight(.semibold))
-                    Text(Self.dateFormat.string(from: date)).font(.caption).foregroundStyle(.secondary)
+                    Text(Theme.historyDate(ms: game.startedAt)).font(.caption).foregroundStyle(.secondary)
                 }
                 Spacer()
                 VStack(alignment: .trailing) {

@@ -108,19 +108,6 @@ public enum BankPick {
     }
 }
 
-public func formatDuration(_ ms: Int64) -> String {
-    let total = ms / 1000
-    let hours = total / 3600
-    let minutes = total % 3600 / 60
-    let seconds = total % 60
-    let secondsText = seconds < 10 ? "0\(seconds)" : "\(seconds)"
-    if hours > 0 {
-        let minutesText = minutes < 10 ? "0\(minutes)" : "\(minutes)"
-        return "\(hours):\(minutesText):\(secondsText)"
-    }
-    return "\(minutes):\(secondsText)"
-}
-
 public func levelLabel(_ difficulty: Difficulty?) -> String {
     guard let difficulty else {
         return "Expert+"

@@ -1,3 +1,4 @@
+import PuzzlesCore
 import SolitaireEngine
 import SwiftUI
 

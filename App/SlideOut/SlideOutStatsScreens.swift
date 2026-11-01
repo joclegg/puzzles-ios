@@ -1,3 +1,4 @@
+import PuzzlesCore
 import SlideOutEngine
 import SwiftData
 import SwiftUI

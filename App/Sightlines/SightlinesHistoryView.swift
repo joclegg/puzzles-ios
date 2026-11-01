@@ -1,3 +1,4 @@
+import PuzzlesCore
 import SightlinesEngine
 import SwiftUI
 
@@ -75,7 +76,7 @@ struct SightlinesHistoryView: View {
                 }
                 Spacer()
                 VStack(alignment: .trailing) {
-                    Text(formatDuration(ms: game.elapsedMs))
+                    Text(formatDuration(game.elapsedMs))
                     Text(game.hints > 0 ? "\(game.status.label) · \(game.hints) hints" : game.status.label)
                         .font(.caption)
                         .foregroundStyle(.secondary)
@@ -100,9 +101,6 @@ struct SightlinesHistoryView: View {
     }
 
     private func started(_ game: SavedGame) -> String {
-        let format = DateFormatter()
-        format.locale = Locale(identifier: "en_GB")
-        format.dateFormat = "d MMM yyyy, HH:mm"
-        return format.string(from: Date(timeIntervalSince1970: Double(game.startedAt) / 1000))
+        Theme.historyDate(ms: game.startedAt)
     }
 }

@@ -122,7 +122,7 @@ struct SightlinesHomeView: View {
                     .overlay { PuzzleIcon.image("play.fill").foregroundStyle(Color(uiColor: .systemBackground)) }
                 VStack(alignment: .leading) {
                     Text("Continue").font(.headline)
-                    Text("\(game.ref.title) · \(formatDuration(ms: game.elapsedMs))")
+                    Text("\(game.ref.title) · \(formatDuration(game.elapsedMs))")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
@@ -208,7 +208,7 @@ struct SightlinesHomeView: View {
                     if let saved {
                         HStack(spacing: 6) {
                             Circle().fill(SightlinesColors.accent).frame(width: 6, height: 6)
-                            Text("In progress · \(formatDuration(ms: saved.elapsedMs))").font(.caption).foregroundStyle(.secondary)
+                            Text("In progress · \(formatDuration(saved.elapsedMs))").font(.caption).foregroundStyle(.secondary)
                                 .lineLimit(1)
                         }
                     }
@@ -231,7 +231,7 @@ struct SightlinesHomeView: View {
     private func resumeDialog(_ saved: SavedGame) -> some View {
         SightlinesDialog(tag: "resume_dialog", dismiss: { resumeChoice = nil }) {
             Text(saved.ref.title).font(.title3.weight(.semibold))
-            Text("You have a puzzle in progress (\(formatDuration(ms: saved.elapsedMs))).")
+            Text("You have a puzzle in progress (\(formatDuration(saved.elapsedMs))).")
             HStack(spacing: 16) {
                 Spacer()
                 Text("New puzzle")

@@ -11,18 +11,6 @@ struct SavedGameTests {
         SavedGame(id: id, ref: PuzzleRef(id: refId, puzzle: puzzle), elapsedMs: elapsed, status: status, startedAt: 0)
     }
 
-    @Test(
-        "given a duration when formatted then hours only show when needed",
-        arguments: [(Int64(0), "0:00"), (65_000, "1:05"), (3_725_000, "1:02:05")]
-    )
-    func duration(ms: Int64, text: String) {
-        // Act
-        let result = formatDuration(ms: ms)
-
-        // Assert
-        #expect(result == text)
-    }
-
     @Test("given a daily ref when read then its slot and title name the date")
     func dailyRef() {
         // Arrange

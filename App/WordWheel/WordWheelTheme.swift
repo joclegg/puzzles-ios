@@ -23,20 +23,7 @@ enum WheelColors {
     static let accent = dynamic(0x4F5BD5, 0x939BFF)
 
     private static func dynamic(_ light: UInt32, _ dark: UInt32) -> Color {
-        Color(
-            uiColor: UIColor { traits in
-                color(traits.userInterfaceStyle == .dark ? dark : light)
-            }
-        )
-    }
-
-    private static func color(_ hex: UInt32) -> UIColor {
-        UIColor(
-            red: CGFloat((hex >> 16) & 0xFF) / 255,
-            green: CGFloat((hex >> 8) & 0xFF) / 255,
-            blue: CGFloat(hex & 0xFF) / 255,
-            alpha: 1
-        )
+        Color(light: light, dark: dark)
     }
 }
 

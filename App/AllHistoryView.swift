@@ -1,5 +1,6 @@
 import FiveLettersEngine
 import KakuroEngine
+import PuzzlesCore
 import SightlinesEngine
 import SlideOutEngine
 import SolitaireEngine
@@ -26,7 +27,7 @@ enum AllHistory {
     }
 
     private static func time(_ ms: Int64) -> String {
-        SudokuEngine.formatDuration(ms)
+        formatDuration(ms)
     }
 
     private static func withHints(_ label: String, _ hints: Int) -> String {
