@@ -15,15 +15,18 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ ${#FLOWS[@]} -eq 0 ]]; then
-  ALL=($(ls e2e/flows/*.yaml | sort))
-  if [[ -n "$PART" ]]; then
-    INDEX="${PART%/*}"
-    TOTAL="${PART#*/}"
-    for i in "${!ALL[@]}"; do
-      if [[ $((i % TOTAL)) -eq $((INDEX - 1)) ]]; then
-        FLOWS+=("${ALL[$i]}")
+  if [[ -n "$PART" || ${#TAGS[@]} -gt 0 ]]; then
+    ALL=()
+    for f in $(ls e2e/flows/*.yaml | sort); do
+      if [[ ${#TAGS[@]} -eq 0 ]] || grep -qE '^[[:space:]]*-[[:space:]]*fast[[:space:]]*$' "$f"; then
+        ALL+=("$f")
       fi
     done
+  fi
+  if [[ -n "$PART" ]]; then
+    FLOWS=($(printf '%s\n' ${ALL[@]+"${ALL[@]}"} | e2e/partition.sh "$PART" e2e/flow-times.txt))
+  elif [[ ${#TAGS[@]} -gt 0 ]]; then
+    FLOWS=(${ALL[@]+"${ALL[@]}"})
   else
     FLOWS=(e2e/flows)
   fi
@@ -49,8 +52,12 @@ xcrun simctl bootstatus "$UDID" -b >/dev/null
 
 e2e/fetch-banks.sh
 
-xcodebuild -project Puzzles.xcodeproj -scheme PuzzlesApp \
-  -destination "platform=iOS Simulator,id=$UDID" -derivedDataPath build build -quiet
-xcrun simctl install "$UDID" build/Build/Products/Debug-iphonesimulator/Puzzles.app
+APP="${E2E_APP_PATH:-}"
+if [[ -z "$APP" ]]; then
+  xcodebuild -project Puzzles.xcodeproj -scheme PuzzlesApp \
+    -destination "platform=iOS Simulator,id=$UDID" -derivedDataPath build build -quiet
+  APP=build/Build/Products/Debug-iphonesimulator/Puzzles.app
+fi
+xcrun simctl install "$UDID" "$APP"
 
 maestro --device "$UDID" test ${TAGS[@]+"${TAGS[@]}"} "${FLOWS[@]}"
