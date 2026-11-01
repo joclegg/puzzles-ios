@@ -19,6 +19,7 @@ Puzzles for iOS: eight puzzle games, playable offline after a first download of 
 - `e2e/run.sh`: build, install and run every flow on one simulator
 - `e2e/run.sh --fast`, `e2e/run.sh --part I/N`, `e2e/run.sh e2e/flows/<flow>.yaml`: run some of them
 - `E2E_DEVICE=<simulator name> e2e/run.sh`: run on another simulator than `iPhone 17`
+- `E2E_APP_PATH=<path to Puzzles.app> e2e/run.sh`: install that build instead of building
 
 ## Structure
 
@@ -70,4 +71,6 @@ Rules marked (lint) are enforced by `swift-format lint`, `scripts/verify-no-comm
 - MUST give every element a flow touches an `accessibilityIdentifier`, using Android's test tag. Fixtures are debug-only, through the `fixture` launch argument.
 - MUST run flows on a simulator kept for them, not one someone is using by hand. Xcode 27.2 has no `Simulator.app`; use `DeviceHub.app` in `/Applications/Xcode.app/Contents/Applications/`.
 - Maestro needs Java 21. `e2e/run.sh` uses Homebrew's `openjdk@21` when it's installed.
+- CI builds the app once in the `build` job and runs the flows in 5 shards, the most macOS jobs the free plan runs at once. Pull requests and pushes to `main` run every flow: CI is the gate to `main`.
+- `--part I/N` splits flows by `e2e/partition.sh`, longest first onto the least loaded shard, using the seconds in `e2e/flow-times.txt`. A flow missing from it counts as the median. Update it from a CI run's `[Passed]` lines when flows are added or get much slower.
 - `e2e/run.sh` runs `e2e/fetch-banks.sh`, which puts the banks in `/tmp/puzzles-e2e-banks`. Debug simulator builds copy them in on first launch, because the CI simulator's TLS fails, so e2e runs never exercise the first download.
