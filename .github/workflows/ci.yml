@@ -64,7 +64,7 @@ jobs:
         with:
           name: puzzles-app
       - run: ditto -x -k Puzzles.app.zip .
-      - run: e2e/run.sh ${{ github.event_name == 'pull_request' && '--fast' || '' }} --part ${{ matrix.part }}/5
+      - run: e2e/run.sh --part ${{ matrix.part }}/5
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
