@@ -161,8 +161,8 @@ private struct SudokuHintsRows: View {
 
     var body: some View {
         SudokuToggleRow(
-            key: SettingToggle.showHints.key(mode), fallback: SettingToggle.showHints.defaultFor(mode), title: "Hints", detail: "Show the hint button.",
-            id: "setting_show_hints")
+            key: SettingToggle.showHints.key(mode), fallback: SettingToggle.showHints.defaultFor(mode), title: "Hints",
+            detail: "Show the hint button.", id: "setting_show_hints")
         if hints {
             HStack {
                 VStack(alignment: .leading) {

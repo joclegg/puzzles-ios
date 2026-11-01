@@ -27,7 +27,7 @@ Puzzles for iOS: eight puzzle games, playable offline after a first download of 
 - `Sources/PuzzlesSync/`: PKCE and sign-in URLs, `SupabaseAuth`, `SyncEngine`
 - `App/<Game>/`: one game's screens, store and fixtures. `<Game>Game.swift` is its entry point
 - `App/LauncherView.swift`, `SettingsHubView.swift`, `WinDialog.swift`, `DailyCalendar.swift`, `TodaysDailies.swift`, `PuzzleIcon.swift`, `BankStore.swift`, `BackSwipe.swift`: shared by every game
-- `App/RootView.swift`: holds the launcher back until the banks are on the device
+- `App/RootView.swift`: starts the bank download in the background; `BankGate` holds back only a game whose banks are not on the device yet
 - `App/Sync/`: `SyncCenter`, sign-in, the per-game sync sources and settings mapping
 - `e2e/flows/`: Maestro flows, one behaviour per file, named `<game>_<behaviour>.yaml`
 - `Puzzles-Info.plist`: only the `com.joclegg.puzzles://` URL scheme; the rest is generated
