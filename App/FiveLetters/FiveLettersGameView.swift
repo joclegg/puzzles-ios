@@ -172,7 +172,7 @@ struct FiveLettersGameView: View {
                     .fixedSize()
                     .accessibilityIdentifier("game_title")
                 if game.hardMode {
-                    Text("Hard mode").font(.caption2)
+                    Text("Hard mode").font(.caption2).accessibilityIdentifier("hard_mode")
                 }
             }
         }

@@ -1,0 +1,29 @@
+appId: com.joclegg.puzzles
+name: Daily calendar - choosing a level for today opens its game
+---
+- launchApp:
+    clearState: true
+    arguments:
+      helpers: "on"
+- waitForAnimationToEnd:
+    timeout: 1500
+- scrollUntilVisible:
+    element:
+      id: "game_sudoku"
+    centerElement: true
+- tapOn:
+    id: "game_sudoku"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "daily_calendar"
+- tapOn:
+    id: "daily_today"
+- assertVisible:
+    id: "daily_choice"
+- tapOn:
+    id: "daily_play_classic_fast"
+- extendedWaitUntil:
+    visible:
+      id: "game_title"
+    timeout: 15000

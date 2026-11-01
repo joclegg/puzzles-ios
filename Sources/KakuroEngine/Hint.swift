@@ -18,7 +18,7 @@ extension GameState {
             return Hint(cell: wrong, digit: puzzle.solution[wrong], message: "This cell is wrong.")
         }
         let empty = puzzle.runsOf.keys.filter { values[$0] == 0 }.sorted()
-        guard let first = empty.first else {
+        if empty.isEmpty {
             return nil
         }
         let candidates = narrowedCandidates(empty: empty)
@@ -43,9 +43,16 @@ extension GameState {
                 }
             }
         }
-        let open = empty.filter { candidates[$0] != 0 }
-        let cell = open.min { candidates[$0].nonzeroBitCount < candidates[$1].nonzeroBitCount } ?? first
-        let allowed = Combinations.digitsOf(candidates[cell] == 0 ? allDigits : candidates[cell])
+        return fewestCandidatesHint()
+    }
+
+    public func fewestCandidatesHint() -> Hint? {
+        let empty = puzzle.runsOf.keys.filter { values[$0] == 0 }.sorted()
+        guard let cell = empty.min(by: { runCandidates(cell: $0).nonzeroBitCount < runCandidates(cell: $1).nonzeroBitCount })
+        else {
+            return nil
+        }
+        let allowed = Combinations.digitsOf(runCandidates(cell: cell))
         let runs = (puzzle.runsOf[cell] ?? []).sorted { $0.isAcross && !$1.isAcross }
             .map { "\($0.isAcross ? "across" : "down") run (\($0.sum) in \($0.cells.count))" }
             .joined(separator: " and ")
@@ -54,6 +61,12 @@ extension GameState {
             digit: puzzle.solution[cell],
             message: "This cell's \(runs) only allow \(listDigits(allowed))."
         )
+    }
+
+    private func runCandidates(cell: Int) -> Int {
+        (puzzle.runsOf[cell] ?? []).reduce(allDigits) { mask, run in
+            mask & fittingMasks(run: run).reduce(0) { $0 | $1 } & ~placedMask(run: run)
+        }
     }
 
     private func narrowedCandidates(empty: [Int]) -> [Int] {

@@ -152,9 +152,14 @@ enum GameSyncSources {
                 "sightlines_",
                 [
                     ("markBrokenRules", "mark_broken_rules", false), ("showTimer", "show_timer", true),
-                    ("showProgress", "show_progress", false), ("showSeenCount", "show_seen_count", false),
+                    ("showProgress", "show_progress", false), ("showSeen", "show_seen_count", false),
                     ("showHints", "show_hints", false), ("showTutorial", "show_tutorial", true), ("allowReveal", "allow_reveal", false),
-                ]) + [.upper("inputMode", "sightlines_input_mode", "TAP_TO_CYCLE")]
+                ]) + [.upper("inputMode", "sightlines_input_mode", "TAP_TO_CYCLE")],
+            extraWrite: { json in
+                if json["showSeen"] == nil, let value = json["showSeenCount"] as? Bool {
+                    UserDefaults.standard.set(value, forKey: SightlinesSettings.showSeenCount)
+                }
+            }
         ),
         SettingsBridge(
             game: "fiveLetters",
@@ -206,7 +211,9 @@ enum GameSyncSources {
             let toggles = SettingToggle.allCases.filter { !assists.contains($0) }.map { toggle in
                 SettingField.bool(jsonName(fromEnum: toggle.rawValue), toggle.key(mode), toggle.defaultFor(mode))
             }
-            return toggles + [
+            let shared = assists.map { SettingField.bool(jsonName(fromEnum: $0.rawValue), $0.key(mode), $0.defaultFor(mode)) }
+            return toggles + shared + [
+                .upper("hintStyle", SettingKeys.hintStyle(mode), HintStyle.point.rawValue),
                 .upper("mistakeCheck", SettingKeys.mistakes(mode), ModeSettings.defaultMistakeCheck.rawValue),
                 .upper("sameNumberStyle", SettingKeys.sameNumber(mode), ModeSettings.defaultHighlightStyle.rawValue),
                 .upper("notesStyle", SettingKeys.notes(mode), ModeSettings.defaultHighlightStyle.rawValue),
@@ -234,12 +241,14 @@ enum GameSyncSources {
             },
             extraWrite: { json in
                 for mode in GameMode.allCases {
+                    let inner = json[mode == .classic ? "classic" : "killer"] as? [String: Any] ?? [:]
                     for assist in assists {
-                        if let value = json[jsonName(fromEnum: assist.rawValue)] as? Bool {
+                        let name = jsonName(fromEnum: assist.rawValue)
+                        if inner[name] == nil, let value = json[name] as? Bool {
                             UserDefaults.standard.set(value, forKey: assist.key(mode))
                         }
                     }
-                    if let value = json["hintStyle"] as? String {
+                    if inner["hintStyle"] == nil, let value = json["hintStyle"] as? String {
                         UserDefaults.standard.set(enumName(fromJSON: value), forKey: SettingKeys.hintStyle(mode))
                     }
                 }
