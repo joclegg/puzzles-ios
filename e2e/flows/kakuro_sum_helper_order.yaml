@@ -17,8 +17,18 @@ name: Kakuro - the sum helper starts increasing and can list combinations in dec
     timeout: 1500
 - assertNotVisible:
     id: "setting_combination_order_increasing"
+- scrollUntilVisible:
+    element:
+      id: "setting_show_combinations"
+    centerElement: true
 - tapOn:
     id: "setting_show_combinations"
+- waitForAnimationToEnd:
+    timeout: 1500
+- scrollUntilVisible:
+    element:
+      id: "setting_combination_order_increasing"
+    centerElement: true
 - assertVisible:
     id: "setting_combination_order_increasing"
     selected: true
