@@ -47,7 +47,7 @@ final class GameSyncSource<Record: SyncedRecord>: SyncSource {
     }
 
     private var all: [Record] {
-        (try? context.fetch(FetchDescriptor<Record>())) ?? []
+        context.fetchOrEmpty(FetchDescriptor<Record>())
     }
 
     func changed(since: Int64) -> [SyncRow] {
@@ -68,7 +68,7 @@ final class GameSyncSource<Record: SyncedRecord>: SyncSource {
         if row.deleted {
             if let local {
                 context.delete(local)
-                try? context.save()
+                context.saveOrReport()
             }
             return
         }
@@ -79,7 +79,7 @@ final class GameSyncSource<Record: SyncedRecord>: SyncSource {
             context.delete(local)
         }
         context.insert(record)
-        try? context.save()
+        context.saveOrReport()
     }
 
     func settings() -> SyncSettings {
@@ -215,7 +215,7 @@ enum GameSyncSources {
             nested: [("classic", group(.classic)), ("killer", group(.killer))],
             extraRead: { json in
                 let context = SudokuStore.shared.context
-                let bests = (try? context.fetch(FetchDescriptor<SudokuPastBestRecord>())) ?? []
+                let bests = context.fetchOrEmpty(FetchDescriptor<SudokuPastBestRecord>())
                 json["pastBests"] = bests.map { best -> [String: Any] in
                     [
                         "mode": jsonName(fromEnum: best.mode), "difficulty": jsonName(fromEnum: best.difficulty),
@@ -240,7 +240,7 @@ enum GameSyncSources {
                     return
                 }
                 let context = SudokuStore.shared.context
-                let existing = (try? context.fetch(FetchDescriptor<SudokuPastBestRecord>())) ?? []
+                let existing = context.fetchOrEmpty(FetchDescriptor<SudokuPastBestRecord>())
                 for item in incoming {
                     let fields = SyncFields(json: item)
                     guard let mode = fields.enumValue("mode"), let difficulty = fields.enumValue("difficulty"),
@@ -254,7 +254,7 @@ enum GameSyncSources {
                         context.insert(SudokuPastBestRecord(mode: mode, difficulty: difficulty, bestMs: bestMs))
                     }
                 }
-                try? context.save()
+                context.saveOrReport()
             }
         )
     }

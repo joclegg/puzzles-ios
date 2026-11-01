@@ -104,7 +104,7 @@ final class TwoToneStore {
     var history: [TwoToneGameRecord] {
         _ = revision
         let order = [SortDescriptor(\TwoToneGameRecord.startedAt, order: .reverse), SortDescriptor(\TwoToneGameRecord.id, order: .reverse)]
-        return (try? context.fetch(FetchDescriptor(sortBy: order))) ?? []
+        return context.fetchOrEmpty(FetchDescriptor(sortBy: order))
     }
 
     var inProgress: [TwoToneGameRecord] {
@@ -184,7 +184,7 @@ final class TwoToneStore {
     }
 
     private func commit() {
-        try? context.save()
+        context.saveOrReport()
         revision += 1
     }
 }

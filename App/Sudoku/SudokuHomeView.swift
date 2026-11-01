@@ -118,7 +118,7 @@ struct SudokuHomeView: View {
 
     private func dailyTile(_ level: Difficulty, done: Bool, date: CalendarDay) -> some View {
         Button {
-            launch { try? await store.openDaily(mode: mode, difficulty: level, date: date) }
+            launch { await attempt("Sudoku daily") { try await store.openDaily(mode: mode, difficulty: level, date: date) } ?? nil }
         } label: {
             VStack(spacing: 4) {
                 Text(levelLabel(level)).font(.subheadline.weight(.semibold)).lineLimit(1).minimumScaleFactor(0.7)

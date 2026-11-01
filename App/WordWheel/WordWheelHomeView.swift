@@ -250,7 +250,7 @@ struct WordWheelHomeView: View {
         starting = true
         Task {
             defer { starting = false }
-            if let id = try? await work() {
+            if let id = await attempt("Word Wheel start", { try await work() }) {
                 openGame = id
             }
         }

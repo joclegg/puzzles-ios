@@ -32,7 +32,7 @@ enum SlideOutGame: GameDefinition {
         if let existing = SlideOutStore.inProgress(puzzleId: PuzzleRef.dailyId(date: date, level: level)) {
             return String(existing)
         }
-        guard let ref = try? await SlideOutBank.shared.daily(level, date: date) else {
+        guard let ref = await attempt("Slide Out bank", { try await SlideOutBank.shared.daily(level, date: date) }) else {
             return nil
         }
         return String(SlideOutStore.start(ref))

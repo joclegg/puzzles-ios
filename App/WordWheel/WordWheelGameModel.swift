@@ -25,7 +25,7 @@ final class WordWheelGameModel {
     }
 
     func load() async {
-        guard game == nil, let loaded = store.game(id: id), let list = try? await WordWheelBank.shared.words()
+        guard game == nil, let loaded = store.game(id: id), let list = await attempt("Word Wheel words", { try await WordWheelBank.shared.words() })
         else {
             return
         }
@@ -114,7 +114,7 @@ final class WordWheelGameModel {
     }
 
     func newPuzzle() async -> Int64 {
-        guard let level = saved?.ref.level, let puzzles = try? await WordWheelBank.shared.puzzles(level) else {
+        guard let level = saved?.ref.level, let puzzles = await attempt("Word Wheel bank", { try await WordWheelBank.shared.puzzles(level) }) else {
             return id
         }
         return store.start(.random(puzzles: puzzles, level: level, seed: Int64.random(in: .min ... .max)))

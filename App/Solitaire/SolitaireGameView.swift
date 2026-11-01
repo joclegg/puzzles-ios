@@ -66,7 +66,7 @@ struct SolitaireGameView: View {
             header
             HelpersButton { settingsOpen = true }
             if let state = model.game {
-                SolitaireTableView(model: model, state: state)
+                SolitaireBoardView(model: model, state: state)
                     .tourTarget("table")
             }
             if let message = model.hintMessage {

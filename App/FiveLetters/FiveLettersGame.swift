@@ -71,7 +71,7 @@ enum FiveLettersGame: GameDefinition {
         }
         switch daily {
         case .word:
-            guard let words = try? await store.words() else {
+            guard let words = await attempt("Five Letters words", { try await store.words() }) else {
                 return nil
             }
             return store.start(ref: .daily(words: words, date: date), hardMode: FiveLettersSetting.hardMode.current).uuid

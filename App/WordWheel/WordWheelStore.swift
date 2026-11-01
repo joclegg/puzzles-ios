@@ -202,7 +202,7 @@ final class WordWheelStore {
     }
 
     private func commit() {
-        try? context.save()
+        context.saveOrReport()
         refresh()
     }
 
@@ -210,7 +210,7 @@ final class WordWheelStore {
         let descriptor = FetchDescriptor<WordWheelGameEntity>(
             sortBy: [SortDescriptor(\.startedAt, order: .reverse), SortDescriptor(\.id, order: .reverse)]
         )
-        entities = (try? context.fetch(descriptor)) ?? []
+        entities = context.fetchOrEmpty(descriptor)
         history = entities.compactMap(\.model)
     }
 

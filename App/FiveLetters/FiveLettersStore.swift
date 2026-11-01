@@ -154,13 +154,13 @@ final class FiveLettersStore {
     private func write(_ game: SavedGame) {
         let uuid = game.uuid
         let descriptor = FetchDescriptor<FiveLettersGameRecord>(predicate: #Predicate { $0.uuid == uuid })
-        if let record = try? context.fetch(descriptor).first {
+        if let record = context.fetchOrEmpty(descriptor).first {
             record.apply(game, updatedAt: Self.now())
         }
     }
 
     private func commit() {
-        try? context.save()
+        context.saveOrReport()
         refresh()
     }
 
@@ -168,7 +168,7 @@ final class FiveLettersStore {
         let descriptor = FetchDescriptor<FiveLettersGameRecord>(
             sortBy: [SortDescriptor(\.startedAt, order: .reverse)]
         )
-        history = ((try? context.fetch(descriptor)) ?? []).map(\.game)
+        history = (context.fetchOrEmpty(descriptor)).map(\.game)
     }
 
     private static func now() -> Int64 {

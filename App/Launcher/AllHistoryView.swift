@@ -97,7 +97,7 @@ enum AllHistory {
     }
 
     private static var slideOut: [HistoryEntry] {
-        let records = (try? SlideOutStore.context.fetch(FetchDescriptor<SlideOutGameRecord>())) ?? []
+        let records = SlideOutStore.context.fetchOrEmpty(FetchDescriptor<SlideOutGameRecord>())
         return records.map { game in
             HistoryEntry(
                 id: "slide_out_\(game.id)", tab: .slideOut, title: game.title, startedAt: game.startedAt, time: time(game.elapsedMs),

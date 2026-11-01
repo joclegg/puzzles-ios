@@ -27,7 +27,7 @@ enum WordWheelGame: GameDefinition {
             return { solved.contains($0) }
         },
         open: { date, level in
-            (try? await WordWheelStore.shared.openDaily(level, date: date)).map(String.init)
+            await attempt("Word Wheel daily") { try await WordWheelStore.shared.openDaily(level, date: date) }.map(String.init)
         }
     )
 

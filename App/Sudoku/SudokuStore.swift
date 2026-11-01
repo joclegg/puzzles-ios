@@ -33,11 +33,11 @@ final class SudokuStore {
         _ = revision
         let descriptor = FetchDescriptor<SudokuGameRecord>(
             sortBy: [SortDescriptor(\.startedAt, order: .reverse), SortDescriptor(\.id, order: .reverse)])
-        return (try? context.fetch(descriptor)) ?? []
+        return context.fetchOrEmpty(descriptor)
     }
 
     private func commit() {
-        try? context.save()
+        context.saveOrReport()
         revision += 1
     }
 
@@ -68,7 +68,7 @@ final class SudokuStore {
     }
 
     private func pastBests() -> [FinishedGame] {
-        let rows = (try? context.fetch(FetchDescriptor<SudokuPastBestRecord>())) ?? []
+        let rows = context.fetchOrEmpty(FetchDescriptor<SudokuPastBestRecord>())
         return rows.compactMap { row in
             guard let mode = GameMode(rawValue: row.mode), let difficulty = Difficulty(name: row.difficulty) else {
                 return nil
@@ -134,7 +134,7 @@ final class SudokuStore {
     }
 
     private func linesOrEmpty(_ mode: GameMode, _ difficulty: Difficulty) async -> [String] {
-        (try? await lines(mode, difficulty)) ?? []
+        await attempt("Sudoku bank") { try await lines(mode, difficulty) } ?? []
     }
 
     func openDaily(mode: GameMode, difficulty: Difficulty, date: CalendarDay) async throws -> Int? {
@@ -211,12 +211,12 @@ final class SudokuStore {
         let descriptor = FetchDescriptor<SudokuGeneratedRecord>(
             predicate: #Predicate { $0.mode == modeName && $0.difficulty == level },
             sortBy: [SortDescriptor(\.id)])
-        return (try? context.fetch(descriptor)) ?? []
+        return context.fetchOrEmpty(descriptor)
     }
 
     @discardableResult
     private func insertGenerated(_ mode: GameMode, _ difficulty: Difficulty, _ puzzle: Puzzle, used: Bool) -> Int {
-        let all = (try? context.fetch(FetchDescriptor<SudokuGeneratedRecord>())) ?? []
+        let all = context.fetchOrEmpty(FetchDescriptor<SudokuGeneratedRecord>())
         let id = (all.map(\.id).max() ?? 0) + 1
         context.insert(
             SudokuGeneratedRecord(

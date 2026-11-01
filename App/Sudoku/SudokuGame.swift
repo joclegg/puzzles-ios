@@ -30,7 +30,10 @@ enum SudokuGame: GameDefinition {
             return { solved.contains(DailyIds.of(mode: $0.mode, difficulty: $0.level, date: date)) }
         },
         open: { date, option in
-            (try? await SudokuStore.shared.openDaily(mode: option.mode, difficulty: option.level, date: date)).map(String.init)
+            let id = await attempt("Sudoku daily") {
+                try await SudokuStore.shared.openDaily(mode: option.mode, difficulty: option.level, date: date)
+            }
+            return (id ?? nil).map(String.init)
         }
     )
 

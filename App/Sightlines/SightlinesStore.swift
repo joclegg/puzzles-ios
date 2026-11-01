@@ -127,7 +127,7 @@ final class SightlinesStore {
             game.status = .abandoned
             write(game)
         }
-        let records = (try? context.fetch(FetchDescriptor<SightlinesGameRecord>())) ?? []
+        let records = context.fetchOrEmpty(FetchDescriptor<SightlinesGameRecord>())
         let id = (records.map(\.id).max() ?? 0) + 1
         let now = Self.nowMs
         let game = SavedGame(id: id, ref: ref, startedAt: now)
@@ -159,14 +159,14 @@ final class SightlinesStore {
     private func write(_ game: SavedGame) {
         let id = game.id
         let descriptor = FetchDescriptor<SightlinesGameRecord>(predicate: #Predicate { $0.id == id })
-        guard let record = try? context.fetch(descriptor).first else {
+        guard let record = context.fetchOrEmpty(descriptor).first else {
             return
         }
         record.apply(game, updatedAt: Self.nowMs)
     }
 
     private func commit() {
-        try? context.save()
+        context.saveOrReport()
         reload()
     }
 
@@ -174,7 +174,7 @@ final class SightlinesStore {
         let order = [
             SortDescriptor(\SightlinesGameRecord.startedAt, order: .reverse), SortDescriptor(\SightlinesGameRecord.id, order: .reverse),
         ]
-        let records = (try? context.fetch(FetchDescriptor<SightlinesGameRecord>(sortBy: order))) ?? []
+        let records = context.fetchOrEmpty(FetchDescriptor<SightlinesGameRecord>(sortBy: order))
         games = records.compactMap(\.model)
     }
 }

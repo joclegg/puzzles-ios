@@ -173,18 +173,18 @@ final class KakuroStore {
     private func write(_ game: SavedGame, now: Int64) {
         let id = game.id
         let descriptor = FetchDescriptor<KakuroGameEntity>(predicate: #Predicate { $0.id == id })
-        try? context.fetch(descriptor).first?.update(from: game, updatedAt: now)
+        context.fetchOrEmpty(descriptor).first?.update(from: game, updatedAt: now)
     }
 
     private func commit() {
-        try? context.save()
+        context.saveOrReport()
     }
 
     private func reload() {
         let descriptor = FetchDescriptor<KakuroGameEntity>(
             sortBy: [SortDescriptor(\.startedAt, order: .reverse), SortDescriptor(\.id, order: .reverse)]
         )
-        games = ((try? context.fetch(descriptor)) ?? []).compactMap(\.model)
+        games = (context.fetchOrEmpty(descriptor)).compactMap(\.model)
     }
 
     private static func makeContainer() -> ModelContainer {

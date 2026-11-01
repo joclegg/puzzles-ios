@@ -241,7 +241,7 @@ struct FiveLettersHomeView: View {
         }
         starting = true
         Task {
-            try? await start()
+            await attempt("Five Letters start") { try await start() }
             starting = false
         }
     }
