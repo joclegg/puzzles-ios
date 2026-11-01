@@ -132,6 +132,9 @@ private struct KakuroToggleRow: View {
                     Text(detail).font(.caption).foregroundStyle(.secondary)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
+            .onTapGesture { isOn.toggle() }
         }
         .tint(KakuroColors.of(scheme).accent)
         .accessibilityIdentifier("setting_\(toggle.rawValue)")
