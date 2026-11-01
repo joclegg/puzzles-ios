@@ -8,9 +8,15 @@ private final class FakeHttp: Http, @unchecked Sendable {
     var savedGames = "[]"
     var settings = "[]"
     var refreshCode = 200
+    var rpcCode = 204
+    var headers: [[String: String]] = []
 
     func send(method: String, url: String, headers: [String: String], body: String?) async throws -> HttpResponse {
         sent.append((method, url, body))
+        self.headers.append(headers)
+        if url.contains("/rest/v1/rpc/") {
+            return HttpResponse(code: rpcCode, body: "")
+        }
         if url.contains("grant_type=refresh_token") {
             return HttpResponse(code: refreshCode, body: #"{"access_token":"new","refresh_token":"r2","expires_in":3600}"#)
         }
@@ -154,6 +160,49 @@ struct SyncEngineTests {
 
         // Assert
         #expect(!result)
+        #expect(http.sent.isEmpty)
+    }
+
+    @Test("given a session when the account is deleted then the RPC is called with the token")
+    func deletesAccount() async {
+        // Arrange
+        let (_, http, store, _, auth) = make(session: valid)
+
+        // Act
+        let deleted = await auth.deleteAccount()
+
+        // Assert
+        #expect(deleted)
+        #expect(http.sent.map(\.url) == ["\(SupabaseConfig.url)/rest/v1/rpc/delete_account"])
+        #expect(http.sent.first?.method == "POST")
+        #expect(http.headers.first?["Authorization"] == "Bearer a")
+        #expect(store.session != nil)
+    }
+
+    @Test("given a server error when the account is deleted then it fails and the player stays signed in")
+    func deleteAccountFails() async {
+        // Arrange
+        let (_, http, store, _, auth) = make(session: valid)
+        http.rpcCode = 500
+
+        // Act
+        let deleted = await auth.deleteAccount()
+
+        // Assert
+        #expect(!deleted)
+        #expect(store.session != nil)
+    }
+
+    @Test("given no session when the account is deleted then nothing is sent")
+    func deleteAccountSignedOut() async {
+        // Arrange
+        let (_, http, _, _, auth) = make(session: nil)
+
+        // Act
+        let deleted = await auth.deleteAccount()
+
+        // Assert
+        #expect(!deleted)
         #expect(http.sent.isEmpty)
     }
 }
