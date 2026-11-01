@@ -70,3 +70,12 @@ jobs:
         with:
           name: e2e-part-${{ matrix.part }}
           path: ~/.maestro/tests
+
+  e2e-result:
+    name: Maestro e2e
+    if: always()
+    needs: e2e
+    runs-on: ubuntu-latest
+    steps:
+      - if: needs.e2e.result != 'success'
+        run: exit 1
