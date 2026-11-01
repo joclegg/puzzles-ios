@@ -25,7 +25,6 @@ struct SightlinesGameView: View {
     let onHome: () -> Void
 
     @Environment(\.scenePhase) private var scenePhase
-    @AppStorage(SightlinesSettings.inputMode) private var inputMode = SightlinesSettings.tapToCycle
     @AppStorage(SightlinesSettings.markBrokenRules) private var markBrokenRules = true
     @AppStorage(SightlinesSettings.showTimer) private var showTimer = true
     @AppStorage(SightlinesSettings.showProgress) private var showProgress = true
@@ -47,24 +46,17 @@ struct SightlinesGameView: View {
         _model = State(initialValue: SightlinesGameModel(id: id, store: .shared))
     }
 
-    private var pickColour: Bool {
-        inputMode == SightlinesSettings.pickColour
-    }
-
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
                 header
                 if let game = model.game {
                     SightlinesBoardView(state: game, markBroken: markBrokenRules, showSeen: showSeenCount) {
-                        model.onDot($0, pickColour: pickColour)
+                        model.onDot($0)
                     }
                     .tourTarget("board")
                     .padding(.horizontal, 12)
                     .padding(.top, 24)
-                    if pickColour {
-                        SightlinesColourPicker(colour: model.colour) { model.colour = $0 }.padding(.top, 16)
-                    }
                     if let message = game.hint?.message {
                         Text(message).padding(.horizontal, 24).padding(.top, 16).accessibilityIdentifier("hint_message")
                     }
@@ -116,9 +108,6 @@ struct SightlinesGameView: View {
             }
             Spacer(minLength: 0)
             tool("arrow.uturn.backward", "Undo the last tap", tag: "undo", enabled: model.canUndo) { model.onUndo() }
-            tool("paintpalette", pickColour ? "Switch to tap to cycle" : "Switch to pick a colour", tag: "input_mode") {
-                inputMode = pickColour ? SightlinesSettings.tapToCycle : SightlinesSettings.pickColour
-            }
             if showHints {
                 tool("lightbulb", "Show a hint", tag: "hint", enabled: !model.solved) { model.onHint() }.tourTarget("hint")
             }

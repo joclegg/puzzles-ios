@@ -45,17 +45,12 @@ struct TwoToneGameView: View {
     @State private var tourStep: Int?
     @State private var settingsOpen = false
 
-    @AppStorage(TwoToneSettingKey.inputMode) private var inputMode = TwoToneInputMode.tapToCycle.rawValue
     @AppStorage(TwoToneSettingKey.markBrokenRules) private var markBrokenRules = true
     @AppStorage(TwoToneSettingKey.showTimer) private var showTimer = true
     @AppStorage(TwoToneSettingKey.showProgress) private var showProgress = true
     @AppStorage(TwoToneSettingKey.showHints) private var showHints = true
     @AppStorage(TwoToneSettingKey.showTutorial) private var showTutorial = true
     @AppStorage(TwoToneSettingKey.allowReveal) private var allowReveal = true
-
-    private var pickColour: Bool {
-        inputMode == TwoToneInputMode.pickColour.rawValue
-    }
 
     var body: some View {
         Group {
@@ -94,14 +89,11 @@ struct TwoToneGameView: View {
                 grid: model.game.grid,
                 marks: model.game.boardMarks(markBrokenRules: markBrokenRules),
                 showGivens: showGivens,
-                onTile: { model.onTile($0, pickColour: pickColour) }
+                onTile: { model.onTile($0) }
             )
             .anchorPreference(key: TourAnchors.self, value: .bounds) { ["board": $0] }
             .padding(.horizontal, 12)
             .padding(.top, 24)
-            if pickColour {
-                TwoToneColourPicker(colour: Bindable(model).colour).padding(.top, 16)
-            }
             if let message = model.game.hint?.message {
                 Text(message)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -154,9 +146,6 @@ struct TwoToneGameView: View {
                     showGivens ? "Hide the starting tiles" : "Show the starting tiles", "starting_tiles"
                 ) {
                     showGivens.toggle()
-                }
-                tool("paintpalette", pickColour ? "Switch to tap to cycle" : "Switch to pick a colour", "input_mode") {
-                    inputMode = (pickColour ? TwoToneInputMode.tapToCycle : .pickColour).rawValue
                 }
                 if showHints {
                     tool("lightbulb", "Show a hint", "hint", enabled: !model.game.isSolved) { model.onHint() }

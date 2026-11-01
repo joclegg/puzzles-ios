@@ -36,19 +36,6 @@ enum TwoToneSettingKey {
     static let allowReveal = "two_tone_allow_reveal"
 }
 
-enum TwoToneInputMode: String, CaseIterable {
-    case tapToCycle = "TAP_TO_CYCLE"
-    case pickColour = "PICK_COLOUR"
-
-    var label: String {
-        self == .tapToCycle ? "Tap to cycle" : "Pick a colour"
-    }
-
-    var tag: String {
-        "setting_\(rawValue.lowercased())"
-    }
-}
-
 struct TwoToneDialog<Content: View, Buttons: View>: View {
     let title: String
     var tag: String?

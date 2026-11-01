@@ -116,39 +116,3 @@ private struct SightlinesDotView: View {
         .accessibilityIdentifier(tag)
     }
 }
-
-struct SightlinesColourPicker: View {
-    let colour: Dot
-    let onPick: (Dot) -> Void
-
-    var body: some View {
-        HStack(spacing: 20) {
-            option(.blue, "Blue", "colour_blue", SightlinesColors.blue)
-            option(.red, "Red", "colour_red", SightlinesColors.red)
-            option(.empty, "Clear", "colour_empty", SightlinesColors.emptyTile)
-        }
-    }
-
-    private func option(_ dot: Dot, _ name: String, _ tag: String, _ fill: Color) -> some View {
-        Button {
-            onPick(dot)
-        } label: {
-            RoundedRectangle(cornerRadius: 10)
-                .fill(fill)
-                .frame(width: 56, height: 56)
-                .overlay {
-                    if dot == .empty {
-                        PuzzleIcon.image("xmark").foregroundStyle(Color.primary)
-                    }
-                }
-                .overlay {
-                    if colour == dot {
-                        RoundedRectangle(cornerRadius: 10).strokeBorder(SightlinesColors.accent, lineWidth: 3)
-                    }
-                }
-        }
-        .accessibilityLabel(name)
-        .accessibilityAddTraits(colour == dot ? .isSelected : [])
-        .accessibilityIdentifier(tag)
-    }
-}

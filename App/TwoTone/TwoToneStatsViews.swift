@@ -137,7 +137,6 @@ struct TwoToneHistoryView: View {
 }
 
 struct TwoToneSettingsView: View {
-    @AppStorage(TwoToneSettingKey.inputMode) private var inputMode = TwoToneInputMode.tapToCycle.rawValue
     @AppStorage(TwoToneSettingKey.markBrokenRules) private var markBrokenRules = true
     @AppStorage(TwoToneSettingKey.showTimer) private var showTimer = true
     @AppStorage(TwoToneSettingKey.showProgress) private var showProgress = true
@@ -150,18 +149,6 @@ struct TwoToneSettingsView: View {
             VStack(alignment: .leading, spacing: 12) {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Filling in").font(.headline)
-                    HStack(spacing: 0) {
-                        ForEach(TwoToneInputMode.allCases, id: \.self) { mode in
-                            modeButton(mode)
-                        }
-                    }
-                    .clipShape(.capsule)
-                    .overlay { Capsule().stroke(.secondary.opacity(0.5)) }
-                    Text(
-                        "Tap to cycle steps a spot through the colours. Pick a colour shows colour buttons under the board: pick one, then tap spots to fill them."
-                    )
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
                     toggle(
                         "Mark broken rules", "Outline tiles that make three in a row, overfill a line or copy another line.",
                         "setting_mark_broken_rules", $markBrokenRules)
@@ -178,22 +165,6 @@ struct TwoToneSettingsView: View {
         }
         .tint(TwoToneColors.accent)
         .navigationBarTitleDisplayMode(.inline)
-    }
-
-    private func modeButton(_ mode: TwoToneInputMode) -> some View {
-        let selected = inputMode == mode.rawValue
-        return Button {
-            inputMode = mode.rawValue
-        } label: {
-            Text(mode.label)
-                .font(.subheadline.weight(.medium))
-                .frame(maxWidth: .infinity, minHeight: 40)
-                .background(selected ? TwoToneColors.accent.opacity(0.25) : Color.clear)
-                .contentShape(.rect)
-        }
-        .buttonStyle(.plain)
-        .accessibilityIdentifier(mode.tag)
-        .accessibilityAddTraits(selected ? .isSelected : [])
     }
 
     private func toggle(_ title: String, _ detail: String?, _ tag: String, _ value: Binding<Bool>) -> some View {

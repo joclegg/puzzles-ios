@@ -13,7 +13,6 @@ final class SightlinesGameModel {
     private(set) var hints = 0
     private(set) var newBest = false
     private(set) var resultSaved = false
-    var colour = Dot.blue
 
     private let store: SightlinesStore
     private var saved: SavedGame?
@@ -56,8 +55,8 @@ final class SightlinesGameModel {
         game?.isSolved ?? false
     }
 
-    func onDot(_ cell: Int, pickColour: Bool) {
-        move { pickColour ? $0.paint(cell, colour: colour) : $0.tap(cell) }
+    func onDot(_ cell: Int) {
+        move { $0.tap(cell) }
     }
 
     func onUndo() {

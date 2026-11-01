@@ -14,7 +14,6 @@ final class TwoToneGameModel {
     private(set) var newBest = false
     private(set) var resultSaved = false
     private(set) var elapsedMs: Int64
-    var colour = Tile.red
 
     private var timer: GameTimer
     private var ticker: Task<Void, Never>?
@@ -51,8 +50,8 @@ final class TwoToneGameModel {
         Int64(ProcessInfo.processInfo.systemUptime * 1000)
     }
 
-    func onTile(_ cell: Int, pickColour: Bool) {
-        move { pickColour ? $0.paint(cell, colour: colour) : $0.tap(cell) }
+    func onTile(_ cell: Int) {
+        move { $0.tap(cell) }
     }
 
     func onUndo() {
