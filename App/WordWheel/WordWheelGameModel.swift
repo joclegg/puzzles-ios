@@ -14,7 +14,7 @@ final class WordWheelGameModel {
     private(set) var revealedAll = false
 
     @ObservationIgnored private let id: Int64
-    @ObservationIgnored private let repository = WordWheelRepository.shared
+    @ObservationIgnored private let store = WordWheelStore.shared
     @ObservationIgnored private var words: WordList?
     @ObservationIgnored private var elapsedBase: Int64 = 0
     @ObservationIgnored private var runningSince: TimeInterval?
@@ -25,7 +25,8 @@ final class WordWheelGameModel {
     }
 
     func load() async {
-        guard game == nil, let loaded = repository.game(id: id), let list = try? await WordWheelBank.shared.words()
+        guard game == nil, let loaded = store.game(id: id),
+            let list = await attempt("Word Wheel words", { try await WordWheelBank.shared.words() })
         else {
             return
         }
@@ -114,10 +115,12 @@ final class WordWheelGameModel {
     }
 
     func newPuzzle() async -> Int64 {
-        guard let level = saved?.ref.level, let puzzles = try? await WordWheelBank.shared.puzzles(level) else {
+        guard let level = saved?.ref.level,
+            let puzzles = await attempt("Word Wheel bank", { try await WordWheelBank.shared.puzzles(level) })
+        else {
             return id
         }
-        return repository.start(.random(puzzles: puzzles, level: level, seed: Int64.random(in: .min ... .max)))
+        return store.start(.random(puzzles: puzzles, level: level, seed: Int64.random(in: .min ... .max)))
     }
 
     func revealSolution() {
@@ -129,7 +132,7 @@ final class WordWheelGameModel {
         revealedAll = true
         chosen = []
         if let snapshot {
-            repository.reveal(snapshot)
+            store.reveal(snapshot)
         }
     }
 
@@ -179,7 +182,7 @@ final class WordWheelGameModel {
         if !before.isSolved && after.isSolved {
             pause()
             if let snapshot {
-                newBest = repository.solve(snapshot)
+                newBest = store.solve(snapshot)
                 resultSaved = true
             }
         } else if after.found != before.found || after.bonus != before.bonus || after.revealed != before.revealed {
@@ -191,7 +194,7 @@ final class WordWheelGameModel {
         guard let snapshot, !isSolved else {
             return
         }
-        repository.save(snapshot)
+        store.save(snapshot)
     }
 
     private var snapshot: SavedGame? {

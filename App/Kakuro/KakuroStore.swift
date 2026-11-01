@@ -167,24 +167,24 @@ final class KakuroStore {
     }
 
     static func nowMs() -> Int64 {
-        Int64(Date().timeIntervalSince1970 * 1000)
+        GameClock.nowMs()
     }
 
     private func write(_ game: SavedGame, now: Int64) {
         let id = game.id
         let descriptor = FetchDescriptor<KakuroGameEntity>(predicate: #Predicate { $0.id == id })
-        try? context.fetch(descriptor).first?.update(from: game, updatedAt: now)
+        context.fetchOrEmpty(descriptor).first?.update(from: game, updatedAt: now)
     }
 
     private func commit() {
-        try? context.save()
+        context.saveOrReport()
     }
 
     private func reload() {
         let descriptor = FetchDescriptor<KakuroGameEntity>(
             sortBy: [SortDescriptor(\.startedAt, order: .reverse), SortDescriptor(\.id, order: .reverse)]
         )
-        games = ((try? context.fetch(descriptor)) ?? []).compactMap(\.model)
+        games = (context.fetchOrEmpty(descriptor)).compactMap(\.model)
     }
 
     private static func makeContainer() -> ModelContainer {
@@ -210,20 +210,19 @@ final class KakuroStore {
 enum KakuroBank {
     private static var loaded: [Int: [Puzzle]] = [:]
 
-    static func puzzles(size: Int) async -> [Puzzle] {
+    static func puzzles(size: Int) async throws -> [Puzzle] {
         if let cached = loaded[size] {
             return cached
         }
-        let lines = (try? await BankStore.shared.lines("kakuro/\(size).txt")) ?? []
+        let lines = try await BankStore.shared.lines("kakuro/\(size).txt")
         let puzzles = lines.compactMap(Puzzle.decode)
         loaded[size] = puzzles
         return puzzles
     }
 }
 
-extension CalendarDay {
-    static var today: CalendarDay {
-        let parts = Calendar.current.dateComponents([.year, .month, .day], from: Date())
-        return CalendarDay(year: parts.year ?? 1970, month: parts.month ?? 1, day: parts.day ?? 1)
+extension KakuroGameEntity: SyncedRecord {
+    static func fromSync(_ fields: SyncFields, uuid: String, updatedAt: Int64, existing: [KakuroGameEntity]) -> KakuroGameEntity? {
+        KakuroGameEntity(sync: fields, id: (existing.map(\.id).max() ?? 0) + 1, uuid: uuid, updatedAt: updatedAt)
     }
 }

@@ -1,207 +1,7 @@
-import PuzzlesSync
 import Foundation
 import PuzzlesCore
 import SudokuEngine
 import SwiftData
-
-@Model
-final class SudokuGameRecord {
-    var id: Int
-    @Attribute(.unique) var uuid: String
-    var updatedAt: Int64
-    var puzzleId: String
-    var mode: String
-    var difficulty: String?
-    var custom: Bool
-    var puzzle: String
-    var cellValues: String
-    var notes: String
-    var elapsedMs: Int64
-    var mistakes: Int
-    var mistakeLevel: String
-    var status: String
-    var startedAt: Int64
-    var finishedAt: Int64?
-    var undoHistory: String
-
-    init?(sync fields: SyncFields, id: Int, uuid: String, updatedAt: Int64) {
-        guard let puzzleId = fields.string("puzzleId"), let mode = fields.enumValue("mode"), let puzzle = fields.string("puzzle"),
-            let cellValues = fields.string("values"), let notes = fields.json["notes"] as? [NSNumber],
-            let elapsedMs = fields.long("elapsedMs"), let mistakeLevel = fields.enumValue("mistakeCheck"),
-            let status = fields.enumValue("status"), let startedAt = fields.long("startedAt")
-        else {
-            return nil
-        }
-        self.id = id
-        self.uuid = uuid
-        self.updatedAt = updatedAt
-        self.puzzleId = puzzleId
-        self.mode = mode
-        difficulty = fields.enumValue("difficulty")
-        custom = fields.bool("custom")
-        self.puzzle = puzzle
-        self.cellValues = cellValues
-        self.notes = notes.map { String($0.intValue) }.joined(separator: ",")
-        self.elapsedMs = elapsedMs
-        mistakes = fields.int("mistakes") ?? 0
-        self.mistakeLevel = mistakeLevel
-        self.status = status
-        self.startedAt = startedAt
-        finishedAt = fields.long("finishedAt")
-        undoHistory = fields.string("moves") ?? ""
-    }
-
-    var syncJSON: [String: Any] {
-        [
-            "id": uuid, "puzzleId": puzzleId, "mode": jsonName(fromEnum: mode),
-            "difficulty": difficulty.map { jsonName(fromEnum: $0) as Any } ?? NSNull(), "custom": custom, "puzzle": puzzle,
-            "values": cellValues, "notes": notes.split(separator: ",").compactMap { Int($0) }, "moves": undoHistory,
-            "mistakes": mistakes, "mistakeCheck": jsonName(fromEnum: mistakeLevel), "elapsedMs": elapsedMs,
-            "status": jsonName(fromEnum: status), "startedAt": startedAt, "finishedAt": nullable(finishedAt),
-        ]
-    }
-
-    init(id: Int, game: SudokuSavedGame, now: Int64) {
-        self.id = id
-        uuid = UUID().uuidString.lowercased()
-        updatedAt = now
-        puzzleId = game.ref.id
-        mode = game.ref.mode.rawValue
-        difficulty = game.ref.difficulty?.name
-        custom = game.ref.custom
-        puzzle = PuzzleCodec.encode(game.ref.puzzle)
-        cellValues = ""
-        notes = ""
-        elapsedMs = 0
-        mistakes = 0
-        mistakeLevel = game.mistakeCheck.rawValue
-        status = game.status.rawValue
-        startedAt = game.startedAt
-        finishedAt = nil
-        undoHistory = ""
-        apply(game, now: now)
-    }
-
-    func apply(_ game: SudokuSavedGame, now: Int64) {
-        updatedAt = now
-        cellValues = game.values.map(String.init).joined()
-        notes = game.notes.map(String.init).joined(separator: ",")
-        elapsedMs = game.elapsedMs
-        mistakes = game.mistakes
-        status = game.status.rawValue
-        finishedAt = game.finishedAt
-        undoHistory = MoveCodec.encode(game.moves)
-    }
-
-    var saved: SudokuSavedGame? {
-        guard let decoded = try? PuzzleCodec.decode(puzzle), let gameMode = GameMode(rawValue: mode),
-            let moves = try? MoveCodec.decode(undoHistory)
-        else {
-            return nil
-        }
-        return SudokuSavedGame(
-            id: id,
-            ref: PuzzleRef(
-                id: puzzleId, mode: gameMode, difficulty: difficulty.flatMap(Difficulty.init(name:)), puzzle: decoded,
-                custom: custom),
-            values: cellValues.compactMap(\.wholeNumberValue),
-            notes: notes.split(separator: ",").compactMap { Int($0) },
-            elapsedMs: elapsedMs,
-            mistakes: mistakes,
-            mistakeCheck: MistakeCheck(rawValue: mistakeLevel) ?? .off,
-            status: GameStatus(rawValue: status) ?? .abandoned,
-            startedAt: startedAt,
-            finishedAt: finishedAt,
-            moves: moves
-        )
-    }
-}
-
-@Model
-final class SudokuPastBestRecord {
-    var mode: String
-    var difficulty: String
-    var bestMs: Int64
-
-    init(mode: String, difficulty: String, bestMs: Int64) {
-        self.mode = mode
-        self.difficulty = difficulty
-        self.bestMs = bestMs
-    }
-}
-
-@Model
-final class SudokuGeneratedRecord {
-    var id: Int
-    var mode: String
-    var difficulty: String
-    var puzzle: String
-    var createdAt: Int64
-    var used: Bool
-
-    init(id: Int, mode: String, difficulty: String, puzzle: String, createdAt: Int64, used: Bool) {
-        self.id = id
-        self.mode = mode
-        self.difficulty = difficulty
-        self.puzzle = puzzle
-        self.createdAt = createdAt
-        self.used = used
-    }
-}
-
-struct SudokuSavedGame: Identifiable {
-    var id: Int
-    var ref: PuzzleRef
-    var values: [Int]
-    var notes: [Int]
-    var elapsedMs: Int64
-    var mistakes: Int
-    var mistakeCheck: MistakeCheck
-    var status: GameStatus
-    var startedAt: Int64
-    var finishedAt: Int64?
-    var moves: [Move] = []
-
-    var title: String {
-        gameTitle(
-            killer: ref.mode == .killer, custom: ref.custom, difficulty: ref.difficulty,
-            answerKnown: ref.puzzle.solution != nil)
-    }
-}
-
-func sudokuToday() -> CalendarDay {
-    sudokuDay(Date())
-}
-
-func sudokuDay(_ date: Date) -> CalendarDay {
-    let parts = Calendar.current.dateComponents([.year, .month, .day], from: date)
-    return CalendarDay(year: parts.year ?? 1970, month: parts.month ?? 1, day: parts.day ?? 1)
-}
-
-func sudokuDate(_ day: CalendarDay) -> Date {
-    let parts = day.isoString.split(separator: "-").compactMap { Int($0) }
-    let components = DateComponents(year: parts[0], month: parts[1], day: parts[2])
-    return Calendar.current.date(from: components) ?? Date()
-}
-
-func sudokuNowMs() -> Int64 {
-    Int64(Date().timeIntervalSince1970 * 1000)
-}
-
-@MainActor
-func sudokuModeSettings(_ mode: GameMode) -> ModeSettings {
-    let defaults = UserDefaults.standard
-    return ModeSettings(
-        mode: mode,
-        bool: { defaults.object(forKey: $0) as? Bool },
-        string: { defaults.string(forKey: $0) }
-    )
-}
-
-@MainActor
-func sudokuInputMode() -> InputMode {
-    UserDefaults.standard.string(forKey: SettingKeys.inputMode).flatMap(InputMode.init(rawValue:)) ?? .cellFirst
-}
 
 @MainActor
 @Observable
@@ -212,7 +12,6 @@ final class SudokuStore {
     private static let stockTarget = 30
 
     let context: ModelContext
-    private var bankLines: [String: [String]] = [:]
     private var toppingUp = false
     private(set) var revision = 0
 
@@ -234,11 +33,11 @@ final class SudokuStore {
         _ = revision
         let descriptor = FetchDescriptor<SudokuGameRecord>(
             sortBy: [SortDescriptor(\.startedAt, order: .reverse), SortDescriptor(\.id, order: .reverse)])
-        return (try? context.fetch(descriptor)) ?? []
+        return context.fetchOrEmpty(descriptor)
     }
 
     private func commit() {
-        try? context.save()
+        context.saveOrReport()
         revision += 1
     }
 
@@ -269,7 +68,7 @@ final class SudokuStore {
     }
 
     private func pastBests() -> [FinishedGame] {
-        let rows = (try? context.fetch(FetchDescriptor<SudokuPastBestRecord>())) ?? []
+        let rows = context.fetchOrEmpty(FetchDescriptor<SudokuPastBestRecord>())
         return rows.compactMap { row in
             guard let mode = GameMode(rawValue: row.mode), let difficulty = Difficulty(name: row.difficulty) else {
                 return nil
@@ -283,7 +82,7 @@ final class SudokuStore {
     }
 
     func start(_ ref: PuzzleRef, mistakeCheck: MistakeCheck) -> SudokuSavedGame {
-        let now = sudokuNowMs()
+        let now = GameClock.nowMs()
         let all = records()
         for record in all where record.status == GameStatus.inProgress.rawValue && record.saved?.ref.slot == ref.slot {
             record.status = GameStatus.abandoned.rawValue
@@ -299,21 +98,21 @@ final class SudokuStore {
     }
 
     func save(_ game: SudokuSavedGame) {
-        records().first { $0.id == game.id }?.apply(game, now: sudokuNowMs())
+        records().first { $0.id == game.id }?.apply(game, now: GameClock.nowMs())
         commit()
     }
 
     func reveal(_ game: SudokuSavedGame) {
         var finished = game
         finished.status = .revealed
-        finished.finishedAt = sudokuNowMs()
+        finished.finishedAt = GameClock.nowMs()
         save(finished)
     }
 
     func complete(_ game: SudokuSavedGame) -> Bool {
         var finished = game
         finished.status = .completed
-        finished.finishedAt = sudokuNowMs()
+        finished.finishedAt = GameClock.nowMs()
         save(finished)
         guard let difficulty = game.ref.difficulty, !game.ref.custom else {
             return false
@@ -329,22 +128,21 @@ final class SudokuStore {
         return game.elapsedMs < previous
     }
 
-    private func lines(_ mode: GameMode, _ difficulty: Difficulty) async -> [String] {
+    private func lines(_ mode: GameMode, _ difficulty: Difficulty) async throws -> [String] {
         let name = BankPick.fileName(mode: mode, difficulty: difficulty)
-        if let cached = bankLines[name] {
-            return cached
-        }
-        let loaded = (try? await BankStore.shared.lines("sudoku/\(name).txt")) ?? []
-        bankLines[name] = loaded
-        return loaded
+        return try await BankStore.shared.lines("sudoku/\(name).txt")
     }
 
-    func openDaily(mode: GameMode, difficulty: Difficulty, date: CalendarDay) async -> Int? {
+    private func linesOrEmpty(_ mode: GameMode, _ difficulty: Difficulty) async -> [String] {
+        await attempt("Sudoku bank") { try await lines(mode, difficulty) } ?? []
+    }
+
+    func openDaily(mode: GameMode, difficulty: Difficulty, date: CalendarDay) async throws -> Int? {
         let id = DailyIds.of(mode: mode, difficulty: difficulty, date: date)
         if let existing = inProgress.first(where: { $0.ref.id == id }) {
             return existing.id
         }
-        let bank = await lines(mode, difficulty)
+        let bank = try await lines(mode, difficulty)
         guard !bank.isEmpty else {
             return nil
         }
@@ -376,7 +174,7 @@ final class SudokuStore {
     }
 
     private func nextPuzzle(mode: GameMode, difficulty: Difficulty) async -> PuzzleRef? {
-        let bank = await lines(mode, difficulty)
+        let bank = await linesOrEmpty(mode, difficulty)
         let unplayed = unplayedIndices(mode, difficulty, count: bank.count)
         if let index = unplayed.randomElement(), let puzzle = try? PuzzleCodec.decode(bank[index]) {
             let id = "\(BankPick.fileName(mode: mode, difficulty: difficulty)):\(index)"
@@ -402,7 +200,7 @@ final class SudokuStore {
     }
 
     private func stock(_ mode: GameMode, _ difficulty: Difficulty) async -> Int {
-        let bank = await lines(mode, difficulty)
+        let bank = await linesOrEmpty(mode, difficulty)
         return unplayedIndices(mode, difficulty, count: bank.count).count
             + generated(mode, difficulty).count { !$0.used }
     }
@@ -413,17 +211,17 @@ final class SudokuStore {
         let descriptor = FetchDescriptor<SudokuGeneratedRecord>(
             predicate: #Predicate { $0.mode == modeName && $0.difficulty == level },
             sortBy: [SortDescriptor(\.id)])
-        return (try? context.fetch(descriptor)) ?? []
+        return context.fetchOrEmpty(descriptor)
     }
 
     @discardableResult
     private func insertGenerated(_ mode: GameMode, _ difficulty: Difficulty, _ puzzle: Puzzle, used: Bool) -> Int {
-        let all = (try? context.fetch(FetchDescriptor<SudokuGeneratedRecord>())) ?? []
+        let all = context.fetchOrEmpty(FetchDescriptor<SudokuGeneratedRecord>())
         let id = (all.map(\.id).max() ?? 0) + 1
         context.insert(
             SudokuGeneratedRecord(
                 id: id, mode: mode.rawValue, difficulty: difficulty.name, puzzle: PuzzleCodec.encode(puzzle),
-                createdAt: sudokuNowMs(), used: used))
+                createdAt: GameClock.nowMs(), used: used))
         commit()
         return id
     }

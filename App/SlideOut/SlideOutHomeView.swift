@@ -10,7 +10,7 @@ enum SlideOutRoute: Hashable {
     case settings
 }
 
-struct SlideOutHomeScreen: View {
+struct SlideOutHomeView: View {
     var fixture: PuzzleRef?
 
     @Environment(\.dismiss) private var dismiss
@@ -100,7 +100,7 @@ struct SlideOutHomeScreen: View {
     }
 
     private var dailySection: some View {
-        let today = CalendarDay.slideOutToday
+        let today = CalendarDay.today
         let left = Set(SlideOutStore.dailiesLeft(today: today))
         return SlideOutSection(title: "Today", aside: today.slideOutDayMonth) {
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: 8) {
@@ -222,11 +222,11 @@ struct SlideOutHomeScreen: View {
     private func destination(_ target: SlideOutRoute) -> some View {
         switch target {
         case .game(let id):
-            SlideOutGameScreen(gameId: id, onOpenGame: { route = .game($0) }, onHome: { route = nil })
+            SlideOutGameView(gameId: id, onOpenGame: { route = .game($0) }, onHome: { route = nil })
         case .stats:
-            SlideOutStatsScreen { route = nil }
+            SlideOutStatsView { route = nil }
         case .history:
-            SlideOutHistoryScreen(onOpenGame: { route = .game($0) }, onBack: { route = nil })
+            SlideOutHistoryView(onOpenGame: { route = .game($0) }, onBack: { route = nil })
         case .settings:
             SettingsHubView(initial: .slideOut) { route = nil }
         }

@@ -19,7 +19,7 @@ struct TwoToneHomeView: View {
     @State private var resumeChoice: TwoToneGameRecord?
 
     var body: some View {
-        let today = TwoToneStore.today()
+        let today = CalendarDay.today
         let inProgress = store.inProgress
         let solved = store.dailySolved(date: today)
         ScrollView {
@@ -29,7 +29,7 @@ struct TwoToneHomeView: View {
                 if let latest = inProgress.first {
                     continueCard(latest)
                 }
-                section("Today", aside: dayMonth(isoDate: today.isoString)) {
+                section("Today", aside: dayMonthLabel(iso: today.isoString)) {
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: 12) {
                         ForEach(sizes, id: \.self) { size in
                             dailyTile(size, done: solved.contains(size), today: today)
@@ -172,16 +172,7 @@ struct TwoToneHomeView: View {
     }
 
     private func section<Content: View>(_ title: String, aside: String?, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text(title).font(.headline)
-                Spacer()
-                if let aside {
-                    Text(aside).font(.subheadline).foregroundStyle(.secondary)
-                }
-            }
-            content()
-        }
+        HomeSection(title, aside: aside, style: .headline(spacing: 12), content: content)
     }
 
     private func tileBackground(highlighted: Bool) -> some View {

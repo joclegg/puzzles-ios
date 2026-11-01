@@ -167,7 +167,7 @@ struct SettingsHubView: View {
         case .kakuro:
             KakuroSettingsView(onBack: {})
         case .slideOut:
-            SlideOutSettingsScreen {}
+            SlideOutSettingsView {}
         case .wordWheel:
             WordWheelSettingsView()
         }

@@ -24,7 +24,7 @@ struct SudokuHomeView: View {
                     SudokuSegments(
                         options: GameMode.allCases, selected: mode, label: \.label, id: { "mode_\($0.slug)" },
                         onSelect: { mode = $0 })
-                    section("Today", aside: sudokuToday().shortLabel) {
+                    section("Today", aside: CalendarDay.today.shortLabel) {
                         today
                     }
                     section("New game", aside: nil) {
@@ -103,22 +103,11 @@ struct SudokuHomeView: View {
     private func section<Content: View>(_ title: String, aside: String?, @ViewBuilder content: () -> Content)
         -> some View
     {
-        VStack(spacing: 8) {
-            HStack {
-                Text(title.uppercased()).font(.caption.weight(.semibold)).kerning(1.2)
-                Spacer()
-                if let aside {
-                    Text(aside).font(.caption)
-                }
-            }
-            .foregroundStyle(.secondary)
-            .padding(.horizontal, 4)
-            content()
-        }
+        HomeSection(title, aside: aside, style: .caps, content: content)
     }
 
     private var today: some View {
-        let date = sudokuToday()
+        let date = CalendarDay.today
         let solved = Set(store.completedDailies.map(\.id))
         return LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
             ForEach(mode.levels, id: \.self) { level in
@@ -129,7 +118,7 @@ struct SudokuHomeView: View {
 
     private func dailyTile(_ level: Difficulty, done: Bool, date: CalendarDay) -> some View {
         Button {
-            launch { await store.openDaily(mode: mode, difficulty: level, date: date) }
+            launch { await attempt("Sudoku daily") { try await store.openDaily(mode: mode, difficulty: level, date: date) } ?? nil }
         } label: {
             VStack(spacing: 4) {
                 Text(levelLabel(level)).font(.subheadline.weight(.semibold)).lineLimit(1).minimumScaleFactor(0.7)

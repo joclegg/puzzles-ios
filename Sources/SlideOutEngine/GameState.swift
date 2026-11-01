@@ -1,3 +1,5 @@
+import PuzzlesCore
+
 public enum MoveCodec {
     public static func encode(_ moves: [Move]) -> String {
         moves.map { "\($0.block):\($0.position)" }.joined(separator: ",")
@@ -70,33 +72,5 @@ public struct GameState: Sendable, Equatable {
 
     private func previousPosition(_ block: Int, in moves: [Move]) -> Int {
         moves.dropLast().last { $0.block == block }?.position ?? puzzle.board.blocks[block].position
-    }
-}
-
-public struct GameTimer: Sendable, Equatable {
-    public var accumulatedMs: Int64
-    public var runningSinceMs: Int64?
-
-    public init(accumulatedMs: Int64 = 0, runningSinceMs: Int64? = nil) {
-        self.accumulatedMs = accumulatedMs
-        self.runningSinceMs = runningSinceMs
-    }
-
-    public func start(nowMs: Int64) -> GameTimer {
-        if runningSinceMs != nil {
-            return self
-        }
-        return GameTimer(accumulatedMs: accumulatedMs, runningSinceMs: nowMs)
-    }
-
-    public func pause(nowMs: Int64) -> GameTimer {
-        guard let runningSinceMs else {
-            return self
-        }
-        return GameTimer(accumulatedMs: accumulatedMs + (nowMs - runningSinceMs))
-    }
-
-    public func elapsedMs(nowMs: Int64) -> Int64 {
-        accumulatedMs + (runningSinceMs.map { nowMs - $0 } ?? 0)
     }
 }

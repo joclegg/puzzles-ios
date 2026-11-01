@@ -19,19 +19,7 @@ struct LauncherView: View {
         }
 
         var accent: Color {
-            let light = light
-            let dark = dark
-            return Color(
-                uiColor: UIColor { traits in
-                    let value = traits.userInterfaceStyle == .dark ? dark : light
-                    return UIColor(
-                        red: CGFloat((value >> 16) & 0xFF) / 255,
-                        green: CGFloat((value >> 8) & 0xFF) / 255,
-                        blue: CGFloat(value & 0xFF) / 255,
-                        alpha: 1
-                    )
-                }
-            )
+            Color(light: light, dark: dark)
         }
     }
 

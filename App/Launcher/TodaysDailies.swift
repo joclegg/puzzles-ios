@@ -96,68 +96,23 @@ extension SettingsTab {
     static let games = allCases.filter { $0 != .general }
 
     @MainActor
+    var dailySource: any DailySource {
+        Games.definition(for: self).dailySource
+    }
+
+    @MainActor
     func dailies(on date: CalendarDay) -> [GameDaily] {
-        switch self {
-        case .general, .sudoku:
-            SudokuDailies.on(date)
-        case .solitaire:
-            SolitaireDailies.on(date)
-        case .twoTone:
-            TwoToneDailies.on(date)
-        case .sightlines:
-            SightlinesDailies.on(date)
-        case .fiveLetters:
-            FiveLettersDailies.on(date)
-        case .kakuro:
-            KakuroDailies.on(date)
-        case .slideOut:
-            SlideOutDailies.on(date)
-        case .wordWheel:
-            WordWheelDailies.on(date)
-        }
+        dailySource.on(date)
     }
 
     @MainActor
     var dailyResults: [DailyResult] {
-        switch self {
-        case .general, .sudoku:
-            SudokuDailies.results
-        case .solitaire:
-            SolitaireDailies.results
-        case .twoTone:
-            TwoToneDailies.results
-        case .sightlines:
-            SightlinesDailies.results
-        case .fiveLetters:
-            FiveLettersDailies.results
-        case .kakuro:
-            KakuroDailies.results
-        case .slideOut:
-            SlideOutDailies.results
-        case .wordWheel:
-            WordWheelDailies.results
-        }
+        dailySource.results
     }
 
+    @MainActor
     var calendarRules: CalendarRules {
-        switch self {
-        case .general, .sudoku:
-            SudokuDailies.rules
-        case .solitaire:
-            SolitaireDailies.rules
-        case .twoTone:
-            TwoToneDailies.rules
-        case .sightlines:
-            SightlinesDailies.rules
-        case .fiveLetters:
-            FiveLettersDailies.rules
-        case .kakuro:
-            KakuroDailies.rules
-        case .slideOut:
-            SlideOutDailies.rules
-        case .wordWheel:
-            WordWheelDailies.rules
-        }
+        dailySource.rules
     }
 
     @MainActor
@@ -191,5 +146,5 @@ func dailyResult(id: String, finishedAt: Int64?) -> DailyResult? {
 }
 
 func finishedDay(_ finishedAt: Int64?) -> CalendarDay? {
-    finishedAt.map { sudokuDay(Date(timeIntervalSince1970: Double($0) / 1000)) }
+    finishedAt.map { GameClock.day(of: Date(timeIntervalSince1970: Double($0) / 1000)) }
 }

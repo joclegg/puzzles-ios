@@ -1,4 +1,5 @@
 import KakuroEngine
+import PuzzlesCore
 import SwiftUI
 
 struct KakuroStatsView: View {
@@ -10,19 +11,14 @@ struct KakuroStatsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 8) {
                 KakuroScreenTitle(title: "Stats", onBack: onBack)
-                VStack(spacing: 8) {
-                    row("Size", "Solved", "Best", "Average", header: true, tag: nil)
-                    ForEach(KakuroStore.shared.stats(), id: \.size) { stats in
-                        row(
-                            sizeLabel(stats.size),
-                            "\(stats.solved)/\(stats.played)",
-                            stats.bestMs.map { formatDuration(ms: $0) } ?? "–",
-                            stats.averageMs.map { formatDuration(ms: $0) } ?? "–",
-                            header: false,
-                            tag: "size_\(stats.size)"
-                        )
+                StatsTable(
+                    header: ["Size", "Solved", "Best", "Average"],
+                    rows: KakuroStore.shared.stats().map {
+                        StatsRow.size(
+                            $0.size, label: sizeLabel($0.size), solved: $0.solved, played: $0.played, bestMs: $0.bestMs,
+                            averageMs: $0.averageMs)
                     }
-                }
+                )
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
                 .modifier(KakuroTileStyle(accent: KakuroColors.of(scheme).accent, corner: 24))
@@ -33,27 +29,6 @@ struct KakuroStatsView: View {
             .padding(16)
         }
     }
-
-    private func row(_ size: String, _ solved: String, _ best: String, _ average: String, header: Bool, tag: String?) -> some View {
-        HStack {
-            cell(size, header: header, tag: nil)
-            cell(solved, header: header, tag: tag.map { "\($0)_solved" })
-            cell(best, header: header, tag: tag.map { "\($0)_best" })
-            cell(average, header: header, tag: nil)
-        }
-    }
-
-    @ViewBuilder
-    private func cell(_ text: String, header: Bool, tag: String?) -> some View {
-        let label = Text(text)
-            .fontWeight(header ? .semibold : .regular)
-            .frame(maxWidth: .infinity, alignment: .leading)
-        if let tag {
-            label.accessibilityIdentifier(tag)
-        } else {
-            label
-        }
-    }
 }
 
 struct KakuroHistoryView: View {
@@ -62,13 +37,6 @@ struct KakuroHistoryView: View {
 
     @Environment(\.colorScheme) private var scheme
     @State private var filter: Int?
-
-    private static let dateFormat: DateFormatter = {
-        let format = DateFormatter()
-        format.locale = Locale(identifier: "en_GB")
-        format.dateFormat = "d MMM yyyy, HH:mm"
-        return format
-    }()
 
     private var accent: Color {
         KakuroColors.of(scheme).accent
@@ -162,13 +130,13 @@ struct KakuroHistoryView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(game.ref.title).font(.subheadline.weight(.medium))
-                    Text(Self.dateFormat.string(from: Date(timeIntervalSince1970: Double(game.startedAt) / 1000)))
+                    Text(Theme.historyDate(ms: game.startedAt))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: 2) {
-                    Text(formatDuration(ms: game.elapsedMs))
+                    Text(formatDuration(game.elapsedMs))
                     Text(statusText(game)).font(.caption).foregroundStyle(.secondary)
                 }
             }

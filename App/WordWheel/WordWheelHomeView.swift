@@ -1,3 +1,4 @@
+import PuzzlesCore
 import SwiftUI
 import WordWheelEngine
 
@@ -12,7 +13,7 @@ struct WordWheelHomeView: View {
     @State private var starting = false
     @State private var fixtureOpened = false
 
-    private let repository = WordWheelRepository.shared
+    private let store = WordWheelStore.shared
 
     var body: some View {
         content
@@ -73,7 +74,7 @@ struct WordWheelHomeView: View {
                 }
                 if let fixture, !fixtureOpened {
                     fixtureOpened = true
-                    openGame = repository.start(fixture)
+                    openGame = store.start(fixture)
                 }
             }
     }
@@ -82,11 +83,11 @@ struct WordWheelHomeView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 hero
-                if let latest = repository.inProgress.first {
+                if let latest = store.inProgress.first {
                     continueCard(latest)
                 }
-                section("Today", aside: dayLabel(iso: WordWheelDates.today.isoString)) {
-                    let solved = repository.dailySolved(on: WordWheelDates.today)
+                section("Today", aside: dayMonthLabel(iso: CalendarDay.today.isoString)) {
+                    let solved = store.dailySolved(on: CalendarDay.today)
                     HStack(spacing: 8) {
                         ForEach(Level.allCases, id: \.self) { level in
                             dailyTile(level, done: solved.contains(level))
@@ -153,7 +154,7 @@ struct WordWheelHomeView: View {
 
     private func dailyTile(_ level: Level, done: Bool) -> some View {
         Button {
-            launch { try await repository.openDaily(level) }
+            launch { try await store.openDaily(level) }
         } label: {
             VStack(spacing: 4) {
                 Text(level.label).font(.subheadline.weight(.semibold)).lineLimit(1)
@@ -171,7 +172,7 @@ struct WordWheelHomeView: View {
     }
 
     private func levelTile(_ level: Level) -> some View {
-        let saved = repository.inProgress.first { !$0.ref.isDaily && $0.ref.level == level }
+        let saved = store.inProgress.first { !$0.ref.isDaily && $0.ref.level == level }
         return Button {
             if let saved {
                 resumeChoice = saved
@@ -219,16 +220,7 @@ struct WordWheelHomeView: View {
         aside: String? = nil,
         @ViewBuilder content: () -> Content
     ) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text(title).font(.headline)
-                Spacer()
-                if let aside {
-                    Text(aside).font(.subheadline).foregroundStyle(.secondary)
-                }
-            }
-            content()
-        }
+        HomeSection(title, aside: aside, style: .headline(spacing: 8), content: content)
     }
 
     private func toolbarButton(
@@ -247,7 +239,7 @@ struct WordWheelHomeView: View {
     private func start(_ level: Level) {
         launch {
             let puzzles = try await WordWheelBank.shared.puzzles(level)
-            return repository.start(.random(puzzles: puzzles, level: level, seed: Int64.random(in: .min ... .max)))
+            return store.start(.random(puzzles: puzzles, level: level, seed: Int64.random(in: .min ... .max)))
         }
     }
 
@@ -258,7 +250,7 @@ struct WordWheelHomeView: View {
         starting = true
         Task {
             defer { starting = false }
-            if let id = try? await work() {
+            if let id = await attempt("Word Wheel start", { try await work() }) {
                 openGame = id
             }
         }

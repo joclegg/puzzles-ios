@@ -28,7 +28,7 @@ struct SightlinesHomeView: View {
                 if let latest = store.games.inProgress.first {
                     continueCard(latest)
                 }
-                section("Today", aside: dayLabel(iso: SightlinesToday.date.isoString)) {
+                section("Today", aside: dayMonthLabel(iso: CalendarDay.today.isoString)) {
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
                         ForEach(sizes, id: \.self, content: dailyTile)
                     }
@@ -122,7 +122,7 @@ struct SightlinesHomeView: View {
                     .overlay { PuzzleIcon.image("play.fill").foregroundStyle(Color(uiColor: .systemBackground)) }
                 VStack(alignment: .leading) {
                     Text("Continue").font(.headline)
-                    Text("\(game.ref.title) · \(formatDuration(ms: game.elapsedMs))")
+                    Text("\(game.ref.title) · \(formatDuration(game.elapsedMs))")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
@@ -154,7 +154,7 @@ struct SightlinesHomeView: View {
     }
 
     private func dailyTile(_ size: Int) -> some View {
-        let done = store.games.dailySolved(date: SightlinesToday.date).contains(size)
+        let done = store.games.dailySolved(date: CalendarDay.today).contains(size)
         return Button {
             launch {
                 await openDaily(size: size)
@@ -208,7 +208,7 @@ struct SightlinesHomeView: View {
                     if let saved {
                         HStack(spacing: 6) {
                             Circle().fill(SightlinesColors.accent).frame(width: 6, height: 6)
-                            Text("In progress · \(formatDuration(ms: saved.elapsedMs))").font(.caption).foregroundStyle(.secondary)
+                            Text("In progress · \(formatDuration(saved.elapsedMs))").font(.caption).foregroundStyle(.secondary)
                                 .lineLimit(1)
                         }
                     }
@@ -231,7 +231,7 @@ struct SightlinesHomeView: View {
     private func resumeDialog(_ saved: SavedGame) -> some View {
         SightlinesDialog(tag: "resume_dialog", dismiss: { resumeChoice = nil }) {
             Text(saved.ref.title).font(.title3.weight(.semibold))
-            Text("You have a puzzle in progress (\(formatDuration(ms: saved.elapsedMs))).")
+            Text("You have a puzzle in progress (\(formatDuration(saved.elapsedMs))).")
             HStack(spacing: 16) {
                 Spacer()
                 Text("New puzzle")
@@ -256,7 +256,7 @@ struct SightlinesHomeView: View {
     }
 
     private func openDaily(size: Int) async -> Int64 {
-        let date = SightlinesToday.date
+        let date = CalendarDay.today
         if let existing = store.games.dailyInProgress(date: date, size: size) {
             return existing.id
         }

@@ -37,7 +37,7 @@ final class KakuroNavigator {
 
     func startRandom(size: Int) {
         launch {
-            let puzzles = await KakuroBank.puzzles(size: size)
+            let puzzles = await attempt("Kakuro bank") { try await KakuroBank.puzzles(size: size) } ?? []
             guard !puzzles.isEmpty else {
                 return
             }
@@ -53,7 +53,7 @@ final class KakuroNavigator {
             return
         }
         launch {
-            let puzzles = await KakuroBank.puzzles(size: size)
+            let puzzles = await attempt("Kakuro bank") { try await KakuroBank.puzzles(size: size) } ?? []
             guard !puzzles.isEmpty else {
                 return
             }

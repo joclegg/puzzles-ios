@@ -1,27 +1,9 @@
 import PuzzlesCore
 
-public enum GameStatus: String, Sendable, CaseIterable {
-    case inProgress = "IN_PROGRESS"
-    case solved = "SOLVED"
-    case abandoned = "ABANDONED"
-    case revealed = "REVEALED"
-
-    public var label: String {
-        switch self {
-        case .solved:
-            "Solved"
-        case .inProgress:
-            "In progress"
-        case .abandoned:
-            "Abandoned"
-        case .revealed:
-            "Solution shown"
-        }
-    }
-}
+public typealias GameStatus = PuzzleStatus
 
 public struct PuzzleRef: Hashable, Sendable {
-    public static let dailyPrefix = "daily_"
+    public static let dailyPrefix = DailyId.prefix
     private static let firstDay = CalendarDay(year: 2026, month: 10, day: 25)
 
     public var id: String
@@ -35,7 +17,7 @@ public struct PuzzleRef: Hashable, Sendable {
     }
 
     public var isDaily: Bool {
-        id.hasPrefix(Self.dailyPrefix)
+        DailyId.isDaily(id)
     }
 
     public var slot: String {
@@ -46,8 +28,8 @@ public struct PuzzleRef: Hashable, Sendable {
         guard isDaily else {
             return level.label
         }
-        let iso = id.dropFirst(Self.dailyPrefix.count).prefix { $0 != "_" }
-        return "Daily · \(dayLabel(iso: String(iso))) · \(level.label)"
+        let iso = DailyId.isoDate(of: id)
+        return "Daily · \(dayMonthLabel(iso: String(iso))) · \(level.label)"
     }
 
     public static func random(puzzles: [Puzzle], level: Level, seed: Int64) -> PuzzleRef {
@@ -57,7 +39,7 @@ public struct PuzzleRef: Hashable, Sendable {
     }
 
     public static func dailyId(date: CalendarDay, level: Level) -> String {
-        "\(dailyPrefix)\(date.isoString)_\(level.name.lowercased())"
+        DailyId.make(date: date, suffix: "\(level.name.lowercased())")
     }
 
     public static func daily(puzzles: [Puzzle], date: CalendarDay, level: Level) -> PuzzleRef {
@@ -168,27 +150,4 @@ extension Guess {
             "Three letters or more"
         }
     }
-}
-
-public func formatDuration(_ ms: Int64) -> String {
-    let total = ms / 1000
-    let hours = total / 3600
-    let minutes = total % 3600 / 60
-    let seconds = total % 60
-    let paddedSeconds = seconds < 10 ? "0\(seconds)" : "\(seconds)"
-    if hours > 0 {
-        let paddedMinutes = minutes < 10 ? "0\(minutes)" : "\(minutes)"
-        return "\(hours):\(paddedMinutes):\(paddedSeconds)"
-    }
-    return "\(minutes):\(paddedSeconds)"
-}
-
-public func dayLabel(iso: String) -> String {
-    let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-    let parts = iso.split(separator: "-")
-    guard parts.count == 3, let month = Int(parts[1]), let day = Int(parts[2]), months.indices.contains(month - 1)
-    else {
-        return iso
-    }
-    return "\(day) \(months[month - 1])"
 }

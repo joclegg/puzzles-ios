@@ -1,7 +1,36 @@
+import PuzzlesCore
+import SwiftData
 import SwiftUI
 import WordWheelEngine
 
-enum WordWheelGame {
+enum WordWheelGame: GameDefinition {
+    typealias Record = WordWheelGameEntity
+
+    static let tab = SettingsTab.wordWheel
+    static let syncKey = "wordWheel"
+
+    static var context: ModelContext {
+        WordWheelStore.shared.context
+    }
+
+    @MainActor
+    static let dailies = DailyProvider<Level>(
+        tab: .wordWheel, group: { _ in "WORD_WHEEL" }, options: Level.allCases, label: { $0.label },
+        tag: { "daily_play_word_wheel_\($0.name.lowercased())" },
+        results: {
+            WordWheelStore.shared.history.filter { $0.status == .solved }.compactMap {
+                dailyResult(id: $0.ref.id, finishedAt: $0.finishedAt)
+            }
+        },
+        solved: { date in
+            let solved = WordWheelStore.shared.dailySolved(on: date)
+            return { solved.contains($0) }
+        },
+        open: { date, level in
+            await attempt("Word Wheel daily") { try await WordWheelStore.shared.openDaily(level, date: date) }.map(String.init)
+        }
+    )
+
     @MainActor
     static func home() -> AnyView {
         AnyView(WordWheelHomeView())

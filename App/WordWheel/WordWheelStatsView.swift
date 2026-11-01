@@ -1,8 +1,9 @@
+import PuzzlesCore
 import SwiftUI
 import WordWheelEngine
 
 struct WordWheelStatsView: View {
-    private let repository = WordWheelRepository.shared
+    private let store = WordWheelStore.shared
 
     var body: some View {
         ScrollView {
@@ -15,7 +16,7 @@ struct WordWheelStatsView: View {
                         Text("Best").frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .fontWeight(.semibold)
-                    ForEach(repository.stats, id: \.level) { stats in
+                    ForEach(store.stats, id: \.level) { stats in
                         let tag = "level_\(stats.level.letters)"
                         GridRow {
                             Text(stats.level.label)
@@ -47,7 +48,7 @@ struct WordWheelHistoryView: View {
 
     @State private var filter: Level?
 
-    private let repository = WordWheelRepository.shared
+    private let store = WordWheelStore.shared
 
     private static let dateFormat: DateFormatter = {
         let formatter = DateFormatter()
@@ -56,7 +57,7 @@ struct WordWheelHistoryView: View {
     }()
 
     var body: some View {
-        let games = repository.history.filter { filter == nil || $0.ref.level == filter }
+        let games = store.history.filter { filter == nil || $0.ref.level == filter }
         VStack(alignment: .leading, spacing: 16) {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
@@ -92,7 +93,7 @@ struct WordWheelHistoryView: View {
         if game.status == .inProgress {
             onOpenGame(game.id)
         } else {
-            onOpenGame(repository.start(game.ref))
+            onOpenGame(store.start(game.ref))
         }
     }
 
@@ -125,43 +126,5 @@ struct WordWheelHistoryView: View {
                 .overlay { Capsule().stroke(WheelColors.accent.opacity(selected ? 0.8 : 0.3), lineWidth: 1) }
         }
         .buttonStyle(.plain)
-    }
-}
-
-struct WordWheelSettingsView: View {
-    @AppStorage(WordWheelSetting.showTimer) private var showTimer = true
-    @AppStorage(WordWheelSetting.showBonusCount) private var showBonusCount = true
-    @AppStorage(WordWheelSetting.showHints) private var showHints = false
-    @AppStorage(WordWheelSetting.showTutorial) private var showTutorial = true
-    @AppStorage(WordWheelSetting.allowReveal) private var allowReveal = false
-
-    var body: some View {
-        Form {
-            row($showTimer, "show_timer", "Show the timer")
-            row($showBonusCount, "show_bonus_count", "Show the bonus word count")
-            row($showHints, "show_hints", "Hints", detail: "Show the hint button.")
-            row(
-                $showTutorial,
-                "show_tutorial",
-                "How to play",
-                detail: "Show the ? button with the rules and a walkthrough."
-            )
-            row($allowReveal, "allow_reveal", "Show solution", detail: "Offer Show solution in the game menu.")
-        }
-    }
-
-    private func row(_ value: Binding<Bool>, _ tag: String, _ title: String, detail: String? = nil) -> some View {
-        HStack {
-            VStack(alignment: .leading) {
-                Text(title)
-                if let detail {
-                    Text(detail).font(.caption).foregroundStyle(.secondary)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            Toggle(title, isOn: value)
-                .labelsHidden()
-                .accessibilityIdentifier("setting_\(tag)")
-        }
     }
 }

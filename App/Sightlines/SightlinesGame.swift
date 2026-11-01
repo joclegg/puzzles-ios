@@ -1,7 +1,42 @@
+import PuzzlesCore
 import SightlinesEngine
+import SwiftData
 import SwiftUI
 
-enum SightlinesGame {
+enum SightlinesGame: GameDefinition {
+    typealias Record = SightlinesGameRecord
+
+    static let tab = SettingsTab.sightlines
+    static let syncKey = "sightlines"
+
+    static var context: ModelContext {
+        SightlinesStore.shared.context
+    }
+
+    @MainActor
+    static let dailies = DailyProvider<Int>(
+        tab: .sightlines, group: { _ in "SIGHTLINES" }, options: sizes, label: sizeLabel, tag: { "daily_play_sightlines_\($0)" },
+        results: {
+            SightlinesStore.shared.games.filter { $0.status == .solved }.compactMap {
+                dailyResult(id: $0.ref.id, finishedAt: $0.finishedAt)
+            }
+        },
+        solved: { date in
+            let solved = SightlinesStore.shared.games.dailySolved(date: date)
+            return { solved.contains($0) }
+        },
+        open: { date, size in await openDaily(size: size, date: date) }
+    )
+
+    @MainActor
+    private static func openDaily(size: Int, date: CalendarDay) async -> String? {
+        let store = SightlinesStore.shared
+        if let existing = store.games.dailyInProgress(date: date, size: size) {
+            return String(existing.id)
+        }
+        return String(await store.start { PuzzleRef.daily(date: date, size: size) })
+    }
+
     @MainActor
     static func home() -> AnyView {
         AnyView(SightlinesHomeView())
