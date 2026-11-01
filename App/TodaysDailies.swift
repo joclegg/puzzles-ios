@@ -96,68 +96,40 @@ extension SettingsTab {
     static let games = allCases.filter { $0 != .general }
 
     @MainActor
-    func dailies(on date: CalendarDay) -> [GameDaily] {
+    var dailySource: any DailySource {
         switch self {
         case .general, .sudoku:
-            SudokuDailies.on(date)
+            SudokuGame.dailies
         case .solitaire:
-            SolitaireDailies.on(date)
+            SolitaireGame.dailies
         case .twoTone:
-            TwoToneDailies.on(date)
+            TwoToneGame.dailies
         case .sightlines:
-            SightlinesDailies.on(date)
+            SightlinesGame.dailies
         case .fiveLetters:
-            FiveLettersDailies.on(date)
+            FiveLettersGame.dailies
         case .kakuro:
-            KakuroDailies.on(date)
+            KakuroGame.dailies
         case .slideOut:
-            SlideOutDailies.on(date)
+            SlideOutGame.dailies
         case .wordWheel:
-            WordWheelDailies.on(date)
+            WordWheelGame.dailies
         }
     }
 
     @MainActor
-    var dailyResults: [DailyResult] {
-        switch self {
-        case .general, .sudoku:
-            SudokuDailies.results
-        case .solitaire:
-            SolitaireDailies.results
-        case .twoTone:
-            TwoToneDailies.results
-        case .sightlines:
-            SightlinesDailies.results
-        case .fiveLetters:
-            FiveLettersDailies.results
-        case .kakuro:
-            KakuroDailies.results
-        case .slideOut:
-            SlideOutDailies.results
-        case .wordWheel:
-            WordWheelDailies.results
-        }
+    func dailies(on date: CalendarDay) -> [GameDaily] {
+        dailySource.on(date)
     }
 
+    @MainActor
+    var dailyResults: [DailyResult] {
+        dailySource.results
+    }
+
+    @MainActor
     var calendarRules: CalendarRules {
-        switch self {
-        case .general, .sudoku:
-            SudokuDailies.rules
-        case .solitaire:
-            SolitaireDailies.rules
-        case .twoTone:
-            TwoToneDailies.rules
-        case .sightlines:
-            SightlinesDailies.rules
-        case .fiveLetters:
-            FiveLettersDailies.rules
-        case .kakuro:
-            KakuroDailies.rules
-        case .slideOut:
-            SlideOutDailies.rules
-        case .wordWheel:
-            WordWheelDailies.rules
-        }
+        dailySource.rules
     }
 
     @MainActor
