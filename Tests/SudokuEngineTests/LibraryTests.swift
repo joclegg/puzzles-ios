@@ -144,6 +144,6 @@ import Testing
         // Assert
         #expect(!loaded.isOn(.showTimer))
         #expect(loaded.mistakeCheck == .off)
-        #expect(!loaded.playOptions.highlightLastPlaced == false)
+        #expect(!loaded.playOptions.highlightLastPlaced)
     }
 }
