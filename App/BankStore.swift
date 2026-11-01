@@ -10,10 +10,12 @@ actor BankStore {
     }
 
     static let shared = BankStore()
+    private static let parallelDownloads = 6
     private static let baseURL = URL(string: "https://joclegg.github.io/puzzles-data/")!
 
     private let directory: URL
     private var updating: Task<Void, Error>?
+    private var cache: [String: [String]] = [:]
 
     init(directory: URL = URL.applicationSupportDirectory.appending(path: "puzzles-data")) {
         self.directory = directory
@@ -57,17 +59,31 @@ actor BankStore {
     private func update() async throws {
         let (manifestData, _) = try await URLSession.shared.data(from: Self.baseURL.appending(path: "manifest.json"))
         let manifest = try JSONDecoder().decode(Manifest.self, from: manifestData)
-        for (path, entry) in manifest.files {
-            try await download(path: path, sha256: entry.sha256)
+        let directory = directory
+        let pending = manifest.files.map { (path: $0.key, sha256: $0.value.sha256) }
+        defer { cache = [:] }
+        try await withThrowingTaskGroup(of: Void.self) { group in
+            for (index, file) in pending.enumerated() {
+                if index >= Self.parallelDownloads {
+                    _ = try await group.next()
+                }
+                group.addTask { try await Self.download(path: file.path, sha256: file.sha256, into: directory) }
+            }
+            try await group.waitForAll()
         }
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         try manifestData.write(to: directory.appending(path: "manifest.json"), options: .atomic)
     }
 
     func lines(_ path: String) throws -> [String] {
+        if let cached = cache[path] {
+            return cached
+        }
         seedFromHost()
         let text = try String(contentsOf: directory.appending(path: path), encoding: .utf8)
-        return text.split(whereSeparator: \.isNewline).map(String.init)
+        let lines = text.split(whereSeparator: \.isNewline).map(String.init)
+        cache[path] = lines
+        return lines
     }
 
     private func seedFromHost() {
@@ -82,7 +98,7 @@ actor BankStore {
         #endif
     }
 
-    private func download(path: String, sha256: String) async throws {
+    private static func download(path: String, sha256: String, into directory: URL) async throws {
         let target = directory.appending(path: path)
         if let existing = try? Data(contentsOf: target), Self.hash(existing) == sha256 {
             return

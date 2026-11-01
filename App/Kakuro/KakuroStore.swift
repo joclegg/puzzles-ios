@@ -210,11 +210,11 @@ final class KakuroStore {
 enum KakuroBank {
     private static var loaded: [Int: [Puzzle]] = [:]
 
-    static func puzzles(size: Int) async -> [Puzzle] {
+    static func puzzles(size: Int) async throws -> [Puzzle] {
         if let cached = loaded[size] {
             return cached
         }
-        let lines = (try? await BankStore.shared.lines("kakuro/\(size).txt")) ?? []
+        let lines = try await BankStore.shared.lines("kakuro/\(size).txt")
         let puzzles = lines.compactMap(Puzzle.decode)
         loaded[size] = puzzles
         return puzzles

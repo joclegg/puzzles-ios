@@ -212,7 +212,6 @@ final class SudokuStore {
     private static let stockTarget = 30
 
     let context: ModelContext
-    private var bankLines: [String: [String]] = [:]
     private var toppingUp = false
     private(set) var revision = 0
 
@@ -329,22 +328,21 @@ final class SudokuStore {
         return game.elapsedMs < previous
     }
 
-    private func lines(_ mode: GameMode, _ difficulty: Difficulty) async -> [String] {
+    private func lines(_ mode: GameMode, _ difficulty: Difficulty) async throws -> [String] {
         let name = BankPick.fileName(mode: mode, difficulty: difficulty)
-        if let cached = bankLines[name] {
-            return cached
-        }
-        let loaded = (try? await BankStore.shared.lines("sudoku/\(name).txt")) ?? []
-        bankLines[name] = loaded
-        return loaded
+        return try await BankStore.shared.lines("sudoku/\(name).txt")
     }
 
-    func openDaily(mode: GameMode, difficulty: Difficulty, date: CalendarDay) async -> Int? {
+    private func linesOrEmpty(_ mode: GameMode, _ difficulty: Difficulty) async -> [String] {
+        (try? await lines(mode, difficulty)) ?? []
+    }
+
+    func openDaily(mode: GameMode, difficulty: Difficulty, date: CalendarDay) async throws -> Int? {
         let id = DailyIds.of(mode: mode, difficulty: difficulty, date: date)
         if let existing = inProgress.first(where: { $0.ref.id == id }) {
             return existing.id
         }
-        let bank = await lines(mode, difficulty)
+        let bank = try await lines(mode, difficulty)
         guard !bank.isEmpty else {
             return nil
         }
@@ -376,7 +374,7 @@ final class SudokuStore {
     }
 
     private func nextPuzzle(mode: GameMode, difficulty: Difficulty) async -> PuzzleRef? {
-        let bank = await lines(mode, difficulty)
+        let bank = await linesOrEmpty(mode, difficulty)
         let unplayed = unplayedIndices(mode, difficulty, count: bank.count)
         if let index = unplayed.randomElement(), let puzzle = try? PuzzleCodec.decode(bank[index]) {
             let id = "\(BankPick.fileName(mode: mode, difficulty: difficulty)):\(index)"
@@ -402,7 +400,7 @@ final class SudokuStore {
     }
 
     private func stock(_ mode: GameMode, _ difficulty: Difficulty) async -> Int {
-        let bank = await lines(mode, difficulty)
+        let bank = await linesOrEmpty(mode, difficulty)
         return unplayedIndices(mode, difficulty, count: bank.count).count
             + generated(mode, difficulty).count { !$0.used }
     }

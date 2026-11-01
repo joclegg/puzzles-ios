@@ -29,7 +29,7 @@ enum SudokuDailies {
                     offered: !done,
                     calendarLabel: "\(mode.label) \(levelLabel(level))"
                 ) {
-                    await store.openDaily(mode: mode, difficulty: level, date: date).map(String.init)
+                    (try? await store.openDaily(mode: mode, difficulty: level, date: date)).map(String.init)
                 }
             }
         }
