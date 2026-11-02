@@ -261,7 +261,7 @@ enum SolitaireDealer {
             let lines = await attempt(
                 "Solitaire winnable deals",
                 {
-                    try await BankStore.shared.lines(WinnableDeals.bankPath(drawMode: drawMode, order: order))
+                    try await BankStore.shared.lines(WinnableDeals.bankPath(drawMode: drawMode, order: order), retain: true)
                 })
         else {
             return nil

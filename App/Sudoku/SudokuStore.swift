@@ -152,7 +152,7 @@ final class SudokuStore {
 
     private func lines(_ mode: GameMode, _ difficulty: Difficulty) async throws -> [String] {
         let name = BankPick.fileName(mode: mode, difficulty: difficulty)
-        return try await BankStore.shared.lines("sudoku/\(name).txt")
+        return try await BankStore.shared.lines("sudoku/\(name).txt", retain: true)
     }
 
     private func linesOrEmpty(_ mode: GameMode, _ difficulty: Difficulty) async -> [String] {
