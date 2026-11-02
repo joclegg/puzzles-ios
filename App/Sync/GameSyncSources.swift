@@ -40,6 +40,26 @@ final class GameSyncSource<Record: SyncedRecord>: SyncSource {
     private let context: ModelContext
     private let bridge: SettingsBridge
     private let reload: @MainActor () -> Void
+    private var pending: Batch?
+
+    private struct Batch {
+        var records: [Record]
+        var byUUID: [String: Record]
+
+        init(records: [Record]) {
+            self.records = records
+            byUUID = Dictionary(records.map { ($0.uuid, $0) }, uniquingKeysWith: { first, _ in first })
+        }
+
+        mutating func add(_ record: Record) {
+            records.append(record)
+            byUUID[record.uuid] = record
+        }
+
+        mutating func remove(_ record: Record) {
+            byUUID[record.uuid] = nil
+        }
+    }
 
     init(game: String, context: ModelContext, bridge: SettingsBridge, reload: @escaping @MainActor () -> Void = {}) {
         self.game = game
@@ -59,29 +79,30 @@ final class GameSyncSource<Record: SyncedRecord>: SyncSource {
     }
 
     func apply(_ row: SyncRow) {
-        let records = all
-        let local = records.first { $0.uuid == row.id }
+        var batch = pending ?? Batch(records: all)
+        pending = nil
+        defer { pending = batch }
+        let local = batch.byUUID[row.id]
         if let local, local.updatedAt >= row.updatedAt {
             return
         }
-        let center = SyncCenter.shared
-        center.applyingRemote = true
-        defer { center.applyingRemote = false }
         if row.deleted {
             if let local {
                 context.delete(local)
-                context.saveOrReport()
+                batch.remove(local)
             }
             return
         }
-        guard let record = Record.fromSync(SyncFields(json: row.data), uuid: row.id, updatedAt: row.updatedAt, existing: records) else {
+        guard let record = Record.fromSync(SyncFields(json: row.data), uuid: row.id, updatedAt: row.updatedAt, existing: batch.records)
+        else {
             return
         }
         if let local {
             context.delete(local)
+            batch.remove(local)
         }
         context.insert(record)
-        context.saveOrReport()
+        batch.add(record)
     }
 
     func settings() -> SyncSettings {
@@ -99,6 +120,13 @@ final class GameSyncSource<Record: SyncedRecord>: SyncSource {
     }
 
     func pulled() {
+        if pending != nil {
+            pending = nil
+            let center = SyncCenter.shared
+            center.applyingRemote = true
+            defer { center.applyingRemote = false }
+            context.saveOrReport()
+        }
         reload()
     }
 }

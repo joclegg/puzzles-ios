@@ -110,7 +110,7 @@ private struct SlideOutGameContent: View {
                     .accessibilityIdentifier("game_title")
                 HStack(spacing: 12) {
                     if showTimer {
-                        Text(formatDuration(model.elapsedMs)).monospacedDigit().accessibilityIdentifier("timer")
+                        ElapsedTimeText { model.elapsedMs }.monospacedDigit().accessibilityIdentifier("timer")
                     }
                     Text("Moves \(model.moveCount)").accessibilityIdentifier("move_count")
                     if showPar {

@@ -140,8 +140,9 @@ final class FiveLettersStore {
     }
 
     func save(_ game: SavedGame) {
-        write(game)
-        commit()
+        let record = write(game)
+        context.saveOrReport()
+        replace(record)
     }
 
     func finish(_ game: SavedGame, won: Bool) {
@@ -151,12 +152,22 @@ final class FiveLettersStore {
         save(ended)
     }
 
-    private func write(_ game: SavedGame) {
+    @discardableResult
+    private func write(_ game: SavedGame) -> FiveLettersGameRecord? {
         let uuid = game.uuid
-        let descriptor = FetchDescriptor<FiveLettersGameRecord>(predicate: #Predicate { $0.uuid == uuid })
-        if let record = context.fetchOrEmpty(descriptor).first {
-            record.apply(game, updatedAt: Self.now())
+        var descriptor = FetchDescriptor<FiveLettersGameRecord>(predicate: #Predicate { $0.uuid == uuid })
+        descriptor.fetchLimit = 1
+        let record = context.fetchOrEmpty(descriptor).first
+        record?.apply(game, updatedAt: Self.now())
+        return record
+    }
+
+    private func replace(_ record: FiveLettersGameRecord?) {
+        guard let saved = record?.game, let index = history.firstIndex(where: { $0.uuid == saved.uuid }) else {
+            refresh()
+            return
         }
+        history[index] = saved
     }
 
     private func commit() {

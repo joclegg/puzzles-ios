@@ -135,7 +135,7 @@ struct KakuroGameView: View {
                     .accessibilityIdentifier("game_title")
                 HStack(spacing: 12) {
                     if settings.isOn(.showTimer) {
-                        Text(formatDuration(model.elapsedMs)).accessibilityIdentifier("timer")
+                        ElapsedTimeText { model.elapsedMs }.accessibilityIdentifier("timer")
                     }
                     if settings.isOn(.showMistakeCount) && game.mistakeCheck != .off {
                         Text("Mistakes \(game.mistakes)").accessibilityIdentifier("mistakes")

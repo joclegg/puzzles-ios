@@ -128,7 +128,7 @@ struct SolitaireGameView: View {
                     .accessibilityIdentifier("game_title")
                 HStack(spacing: 8) {
                     if showTimer {
-                        Text(formatDuration(model.elapsedMs))
+                        ElapsedTimeText { model.elapsedMs }
                             .monospacedDigit()
                             .accessibilityIdentifier("timer")
                     }

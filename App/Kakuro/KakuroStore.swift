@@ -138,9 +138,9 @@ final class KakuroStore {
     }
 
     func save(_ game: SavedGame) {
-        write(game, now: Self.nowMs())
+        let record = write(game, now: Self.nowMs())
         commit()
-        reload()
+        replace(record)
     }
 
     func reveal(_ game: SavedGame) {
@@ -170,10 +170,22 @@ final class KakuroStore {
         GameClock.nowMs()
     }
 
-    private func write(_ game: SavedGame, now: Int64) {
+    @discardableResult
+    private func write(_ game: SavedGame, now: Int64) -> KakuroGameEntity? {
         let id = game.id
-        let descriptor = FetchDescriptor<KakuroGameEntity>(predicate: #Predicate { $0.id == id })
-        context.fetchOrEmpty(descriptor).first?.update(from: game, updatedAt: now)
+        var descriptor = FetchDescriptor<KakuroGameEntity>(predicate: #Predicate { $0.id == id })
+        descriptor.fetchLimit = 1
+        let record = context.fetchOrEmpty(descriptor).first
+        record?.update(from: game, updatedAt: now)
+        return record
+    }
+
+    private func replace(_ record: KakuroGameEntity?) {
+        guard let saved = record?.model, let index = games.firstIndex(where: { $0.id == saved.id }) else {
+            reload()
+            return
+        }
+        games[index] = saved
     }
 
     private func commit() {

@@ -108,7 +108,7 @@ struct SightlinesGameView: View {
                 Text(model.title).font(.headline).lineLimit(1).minimumScaleFactor(0.7).accessibilityIdentifier("game_title")
                 HStack(spacing: 12) {
                     if showTimer {
-                        Text(formatDuration(model.elapsedMs)).monospacedDigit().accessibilityIdentifier("timer")
+                        ElapsedTimeText { model.elapsedMs }.monospacedDigit().accessibilityIdentifier("timer")
                     }
                     if showProgress {
                         Text("\(model.game?.progressPercent ?? 0)%").accessibilityIdentifier("progress")

@@ -96,7 +96,7 @@ struct WordWheelGameView: View {
                     .accessibilityIdentifier("game_title")
                 HStack(spacing: 12) {
                     if showTimer {
-                        Text(formatDuration(model.elapsedMs))
+                        ElapsedTimeText { model.elapsedMs }
                             .monospacedDigit()
                             .accessibilityIdentifier("timer")
                     }

@@ -29,11 +29,18 @@ final class SudokuStore {
         }
     }
 
-    private func records() -> [SudokuGameRecord] {
+    private func records(_ predicate: Predicate<SudokuGameRecord>? = nil) -> [SudokuGameRecord] {
         _ = revision
         let descriptor = FetchDescriptor<SudokuGameRecord>(
+            predicate: predicate,
             sortBy: [SortDescriptor(\.startedAt, order: .reverse), SortDescriptor(\.id, order: .reverse)])
         return context.fetchOrEmpty(descriptor)
+    }
+
+    private func record(_ id: Int) -> SudokuGameRecord? {
+        var descriptor = FetchDescriptor<SudokuGameRecord>(predicate: #Predicate { $0.id == id })
+        descriptor.fetchLimit = 1
+        return context.fetchOrEmpty(descriptor).first
     }
 
     private func commit() {
@@ -46,11 +53,14 @@ final class SudokuStore {
     }
 
     var inProgress: [SudokuSavedGame] {
-        records().filter { $0.status == GameStatus.inProgress.rawValue }.compactMap(\.saved)
+        let status = GameStatus.inProgress.rawValue
+        return records(#Predicate { $0.status == status }).compactMap(\.saved)
     }
 
     var completedDailies: [(id: String, finishedAt: Int64?)] {
-        records().filter { $0.status == GameStatus.completed.rawValue && $0.puzzleId.hasPrefix(PuzzleRef.dailyPrefix) }
+        let status = GameStatus.completed.rawValue
+        let prefix = PuzzleRef.dailyPrefix
+        return records(#Predicate { $0.status == status && $0.puzzleId.starts(with: prefix) })
             .map { ($0.puzzleId, $0.finishedAt) }
     }
 
@@ -78,17 +88,20 @@ final class SudokuStore {
     }
 
     func game(_ id: Int) -> SudokuSavedGame? {
-        records().first { $0.id == id }?.saved
+        _ = revision
+        return record(id)?.saved
     }
 
     func start(_ ref: PuzzleRef, mistakeCheck: MistakeCheck) -> SudokuSavedGame {
         let now = GameClock.nowMs()
-        let all = records()
-        for record in all where record.status == GameStatus.inProgress.rawValue && record.saved?.ref.slot == ref.slot {
+        let status = GameStatus.inProgress.rawValue
+        for record in records(#Predicate { $0.status == status }) where record.saved?.ref.slot == ref.slot {
             record.status = GameStatus.abandoned.rawValue
             record.updatedAt = now
         }
-        let id = (all.map(\.id).max() ?? 0) + 1
+        var newest = FetchDescriptor<SudokuGameRecord>(sortBy: [SortDescriptor(\.id, order: .reverse)])
+        newest.fetchLimit = 1
+        let id = (context.fetchOrEmpty(newest).first?.id ?? 0) + 1
         let game = SudokuSavedGame(
             id: id, ref: ref, values: ref.puzzle.givens, notes: [Int](repeating: 0, count: ref.puzzle.givens.count),
             elapsedMs: 0, mistakes: 0, mistakeCheck: mistakeCheck, status: .inProgress, startedAt: now, finishedAt: nil)
@@ -97,9 +110,13 @@ final class SudokuStore {
         return game
     }
 
-    func save(_ game: SudokuSavedGame) {
-        records().first { $0.id == game.id }?.apply(game, now: GameClock.nowMs())
-        commit()
+    func save(_ game: SudokuSavedGame, notify: Bool = true) {
+        record(game.id)?.apply(game, now: GameClock.nowMs())
+        if notify {
+            commit()
+        } else {
+            context.saveOrReport()
+        }
     }
 
     func reveal(_ game: SudokuSavedGame) {
@@ -117,10 +134,15 @@ final class SudokuStore {
         guard let difficulty = game.ref.difficulty, !game.ref.custom else {
             return false
         }
-        let earlier = records().filter {
-            $0.status == GameStatus.completed.rawValue && !$0.custom && $0.mode == game.ref.mode.rawValue
-                && $0.difficulty == difficulty.name && $0.id != game.id
-        }.map(\.elapsedMs)
+        let status = GameStatus.completed.rawValue
+        let mode = game.ref.mode.rawValue
+        let level: String? = difficulty.name
+        let id = game.id
+        let earlier = records(
+            #Predicate {
+                $0.status == status && !$0.custom && $0.mode == mode && $0.difficulty == level && $0.id != id
+            }
+        ).map(\.elapsedMs)
         let past = pastBests().filter { $0.mode == game.ref.mode && $0.difficulty == difficulty }.map(\.elapsedMs)
         guard let previous = (earlier + past).min() else {
             return true
@@ -130,7 +152,7 @@ final class SudokuStore {
 
     private func lines(_ mode: GameMode, _ difficulty: Difficulty) async throws -> [String] {
         let name = BankPick.fileName(mode: mode, difficulty: difficulty)
-        return try await BankStore.shared.lines("sudoku/\(name).txt")
+        return try await BankStore.shared.lines("sudoku/\(name).txt", retain: true)
     }
 
     private func linesOrEmpty(_ mode: GameMode, _ difficulty: Difficulty) async -> [String] {
@@ -194,9 +216,13 @@ final class SudokuStore {
     }
 
     private func unplayedIndices(_ mode: GameMode, _ difficulty: Difficulty, count: Int) -> [Int] {
-        let played = Set(records().filter { $0.mode == mode.rawValue }.map(\.puzzleId))
-        let name = BankPick.fileName(mode: mode, difficulty: difficulty)
-        return (0..<count).filter { !played.contains("\(name):\($0)") }
+        let modeName = mode.rawValue
+        let prefix = "\(BankPick.fileName(mode: mode, difficulty: difficulty)):"
+        var descriptor = FetchDescriptor<SudokuGameRecord>(
+            predicate: #Predicate { $0.mode == modeName && $0.puzzleId.starts(with: prefix) })
+        descriptor.propertiesToFetch = [\.puzzleId]
+        let played = Set(context.fetchOrEmpty(descriptor).compactMap { Int($0.puzzleId.dropFirst(prefix.count)) })
+        return (0..<count).filter { !played.contains($0) }
     }
 
     private func stock(_ mode: GameMode, _ difficulty: Difficulty) async -> Int {

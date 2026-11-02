@@ -3,7 +3,7 @@ import SwiftUI
 
 typealias SudokuGrid = SudokuEngine.Grid
 
-struct SudokuCellData {
+struct SudokuCellData: Equatable {
     var value: Int
     var notes: Int
     var given: Bool
@@ -13,9 +13,10 @@ struct SudokuCellData {
     var marked: Bool
 }
 
-struct SudokuBoardData {
+struct SudokuBoardData: Equatable {
     var cells: [SudokuCellData]
     var cages: [Cage]
+    var cellsInCages: Set<Int>
     var wrongCages: Set<Int>
     var highlightDigit: Int?
     var boldPlacedDigits = true
@@ -38,6 +39,7 @@ struct SudokuBoardData {
             )
         }
         cages = state.puzzle.cages
+        cellsInCages = Set(state.puzzle.cages.flatMap(\.cells))
         wrongCages = Set(state.puzzle.cages.indices.filter { state.isCageWrong(state.puzzle.cages[$0]) })
         highlightDigit = state.noteHighlightDigit
     }
@@ -92,7 +94,7 @@ struct SudokuBoardView: View {
 
     private func cell(_ index: Int, grid: SudokuGrid, step: CGFloat) -> some View {
         let data = board.cells[index]
-        let inCage = board.cages.contains { $0.cells.contains(index) }
+        let inCage = board.cellsInCages.contains(index)
         return Button {
             onCell(index)
         } label: {
