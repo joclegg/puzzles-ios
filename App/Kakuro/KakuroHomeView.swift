@@ -18,27 +18,29 @@ struct KakuroHomeView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                header
-                hero
-                if let latest = store.inProgress.first {
-                    continueCard(latest)
-                }
-                section("Today", aside: dayMonthLabel(iso: CalendarDay.today.isoString)) {
-                    HStack(spacing: 8) {
-                        ForEach(sizes, id: \.self, content: dailyTile)
-                    }
-                }
-                section("New puzzle", aside: nil) {
-                    LazyVGrid(columns: [GridItem(.flexible(), spacing: 8), GridItem(.flexible())], spacing: 8) {
-                        ForEach(sizes, id: \.self, content: sizeTile)
-                    }
+        GameHomeScaffold(chrome: EmptyModifier()) {
+            header
+        } hero: {
+            hero
+        } continueCard: {
+            if let latest = store.inProgress.first {
+                continueCard(latest)
+            }
+        } intro: {
+        } today: {
+            section("Today", aside: dayMonthLabel(iso: CalendarDay.today.isoString)) {
+                HStack(spacing: 8) {
+                    ForEach(sizes, id: \.self, content: dailyTile)
                 }
             }
-            .padding(16)
-        }
-        .overlay {
+        } newPuzzle: {
+            section("New puzzle", aside: nil) {
+                LazyVGrid(columns: [GridItem(.flexible(), spacing: 8), GridItem(.flexible())], spacing: 8) {
+                    ForEach(sizes, id: \.self, content: sizeTile)
+                }
+            }
+        } footer: {
+        } dialog: {
             if let saved = resumeChoice {
                 resumeDialog(saved)
             }
@@ -67,22 +69,9 @@ struct KakuroHomeView: View {
     }
 
     private var hero: some View {
-        HStack(spacing: 16) {
-            KakuroGameIcon()
-                .frame(width: 80, height: 80)
-                .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 20))
-                .shadow(radius: 1)
-            Text("Cross sums: runs of different digits that add up")
-                .foregroundStyle(.secondary)
-            Spacer(minLength: 0)
+        GameHero(accent: accent, tagline: "Cross sums: runs of different digits that add up") {
+            KakuroGameIcon().gameHeroBadge(background: Color(.systemBackground))
         }
-        .padding(16)
-        .background(
-            LinearGradient(
-                colors: [accent.opacity(0.2), accent.opacity(0.06), .clear], startPoint: .topLeading, endPoint: .bottomTrailing),
-            in: RoundedRectangle(cornerRadius: 24)
-        )
-        .overlay(RoundedRectangle(cornerRadius: 24).stroke(accent.opacity(0.25), lineWidth: 1))
     }
 
     private func continueCard(_ latest: SavedGame) -> some View {

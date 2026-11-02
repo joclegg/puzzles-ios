@@ -30,20 +30,23 @@ struct SlideOutHomeView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                header
-                SlideOutHero(accent: colors.accent)
-                if let latest = inProgress.first {
-                    continueCard(latest)
-                }
-                dailySection
-                levelSection
+        GameHomeScaffold(alignment: .leading, chrome: SlideOutScreenChrome()) {
+            header
+        } hero: {
+            SlideOutHero(accent: colors.accent)
+        } continueCard: {
+            if let latest = inProgress.first {
+                continueCard(latest)
             }
-            .padding(16)
+        } intro: {
+        } today: {
+            dailySection
+        } newPuzzle: {
+            levelSection
+        } footer: {
+        } dialog: {
+            dialogs
         }
-        .slideOutScreen()
-        .overlay { dialogs }
         .navigationDestination(item: $route) { route in
             destination(route).modelContainer(SlideOutStore.container)
         }

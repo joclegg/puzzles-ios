@@ -157,3 +157,9 @@ extension View {
             .navigationBarBackButtonHidden(true)
     }
 }
+
+struct SolitaireScreenChrome: ViewModifier {
+    func body(content: Content) -> some View {
+        content.solitaireScreen()
+    }
+}

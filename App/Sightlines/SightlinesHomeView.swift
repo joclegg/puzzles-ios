@@ -22,24 +22,31 @@ struct SightlinesHomeView: View {
     @State private var fixtureOpened = false
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                hero
-                if let latest = store.games.inProgress.first {
-                    continueCard(latest)
-                }
-                section("Today", aside: dayMonthLabel(iso: CalendarDay.today.isoString)) {
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
-                        ForEach(sizes, id: \.self, content: dailyTile)
-                    }
-                }
-                section("New puzzle", aside: nil) {
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 2), spacing: 8) {
-                        ForEach(sizes, id: \.self, content: sizeTile)
-                    }
+        GameHomeScaffold(chrome: EmptyModifier()) {
+        } hero: {
+            hero
+        } continueCard: {
+            if let latest = store.games.inProgress.first {
+                continueCard(latest)
+            }
+        } intro: {
+        } today: {
+            section("Today", aside: dayMonthLabel(iso: CalendarDay.today.isoString)) {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
+                    ForEach(sizes, id: \.self, content: dailyTile)
                 }
             }
-            .padding(16)
+        } newPuzzle: {
+            section("New puzzle", aside: nil) {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 2), spacing: 8) {
+                    ForEach(sizes, id: \.self, content: sizeTile)
+                }
+            }
+        } footer: {
+        } dialog: {
+            if let saved = resumeChoice {
+                resumeDialog(saved)
+            }
         }
         .navigationTitle("Sightlines")
         .toolbar {
@@ -60,11 +67,6 @@ struct SightlinesHomeView: View {
                 SettingsHubView(initial: .sightlines)
             case .game(let id):
                 SightlinesGameView(id: id, onOpenGame: { screen = .game($0) }, onHome: { screen = nil }).id(id)
-            }
-        }
-        .overlay {
-            if let saved = resumeChoice {
-                resumeDialog(saved)
             }
         }
         .task {
@@ -90,25 +92,13 @@ struct SightlinesHomeView: View {
     }
 
     private var hero: some View {
-        HStack(spacing: 16) {
+        GameHero(accent: SightlinesColors.accent, tagline: "Blue dots count what they can see") {
             RoundedRectangle(cornerRadius: 20)
                 .fill(Color(uiColor: .systemBackground))
                 .frame(width: 80, height: 80)
                 .shadow(radius: 1)
                 .overlay { SightlinesGameIcon() }
-            Text("Blue dots count what they can see").foregroundStyle(.secondary)
-            Spacer(minLength: 0)
         }
-        .padding(16)
-        .background(
-            LinearGradient(
-                colors: [SightlinesColors.accent.opacity(0.2), SightlinesColors.accent.opacity(0.06), .clear],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            ),
-            in: RoundedRectangle(cornerRadius: 24)
-        )
-        .overlay(RoundedRectangle(cornerRadius: 24).stroke(SightlinesColors.accent.opacity(0.25)))
     }
 
     private func continueCard(_ game: SavedGame) -> some View {

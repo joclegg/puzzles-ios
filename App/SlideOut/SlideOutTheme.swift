@@ -142,24 +142,9 @@ struct SlideOutHero: View {
     let accent: Color
 
     var body: some View {
-        HStack(spacing: 16) {
-            SlideOutGameIcon()
-                .frame(width: 80, height: 80)
-                .background(Color(uiColor: .systemBackground), in: RoundedRectangle(cornerRadius: 20))
-                .shadow(radius: 1)
-            Text("Slide the blocks to free the red one").foregroundStyle(.secondary)
-            Spacer(minLength: 0)
+        GameHero(accent: accent, tagline: "Slide the blocks to free the red one") {
+            SlideOutGameIcon().gameHeroBadge(background: Color(uiColor: .systemBackground))
         }
-        .padding(16)
-        .background(
-            LinearGradient(
-                colors: [accent.opacity(0.2), accent.opacity(0.06), .clear],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            ),
-            in: RoundedRectangle(cornerRadius: 24)
-        )
-        .overlay(RoundedRectangle(cornerRadius: 24).stroke(accent.opacity(0.25)))
     }
 }
 
@@ -214,5 +199,11 @@ extension View {
     func slideOutScreen() -> some View {
         toolbar(.hidden, for: .navigationBar)
             .navigationBarBackButtonHidden()
+    }
+}
+
+struct SlideOutScreenChrome: ViewModifier {
+    func body(content: Content) -> some View {
+        content.slideOutScreen()
     }
 }
