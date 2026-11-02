@@ -216,9 +216,13 @@ final class SudokuStore {
     }
 
     private func unplayedIndices(_ mode: GameMode, _ difficulty: Difficulty, count: Int) -> [Int] {
-        let played = Set(records().filter { $0.mode == mode.rawValue }.map(\.puzzleId))
-        let name = BankPick.fileName(mode: mode, difficulty: difficulty)
-        return (0..<count).filter { !played.contains("\(name):\($0)") }
+        let modeName = mode.rawValue
+        let prefix = "\(BankPick.fileName(mode: mode, difficulty: difficulty)):"
+        var descriptor = FetchDescriptor<SudokuGameRecord>(
+            predicate: #Predicate { $0.mode == modeName && $0.puzzleId.starts(with: prefix) })
+        descriptor.propertiesToFetch = [\.puzzleId]
+        let played = Set(context.fetchOrEmpty(descriptor).compactMap { Int($0.puzzleId.dropFirst(prefix.count)) })
+        return (0..<count).filter { !played.contains($0) }
     }
 
     private func stock(_ mode: GameMode, _ difficulty: Difficulty) async -> Int {
