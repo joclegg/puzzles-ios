@@ -128,7 +128,7 @@ struct SudokuGameView: View {
                         .foregroundStyle(.secondary)
                         .accessibilityIdentifier("solution_shown")
                 } else if display.isOn(.showTimer) {
-                    Text(formatDuration(model.elapsedMs))
+                    ElapsedTimeText { model.elapsedMs }
                         .font(.headline.monospacedDigit())
                         .accessibilityIdentifier("timer")
                 }

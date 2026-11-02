@@ -139,7 +139,7 @@ struct TwoToneGameView: View {
                     .accessibilityIdentifier("game_title")
                 HStack(spacing: 12) {
                     if showTimer {
-                        Text(formatDuration(model.elapsedMs)).monospacedDigit().accessibilityIdentifier("timer")
+                        ElapsedTimeText { model.elapsedMs }.monospacedDigit().accessibilityIdentifier("timer")
                     }
                     if showProgress {
                         Text("\(model.game.progressPercent)%").accessibilityIdentifier("progress")
