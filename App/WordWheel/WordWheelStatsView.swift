@@ -46,8 +46,6 @@ struct WordWheelStatsView: View {
 struct WordWheelHistoryView: View {
     let onOpenGame: (Int64) -> Void
 
-    @State private var filter: Level?
-
     private let store = WordWheelStore.shared
 
     private static let dateFormat: DateFormatter = {
@@ -57,34 +55,28 @@ struct WordWheelHistoryView: View {
     }()
 
     var body: some View {
-        let games = store.history.filter { filter == nil || $0.ref.level == filter }
-        VStack(alignment: .leading, spacing: 16) {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    chip("All", selected: filter == nil) { filter = nil }
-                    ForEach(Level.allCases, id: \.self) { level in
-                        chip("\(level.letters)", selected: filter == level) { filter = level }
-                            .accessibilityIdentifier("filter_\(level.letters)")
-                    }
-                }
-                .padding(.horizontal, 16)
-            }
-            .fixedSize(horizontal: false, vertical: true)
-            if games.isEmpty {
+        GameHistoryView(
+            filters: Level.allCases,
+            label: { "\($0.letters)" },
+            chipsPadding: EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16),
+            fixedChipsHeight: true,
+            games: { filter in store.history.filter { filter == nil || $0.ref.level == filter } },
+            header: {},
+            chip: chip,
+            empty: {
                 ContentUnavailableView("No games yet.", systemImage: "clock")
-            } else {
+            },
+            rows: { games in
                 List(games) { game in
-                    Button {
+                    HistoryItemButton {
                         open(game)
                     } label: {
                         row(game)
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityIdentifier("history_item")
                 }
                 .listStyle(.plain)
             }
-        }
+        )
         .padding(.top, 8)
         .navigationTitle("History")
     }
@@ -98,33 +90,31 @@ struct WordWheelHistoryView: View {
     }
 
     private func row(_ game: SavedGame) -> some View {
-        HStack {
-            VStack(alignment: .leading) {
-                Text(game.ref.title).font(.subheadline.weight(.semibold))
-                Text(Self.dateFormat.string(from: Date(timeIntervalSince1970: Double(game.startedAt) / 1000)))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-            Spacer()
-            VStack(alignment: .trailing) {
-                Text(formatDuration(game.elapsedMs))
-                Text("\(game.status.label) · \(game.found.count) words, \(game.bonus.count) bonus")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .contentShape(Rectangle())
+        HistoryRowLabel(
+            title: game.ref.title,
+            date: Self.dateFormat.string(from: Date(timeIntervalSince1970: Double(game.startedAt) / 1000)),
+            elapsedMs: game.elapsedMs,
+            detail: "\(game.status.label) · \(game.found.count) words, \(game.bonus.count) bonus",
+            titleFont: .subheadline.weight(.semibold),
+            verticalPadding: 0
+        )
     }
 
-    private func chip(_ label: String, selected: Bool, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Text(label)
+    @ViewBuilder
+    private func chip(_ chip: HistoryFilterChip<Level>) -> some View {
+        let button = Button(action: chip.select) {
+            Text(chip.label)
                 .font(.subheadline)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 6)
-                .background(selected ? WheelColors.accent.opacity(0.2) : Color.clear, in: Capsule())
-                .overlay { Capsule().stroke(WheelColors.accent.opacity(selected ? 0.8 : 0.3), lineWidth: 1) }
+                .background(chip.isSelected ? WheelColors.accent.opacity(0.2) : Color.clear, in: Capsule())
+                .overlay { Capsule().stroke(WheelColors.accent.opacity(chip.isSelected ? 0.8 : 0.3), lineWidth: 1) }
         }
         .buttonStyle(.plain)
+        if let level = chip.value {
+            button.accessibilityIdentifier("filter_\(level.letters)")
+        } else {
+            button
+        }
     }
 }

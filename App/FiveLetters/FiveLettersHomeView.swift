@@ -22,17 +22,21 @@ struct FiveLettersHomeView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                hero
-                today
-                practice
-                Text("Everyone with Puzzles gets the same word each day, so you can compare grids.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 4)
-            }
-            .padding(16)
+        GameHomeScaffold(alignment: .leading, chrome: EmptyModifier()) {
+        } hero: {
+            hero
+        } continueCard: {
+        } intro: {
+        } today: {
+            today
+        } newPuzzle: {
+            practice
+        } footer: {
+            Text("Everyone with Puzzles gets the same word each day, so you can compare grids.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 4)
+        } dialog: {
         }
         .fiveLettersHeader("Five Letters")
         .toolbar {
@@ -76,26 +80,10 @@ struct FiveLettersHomeView: View {
     }
 
     private var hero: some View {
-        HStack(spacing: 16) {
-            FiveLettersGameIcon()
-                .frame(width: 80, height: 80)
-                .background(Color(.systemBackground), in: .rect(cornerRadius: 20))
-                .shadow(radius: 1)
-            Text("Guess the word in six tries, a new one every day")
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .padding(16)
-        .background(
-            LinearGradient(
-                colors: [theme.accent.opacity(0.2), theme.accent.opacity(0.06), .clear],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            ),
-            in: .rect(cornerRadius: 24)
-        )
-        .overlay {
-            RoundedRectangle(cornerRadius: 24).stroke(theme.accent.opacity(0.25))
+        GameHero(
+            accent: theme.accent, tagline: "Guess the word in six tries, a new one every day", taglineFillsWidth: true
+        ) {
+            FiveLettersGameIcon().gameHeroBadge(background: Color(.systemBackground))
         }
     }
 

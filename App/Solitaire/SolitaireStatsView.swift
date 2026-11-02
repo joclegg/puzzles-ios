@@ -55,74 +55,60 @@ struct SolitaireHistoryView: View {
     let store: SolitaireStore
     let onOpenGame: (Int64) -> Void
     let onBack: () -> Void
-    @State private var filter: DrawMode?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack(spacing: 0) {
-                SolitaireBackButton(action: onBack)
-                Text("History").font(.largeTitle)
-            }
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    chip("All", selected: filter == nil, tag: "filter_all") { filter = nil }
-                    ForEach(DrawMode.allCases, id: \.self) { mode in
-                        chip(mode.label, selected: filter == mode, tag: "filter_\(mode.tagName)") { filter = mode }
-                    }
+        GameHistoryView(
+            filters: DrawMode.allCases,
+            label: \.label,
+            chipsPadding: EdgeInsets(top: 1, leading: 1, bottom: 1, trailing: 1),
+            games: { store.history(filter: $0) },
+            header: {
+                HStack(spacing: 0) {
+                    SolitaireBackButton(action: onBack)
+                    Text("History").font(.largeTitle)
                 }
-                .padding(1)
-            }
-            let games = store.history(filter: filter)
-            if games.isEmpty {
+            },
+            chip: chip,
+            empty: {
                 Text("No games yet.")
                     .foregroundStyle(SolitaireColors.onSurfaceVariant)
                     .frame(maxWidth: .infinity, minHeight: 120)
                 Spacer(minLength: 0)
-            } else {
+            },
+            rows: { games in
                 ScrollView {
-                    LazyVStack(spacing: 0) {
-                        ForEach(games) { game in
-                            item(game)
-                            Divider()
-                        }
-                    }
-                    .padding(.horizontal, 16)
+                    HistoryRows(games, id: \.id, row: item)
+                        .padding(.horizontal, 16)
                 }
                 .background(SolitaireColors.tile, in: RoundedRectangle(cornerRadius: 16))
                 .overlay(RoundedRectangle(cornerRadius: 16).stroke(SolitaireColors.accent.opacity(0.25), lineWidth: 1))
             }
-        }
+        )
         .padding(16)
         .solitaireScreen()
     }
 
-    private func chip(_ label: String, selected: Bool, tag: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Text(label)
+    private func chip(_ chip: HistoryFilterChip<DrawMode>) -> some View {
+        Button(action: chip.select) {
+            Text(chip.label)
                 .font(.subheadline)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(selected ? SolitaireColors.accent.opacity(0.2) : .clear, in: Capsule())
-                .overlay(Capsule().stroke(SolitaireColors.accent.opacity(selected ? 1 : 0.3), lineWidth: 1))
+                .background(chip.isSelected ? SolitaireColors.accent.opacity(0.2) : .clear, in: Capsule())
+                .overlay(Capsule().stroke(SolitaireColors.accent.opacity(chip.isSelected ? 1 : 0.3), lineWidth: 1))
         }
         .buttonStyle(.plain)
-        .accessibilityIdentifier(tag)
+        .accessibilityIdentifier(chip.value.map { "filter_\($0.tagName)" } ?? "filter_all")
     }
 
     private func item(_ game: SavedGame) -> some View {
-        HStack {
-            VStack(alignment: .leading) {
-                Text(game.deal.title).font(.subheadline.weight(.medium))
-                Text(Self.date(game.startedAt)).font(.caption).foregroundStyle(SolitaireColors.onSurfaceVariant)
-            }
-            Spacer()
-            VStack(alignment: .trailing) {
-                Text(formatDuration(game.elapsedMs))
-                Text(game.summary).font(.caption).foregroundStyle(SolitaireColors.onSurfaceVariant)
-            }
-        }
-        .padding(.vertical, 12)
-        .contentShape(Rectangle())
+        HistoryRowLabel(
+            title: game.deal.title,
+            date: Theme.historyDate(ms: game.startedAt),
+            elapsedMs: game.elapsedMs,
+            detail: game.summary,
+            secondary: AnyShapeStyle(SolitaireColors.onSurfaceVariant)
+        )
         .onTapGesture {
             if game.status == .inProgress {
                 onOpenGame(game.id)
@@ -132,9 +118,5 @@ struct SolitaireHistoryView: View {
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("history_item")
-    }
-
-    private static func date(_ ms: Int64) -> String {
-        Theme.historyDate(ms: ms)
     }
 }

@@ -46,28 +46,6 @@ struct WordWheelHomeView: View {
             .navigationDestination(isPresented: $showSettings) {
                 SettingsHubView(initial: .wordWheel)
             }
-            .overlay {
-                if let saved = resumeChoice {
-                    WordWheelConfirm(
-                        title: saved.ref.title,
-                        message: "You have a puzzle in progress (\(formatDuration(saved.elapsedMs))).",
-                        tag: "resume_dialog",
-                        confirm: "Resume",
-                        confirmTag: "resume_game",
-                        dismiss: "New puzzle",
-                        dismissTag: "new_game",
-                        onConfirm: {
-                            resumeChoice = nil
-                            openGame = saved.id
-                        },
-                        onDismissButton: {
-                            resumeChoice = nil
-                            start(saved.ref.level)
-                        },
-                        onCancel: { resumeChoice = nil }
-                    )
-                }
-            }
             .task {
                 if let id = DailyRouter.shared.take(.wordWheel).flatMap(Int64.init) {
                     openGame = id
@@ -80,50 +58,65 @@ struct WordWheelHomeView: View {
     }
 
     private var content: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                hero
-                if let latest = store.inProgress.first {
-                    continueCard(latest)
-                }
-                section("Today", aside: dayMonthLabel(iso: CalendarDay.today.isoString)) {
-                    let solved = store.dailySolved(on: CalendarDay.today)
-                    HStack(spacing: 8) {
-                        ForEach(Level.allCases, id: \.self) { level in
-                            dailyTile(level, done: solved.contains(level))
-                        }
-                    }
-                }
-                section("New puzzle") {
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
-                        ForEach(Level.allCases, id: \.self) { level in
-                            levelTile(level)
-                        }
+        GameHomeScaffold(alignment: .leading, chrome: WordWheelHomeChrome()) {
+        } hero: {
+            hero
+        } continueCard: {
+            if let latest = store.inProgress.first {
+                continueCard(latest)
+            }
+        } intro: {
+        } today: {
+            section("Today", aside: dayMonthLabel(iso: CalendarDay.today.isoString)) {
+                let solved = store.dailySolved(on: CalendarDay.today)
+                HStack(spacing: 8) {
+                    ForEach(Level.allCases, id: \.self) { level in
+                        dailyTile(level, done: solved.contains(level))
                     }
                 }
             }
-            .padding(16)
+        } newPuzzle: {
+            section("New puzzle") {
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
+                    ForEach(Level.allCases, id: \.self) { level in
+                        levelTile(level)
+                    }
+                }
+            }
+        } footer: {
+        } dialog: {
+            if let saved = resumeChoice {
+                WordWheelConfirm(
+                    title: saved.ref.title,
+                    message: "You have a puzzle in progress (\(formatDuration(saved.elapsedMs))).",
+                    tag: "resume_dialog",
+                    confirm: "Resume",
+                    confirmTag: "resume_game",
+                    dismiss: "New puzzle",
+                    dismissTag: "new_game",
+                    onConfirm: {
+                        resumeChoice = nil
+                        openGame = saved.id
+                    },
+                    onDismissButton: {
+                        resumeChoice = nil
+                        start(saved.ref.level)
+                    },
+                    onCancel: { resumeChoice = nil }
+                )
+            }
         }
-        .background(Color(.systemGroupedBackground))
     }
 
     private var hero: some View {
-        HStack(spacing: 16) {
+        GameHero(
+            accent: WheelColors.accent,
+            tagline: "Swipe the letters to fill the crossword",
+            taglineFont: .subheadline,
+            bordered: false
+        ) {
             WordWheelGameIcon()
-            Text("Swipe the letters to fill the crossword")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-            Spacer(minLength: 0)
         }
-        .padding(16)
-        .background(
-            LinearGradient(
-                colors: [WheelColors.accent.opacity(0.2), WheelColors.accent.opacity(0.06), .clear],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            ),
-            in: RoundedRectangle(cornerRadius: 24)
-        )
     }
 
     private func continueCard(_ game: SavedGame) -> some View {
@@ -287,5 +280,11 @@ struct WordWheelGameIcon: View {
         }
         .frame(width: 56, height: 56)
         .accessibilityHidden(true)
+    }
+}
+
+private struct WordWheelHomeChrome: ViewModifier {
+    func body(content: Content) -> some View {
+        content.background(Color(.systemGroupedBackground))
     }
 }

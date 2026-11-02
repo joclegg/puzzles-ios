@@ -13,26 +13,28 @@ struct SudokuHomeView: View {
 
     var body: some View {
         let inProgress = store.inProgress
-        ZStack {
-            ScrollView {
-                VStack(spacing: 20) {
-                    header
-                    hero
-                    if let latest = inProgress.first {
-                        continueCard(latest)
-                    }
-                    SudokuSegments(
-                        options: GameMode.allCases, selected: mode, label: \.label, id: { "mode_\($0.slug)" },
-                        onSelect: { mode = $0 })
-                    section("Today", aside: CalendarDay.today.shortLabel) {
-                        today
-                    }
-                    section("New game", aside: nil) {
-                        levels(inProgress)
-                    }
-                }
-                .padding(16)
+        GameHomeScaffold(chrome: EmptyModifier()) {
+            header
+        } hero: {
+            hero
+        } continueCard: {
+            if let latest = inProgress.first {
+                continueCard(latest)
             }
+        } intro: {
+            SudokuSegments(
+                options: GameMode.allCases, selected: mode, label: \.label, id: { "mode_\($0.slug)" },
+                onSelect: { mode = $0 })
+        } today: {
+            section("Today", aside: CalendarDay.today.shortLabel) {
+                today
+            }
+        } newPuzzle: {
+            section("New game", aside: nil) {
+                levels(inProgress)
+            }
+        } footer: {
+        } dialog: {
             if let choice = resumeChoice {
                 resumeDialog(choice.level, choice.game)
             }
@@ -56,23 +58,9 @@ struct SudokuHomeView: View {
     }
 
     private var hero: some View {
-        HStack(spacing: 16) {
-            SudokuGameIcon()
-                .frame(width: 80, height: 80)
-                .background(palette.background, in: RoundedRectangle(cornerRadius: 20))
-                .shadow(radius: 1)
-            Text("Classic and killer, from 6x6 to evil")
-                .foregroundStyle(.secondary)
-            Spacer(minLength: 0)
+        GameHero(accent: palette.accent, tagline: "Classic and killer, from 6x6 to evil") {
+            SudokuGameIcon().gameHeroBadge(background: palette.background)
         }
-        .padding(16)
-        .background(
-            LinearGradient(
-                colors: [palette.accent.opacity(0.2), palette.accent.opacity(0.06), .clear], startPoint: .topLeading,
-                endPoint: .bottomTrailing),
-            in: RoundedRectangle(cornerRadius: 24)
-        )
-        .overlay(RoundedRectangle(cornerRadius: 24).stroke(palette.accent.opacity(0.25)))
     }
 
     private func continueCard(_ game: SudokuSavedGame) -> some View {

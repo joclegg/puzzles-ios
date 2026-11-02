@@ -29,24 +29,27 @@ struct SolitaireHomeView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                header
-                hero
-                if let latest = store.inProgress.first {
-                    continueCard(latest)
-                }
-                section("Today", aside: DealRef.dayLabel(iso: CalendarDay.today.isoString)) {
-                    dailyTile
-                }
-                section("New game", aside: nil) {
-                    newGameTile
-                }
+        GameHomeScaffold(alignment: .leading, chrome: SolitaireScreenChrome()) {
+            header
+        } hero: {
+            hero
+        } continueCard: {
+            if let latest = store.inProgress.first {
+                continueCard(latest)
             }
-            .padding(16)
+        } intro: {
+        } today: {
+            section("Today", aside: DealRef.dayLabel(iso: CalendarDay.today.isoString)) {
+                dailyTile
+            }
+        } newPuzzle: {
+            section("New game", aside: nil) {
+                newGameTile
+            }
+        } footer: {
+        } dialog: {
+            resumeDialog
         }
-        .solitaireScreen()
-        .overlay { resumeDialog }
         .navigationDestination(item: $route) { destination($0) }
         .task {
             if let id = DailyRouter.shared.take(.solitaire).flatMap(Int64.init) {
@@ -88,27 +91,15 @@ struct SolitaireHomeView: View {
     }
 
     private var hero: some View {
-        let shape = RoundedRectangle(cornerRadius: 24)
-        return HStack(spacing: 16) {
+        GameHero(
+            accent: SolitaireColors.accent,
+            tagline: "Klondike, draw 1 or 3, or reverse",
+            taglineStyle: AnyShapeStyle(SolitaireColors.onSurfaceVariant)
+        ) {
             SolitaireGameIcon()
-                .frame(width: 80, height: 80)
-                .background(SolitaireColors.background, in: RoundedRectangle(cornerRadius: 20))
-                .shadow(radius: 1)
+                .gameHeroBadge(background: SolitaireColors.background)
                 .accessibilityHidden(true)
-            Text("Klondike, draw 1 or 3, or reverse")
-                .foregroundStyle(SolitaireColors.onSurfaceVariant)
-            Spacer(minLength: 0)
         }
-        .padding(16)
-        .background(
-            LinearGradient(
-                colors: [SolitaireColors.accent.opacity(0.2), SolitaireColors.accent.opacity(0.06), .clear],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            ),
-            in: shape
-        )
-        .overlay(shape.stroke(SolitaireColors.accent.opacity(0.25), lineWidth: 1))
     }
 
     private func continueCard(_ game: SavedGame) -> some View {

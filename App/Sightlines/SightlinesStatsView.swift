@@ -35,88 +35,57 @@ struct SightlinesStatsView: View {
 struct SightlinesHistoryView: View {
     let onOpenGame: (Int64) -> Void
     private let store = SightlinesStore.shared
-    @State private var filter: Int?
-
-    private var games: [SavedGame] {
-        store.games.filter { filter == nil || $0.ref.size == filter }
-    }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    chip("All", nil, tag: "filter_all")
-                    ForEach(sizes, id: \.self) { chip("\($0)", $0, tag: "filter_\($0)") }
-                }
-            }
-            if games.isEmpty {
-                VStack(spacing: 12) {
-                    Circle()
-                        .fill(SightlinesColors.accent.opacity(0.14))
-                        .frame(width: 48, height: 48)
-                        .overlay { PuzzleIcon.image("clock.arrow.circlepath").foregroundStyle(SightlinesColors.accent) }
-                    Text("No games yet.").foregroundStyle(.secondary)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 40)
-                .overlay(RoundedRectangle(cornerRadius: 24).stroke(SightlinesColors.tileBorder))
-            } else {
+        GameHistoryView(
+            filters: sizes,
+            label: { "\($0)" },
+            games: { filter in store.games.filter { filter == nil || $0.ref.size == filter } },
+            header: {},
+            chip: chip,
+            empty: {
+                HistoryEmptyState(accent: SightlinesColors.accent, border: SightlinesColors.tileBorder)
+                Spacer(minLength: 0)
+            },
+            rows: { games in
                 ScrollView {
-                    LazyVStack(spacing: 0) {
-                        ForEach(games) { game in
-                            item(game)
-                            Divider()
-                        }
-                    }
-                    .padding(.horizontal, 16)
+                    HistoryRows(games, id: \.id, row: item)
+                        .padding(.horizontal, 16)
                 }
                 .background(SightlinesColors.tile, in: RoundedRectangle(cornerRadius: 24))
                 .overlay(RoundedRectangle(cornerRadius: 24).stroke(SightlinesColors.tileBorder))
+                Spacer(minLength: 0)
             }
-            Spacer(minLength: 0)
-        }
+        )
         .padding(16)
         .navigationTitle("History")
         .navigationBarTitleDisplayMode(.inline)
     }
 
-    private func chip(_ label: String, _ value: Int?, tag: String) -> some View {
-        Button {
-            filter = value
-        } label: {
-            Text(label)
+    private func chip(_ chip: HistoryFilterChip<Int>) -> some View {
+        Button(action: chip.select) {
+            Text(chip.label)
                 .fontWeight(.medium)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 6)
-                .foregroundStyle(filter == value ? Color(uiColor: .systemBackground) : Color.primary)
-                .background(filter == value ? SightlinesColors.accent : SightlinesColors.tile, in: Capsule())
-                .overlay(Capsule().stroke(filter == value ? SightlinesColors.accent : SightlinesColors.tileBorder))
+                .foregroundStyle(chip.isSelected ? Color(uiColor: .systemBackground) : Color.primary)
+                .background(chip.isSelected ? SightlinesColors.accent : SightlinesColors.tile, in: Capsule())
+                .overlay(Capsule().stroke(chip.isSelected ? SightlinesColors.accent : SightlinesColors.tileBorder))
         }
-        .accessibilityIdentifier(tag)
+        .accessibilityIdentifier(chip.value.map { "filter_\($0)" } ?? "filter_all")
     }
 
     private func item(_ game: SavedGame) -> some View {
-        Button {
+        HistoryItemButton {
             open(game)
         } label: {
-            HStack {
-                VStack(alignment: .leading) {
-                    Text(game.ref.title).font(.subheadline.weight(.medium))
-                    Text(started(game)).font(.caption).foregroundStyle(.secondary)
-                }
-                Spacer()
-                VStack(alignment: .trailing) {
-                    Text(formatDuration(game.elapsedMs))
-                    Text(game.hints > 0 ? "\(game.status.label) · \(game.hints) hints" : game.status.label)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .padding(.vertical, 12)
-            .contentShape(Rectangle())
+            HistoryRowLabel(
+                title: game.ref.title,
+                date: Theme.historyDate(ms: game.startedAt),
+                elapsedMs: game.elapsedMs,
+                detail: game.hints > 0 ? "\(game.status.label) · \(game.hints) hints" : game.status.label
+            )
         }
-        .buttonStyle(.plain)
-        .accessibilityIdentifier("history_item")
     }
 
     private func open(_ game: SavedGame) {
@@ -128,9 +97,5 @@ struct SightlinesHistoryView: View {
         Task {
             onOpenGame(await store.start { ref })
         }
-    }
-
-    private func started(_ game: SavedGame) -> String {
-        Theme.historyDate(ms: game.startedAt)
     }
 }

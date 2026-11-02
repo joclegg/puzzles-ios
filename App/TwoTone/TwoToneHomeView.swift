@@ -22,33 +22,33 @@ struct TwoToneHomeView: View {
         let today = CalendarDay.today
         let inProgress = store.inProgress
         let solved = store.dailySolved(date: today)
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                header
-                hero
-                if let latest = inProgress.first {
-                    continueCard(latest)
-                }
-                section("Today", aside: dayMonthLabel(iso: today.isoString)) {
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: 12) {
-                        ForEach(sizes, id: \.self) { size in
-                            dailyTile(size, done: solved.contains(size), today: today)
-                        }
-                    }
-                }
-                section("New puzzle", aside: nil) {
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 12) {
-                        ForEach(Array(sizes.enumerated()), id: \.element) { index, size in
-                            sizeTile(size, rank: index, saved: inProgress.first { !PuzzleRef.isDaily(id: $0.puzzleId) && $0.size == size })
-                        }
+        GameHomeScaffold(alignment: .leading, chrome: TwoToneHomeChrome()) {
+            header
+        } hero: {
+            hero
+        } continueCard: {
+            if let latest = inProgress.first {
+                continueCard(latest)
+            }
+        } intro: {
+        } today: {
+            section("Today", aside: dayMonthLabel(iso: today.isoString)) {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: 12) {
+                    ForEach(sizes, id: \.self) { size in
+                        dailyTile(size, done: solved.contains(size), today: today)
                     }
                 }
             }
-            .padding(16)
-        }
-        .tint(TwoToneColors.accent)
-        .navigationBarTitleDisplayMode(.inline)
-        .overlay {
+        } newPuzzle: {
+            section("New puzzle", aside: nil) {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 12) {
+                    ForEach(Array(sizes.enumerated()), id: \.element) { index, size in
+                        sizeTile(size, rank: index, saved: inProgress.first { !PuzzleRef.isDaily(id: $0.puzzleId) && $0.size == size })
+                    }
+                }
+            }
+        } footer: {
+        } dialog: {
             if let saved = resumeChoice {
                 resumeDialog(saved)
             }
@@ -118,26 +118,9 @@ struct TwoToneHomeView: View {
     }
 
     private var hero: some View {
-        HStack(spacing: 16) {
-            TwoToneGameIcon()
-                .frame(width: 80, height: 80)
-                .background(Color(uiColor: .systemBackground), in: .rect(cornerRadius: 20))
-                .shadow(radius: 1)
-            Text("Fill the grid red and blue, three simple rules")
-                .foregroundStyle(.secondary)
-            Spacer(minLength: 0)
+        GameHero(accent: TwoToneColors.accent, tagline: "Fill the grid red and blue, three simple rules") {
+            TwoToneGameIcon().gameHeroBadge(background: Color(uiColor: .systemBackground))
         }
-        .padding(16)
-        .frame(maxWidth: .infinity)
-        .background(
-            LinearGradient(
-                colors: [TwoToneColors.accent.opacity(0.2), TwoToneColors.accent.opacity(0.06), .clear],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            ),
-            in: .rect(cornerRadius: 24)
-        )
-        .overlay { RoundedRectangle(cornerRadius: 24).stroke(TwoToneColors.accent.opacity(0.25)) }
     }
 
     private func continueCard(_ game: TwoToneGameRecord) -> some View {
@@ -256,6 +239,14 @@ struct TwoToneHomeView: View {
             }
             .accessibilityIdentifier("resume_game")
         }
+    }
+}
+
+private struct TwoToneHomeChrome: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .tint(TwoToneColors.accent)
+            .navigationBarTitleDisplayMode(.inline)
     }
 }
 

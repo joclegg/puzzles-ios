@@ -33,46 +33,38 @@ struct TwoToneHistoryView: View {
     let store: TwoToneStore
     let onOpen: (Int64) -> Void
 
-    @State private var filter: Int?
-
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("History").font(.largeTitle.bold())
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    chip("All", selected: filter == nil, tag: "filter_all") { filter = nil }
-                    ForEach(sizes, id: \.self) { size in
-                        chip("\(size)", selected: filter == size, tag: "filter_\(size)") { filter = size }
-                    }
-                }
-            }
-            let games = store.history.filter { filter == nil || $0.size == filter }
-            if games.isEmpty {
+        GameHistoryView(
+            filters: sizes,
+            label: { "\($0)" },
+            games: { filter in store.history.filter { filter == nil || $0.size == filter } },
+            header: {
+                Text("History").font(.largeTitle.bold())
+            },
+            chip: chip,
+            empty: {
                 Text("No games yet.")
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, minHeight: 120)
                     .background(TwoToneColors.accent.opacity(0.08), in: .rect(cornerRadius: 16))
                 Spacer()
-            } else {
+            },
+            rows: { games in
                 ScrollView {
-                    LazyVStack(spacing: 0) {
-                        ForEach(games, id: \.uuid) { game in
-                            item(game)
-                            Divider()
-                        }
-                    }
-                    .padding(.horizontal, 16)
+                    HistoryRows(games, id: \.uuid, row: item)
+                        .padding(.horizontal, 16)
                 }
                 .background(TwoToneColors.accent.opacity(0.08), in: .rect(cornerRadius: 16))
             }
-        }
+        )
         .padding(16)
         .navigationBarTitleDisplayMode(.inline)
     }
 
-    private func chip(_ label: String, selected: Bool, tag: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Text(label)
+    private func chip(_ chip: HistoryFilterChip<Int>) -> some View {
+        let selected = chip.isSelected
+        return Button(action: chip.select) {
+            Text(chip.label)
                 .font(.subheadline.weight(.medium))
                 .foregroundStyle(selected ? Color.white : Color.primary)
                 .padding(.horizontal, 14)
@@ -80,36 +72,26 @@ struct TwoToneHistoryView: View {
                 .background(selected ? TwoToneColors.accent : TwoToneColors.accent.opacity(0.1), in: .capsule)
         }
         .buttonStyle(.plain)
-        .accessibilityIdentifier(tag)
+        .accessibilityIdentifier(chip.value.map { "filter_\($0)" } ?? "filter_all")
         .accessibilityAddTraits(selected ? .isSelected : [])
     }
 
     private func item(_ game: TwoToneGameRecord) -> some View {
         let status = game.gameStatus
-        return Button {
+        return HistoryItemButton {
             if status == .inProgress {
                 onOpen(game.id)
             } else if let id = store.replay(game) {
                 onOpen(id)
             }
         } label: {
-            HStack {
-                VStack(alignment: .leading) {
-                    Text(game.title).font(.subheadline.weight(.semibold))
-                    Text(Theme.historyDate(ms: game.startedAt)).font(.caption).foregroundStyle(.secondary)
-                }
-                Spacer()
-                VStack(alignment: .trailing) {
-                    Text(formatDuration(game.elapsedMs))
-                    Text(game.hints > 0 ? "\(status.label) · \(game.hints) hints" : status.label)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .padding(.vertical, 12)
-            .contentShape(.rect)
+            HistoryRowLabel(
+                title: game.title,
+                date: Theme.historyDate(ms: game.startedAt),
+                elapsedMs: game.elapsedMs,
+                detail: game.hints > 0 ? "\(status.label) · \(game.hints) hints" : status.label,
+                titleFont: .subheadline.weight(.semibold)
+            )
         }
-        .buttonStyle(.plain)
-        .accessibilityIdentifier("history_item")
     }
 }
