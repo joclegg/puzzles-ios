@@ -48,3 +48,20 @@ struct AccountSettings: View {
         }
     }
 }
+
+struct PrivacyPolicyLink: View {
+    private static let url = URL(string: "https://joclegg.github.io/puzzles-web/#/privacy")
+
+    var body: some View {
+        if let url = Self.url {
+            Link("Privacy policy", destination: url)
+                .buttonStyle(.bordered)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(16)
+                .modifier(SudokuTileStyle())
+                .padding(.horizontal, 16)
+                .padding(.bottom, 16)
+                .accessibilityIdentifier("privacy_policy")
+        }
+    }
+}
