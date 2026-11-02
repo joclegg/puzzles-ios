@@ -77,49 +77,40 @@ enum SudokuHistoryFilter: String, CaseIterable {
 struct SudokuHistoryView: View {
     @Environment(SudokuNavigator.self) private var navigator
     @Environment(\.sudokuPalette) private var palette
-    @State private var filter: SudokuHistoryFilter?
 
     var body: some View {
-        let games = SudokuStore.shared.history.filter { filter?.matches($0) ?? true }
-        VStack(alignment: .leading, spacing: 16) {
-            HStack(spacing: 0) {
-                SudokuBackButton(action: navigator.back)
-                Text("History").font(.title.weight(.regular))
-            }
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    chip("All", selected: filter == nil, id: "filter_all") { filter = nil }
-                    ForEach(SudokuHistoryFilter.allCases, id: \.self) { option in
-                        chip(option.rawValue.capitalized, selected: filter == option, id: "filter_\(option.rawValue)") {
-                            filter = option
-                        }
-                    }
+        GameHistoryView(
+            filters: SudokuHistoryFilter.allCases,
+            label: { $0.rawValue.capitalized },
+            games: { filter in SudokuStore.shared.history.filter { filter?.matches($0) ?? true } },
+            header: {
+                HStack(spacing: 0) {
+                    SudokuBackButton(action: navigator.back)
+                    Text("History").font(.title.weight(.regular))
                 }
-            }
-            if games.isEmpty {
+            },
+            chip: chip,
+            empty: {
                 Text("No games yet.")
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, minHeight: 120)
                     .modifier(SudokuTileStyle())
-            } else {
+            },
+            rows: { games in
                 ScrollView {
-                    LazyVStack(spacing: 0) {
-                        ForEach(games) { game in
-                            item(game)
-                            Divider()
-                        }
-                    }
-                    .padding(.horizontal, 12)
+                    HistoryRows(games, id: \.id, row: item)
+                        .padding(.horizontal, 12)
                 }
                 .modifier(SudokuTileStyle())
             }
-        }
+        )
         .padding(16)
     }
 
-    private func chip(_ title: String, selected: Bool, id: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Text(title)
+    private func chip(_ chip: HistoryFilterChip<SudokuHistoryFilter>) -> some View {
+        let selected = chip.isSelected
+        return Button(action: chip.select) {
+            Text(chip.label)
                 .font(.subheadline)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
@@ -128,11 +119,11 @@ struct SudokuHistoryView: View {
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(selected ? .isSelected : [])
-        .accessibilityIdentifier(id)
+        .accessibilityIdentifier(chip.value.map { "filter_\($0.rawValue)" } ?? "filter_all")
     }
 
     private func item(_ game: SudokuSavedGame) -> some View {
-        Button {
+        HistoryItemButton {
             if game.status == .inProgress {
                 navigator.openGame(game.id)
             } else {
@@ -140,24 +131,13 @@ struct SudokuHistoryView: View {
                 navigator.openGame(replay.id)
             }
         } label: {
-            HStack {
-                VStack(alignment: .leading) {
-                    Text(game.title).font(.subheadline.weight(.medium))
-                    Text(Self.date(game.startedAt)).font(.caption).foregroundStyle(.secondary)
-                }
-                Spacer()
-                VStack(alignment: .trailing) {
-                    Text(formatDuration(game.elapsedMs))
-                    Text(game.mistakeCheck != .off ? "\(game.status.label) · \(game.mistakes) mistakes" : game.status.label)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .padding(.vertical, 12)
-            .contentShape(Rectangle())
+            HistoryRowLabel(
+                title: game.title,
+                date: Self.date(game.startedAt),
+                elapsedMs: game.elapsedMs,
+                detail: game.mistakeCheck != .off ? "\(game.status.label) · \(game.mistakes) mistakes" : game.status.label
+            )
         }
-        .buttonStyle(.plain)
-        .accessibilityIdentifier("history_item")
     }
 
     private static func date(_ ms: Int64) -> String {

@@ -57,29 +57,24 @@ struct SlideOutHistoryView: View {
     @Environment(\.colorScheme) private var scheme
     @Query(sort: [SortDescriptor(\SlideOutGameRecord.startedAt, order: .reverse), SortDescriptor(\.id, order: .reverse)])
     private var games: [SlideOutGameRecord]
-    @State private var filter: Level?
-
-    private var shown: [SlideOutGameRecord] {
-        games.filter { filter == nil || $0.level == filter?.name }
-    }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack(spacing: 0) {
-                SlideOutBackButton(action: onBack)
-                Text("History").font(.title)
-            }
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    chip("All", level: nil, id: "")
-                    ForEach(Level.allCases, id: \.self) { level in
-                        chip(String(level.label.prefix(1)), level: level, id: "filter_\(level.name.lowercased())")
-                    }
+        GameHistoryView(
+            filters: Level.allCases,
+            label: { String($0.label.prefix(1)) },
+            games: { filter in games.filter { filter == nil || $0.level == filter?.name } },
+            header: {
+                HStack(spacing: 0) {
+                    SlideOutBackButton(action: onBack)
+                    Text("History").font(.title)
                 }
-            }
-            if shown.isEmpty {
-                empty
-            } else {
+            },
+            chip: chip,
+            empty: {
+                HistoryEmptyState(accent: SlideColors.of(scheme).accent)
+                Spacer(minLength: 0)
+            },
+            rows: { shown in
                 ScrollView {
                     SlideOutPanel {
                         ForEach(shown) { game in
@@ -88,34 +83,18 @@ struct SlideOutHistoryView: View {
                         }
                     }
                 }
+                Spacer(minLength: 0)
             }
-            Spacer(minLength: 0)
-        }
+        )
         .padding(16)
         .slideOutScreen()
     }
 
-    private var empty: some View {
+    private func chip(_ chip: HistoryFilterChip<Level>) -> some View {
         let accent = SlideColors.of(scheme).accent
-        return VStack(spacing: 12) {
-            PuzzleIcon.image("clock.arrow.circlepath")
-                .foregroundStyle(accent)
-                .frame(width: 48, height: 48)
-                .background(accent.opacity(0.14), in: Circle())
-            Text("No games yet.").foregroundStyle(.secondary)
-        }
-        .padding(.vertical, 40)
-        .frame(maxWidth: .infinity)
-        .overlay(RoundedRectangle(cornerRadius: 24).stroke(Color.primary.opacity(0.12)))
-    }
-
-    private func chip(_ label: String, level: Level?, id: String) -> some View {
-        let accent = SlideColors.of(scheme).accent
-        let selected = filter == level
-        return Button {
-            filter = level
-        } label: {
-            Text(label)
+        let selected = chip.isSelected
+        return Button(action: chip.select) {
+            Text(chip.label)
                 .fontWeight(.medium)
                 .foregroundStyle(selected ? Color(uiColor: .systemBackground) : Color.primary)
                 .padding(.horizontal, 14)
@@ -124,33 +103,20 @@ struct SlideOutHistoryView: View {
                 .overlay(Capsule().stroke(selected ? accent : Color.primary.opacity(0.12)))
         }
         .buttonStyle(.plain)
-        .accessibilityIdentifier(id)
+        .accessibilityIdentifier(chip.value.map { "filter_\($0.name.lowercased())" } ?? "")
     }
 
     private func item(_ game: SlideOutGameRecord) -> some View {
-        Button {
+        HistoryItemButton {
             open(game)
         } label: {
-            HStack {
-                VStack(alignment: .leading) {
-                    Text(game.title).font(.subheadline).fontWeight(.medium)
-                    Text(Date(timeIntervalSince1970: Double(game.startedAt) / 1000), format: dateStyle)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                Spacer()
-                VStack(alignment: .trailing) {
-                    Text(formatDuration(game.elapsedMs))
-                    Text("\(game.gameStatus.label) · \(game.moveCount) moves")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .padding(.vertical, 12)
-            .contentShape(Rectangle())
+            HistoryRowLabel(
+                title: game.title,
+                date: Date(timeIntervalSince1970: Double(game.startedAt) / 1000).formatted(dateStyle),
+                elapsedMs: game.elapsedMs,
+                detail: "\(game.gameStatus.label) · \(game.moveCount) moves"
+            )
         }
-        .buttonStyle(.plain)
-        .accessibilityIdentifier("history_item")
     }
 
     private var dateStyle: Date.FormatStyle {

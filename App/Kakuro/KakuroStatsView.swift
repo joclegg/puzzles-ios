@@ -36,66 +36,40 @@ struct KakuroHistoryView: View {
     let onBack: () -> Void
 
     @Environment(\.colorScheme) private var scheme
-    @State private var filter: Int?
 
     private var accent: Color {
         KakuroColors.of(scheme).accent
     }
 
-    private var history: [SavedGame] {
-        KakuroStore.shared.games.filter { filter == nil || $0.ref.size == filter }
-    }
-
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            KakuroScreenTitle(title: "History", onBack: onBack)
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    chip("All", value: nil, tag: nil)
-                    ForEach(sizes, id: \.self) { size in
-                        chip("\(size)", value: size, tag: "filter_\(size)")
-                    }
-                }
-            }
-            if history.isEmpty {
-                emptyState
+        GameHistoryView(
+            filters: sizes,
+            label: { "\($0)" },
+            games: { filter in KakuroStore.shared.games.filter { filter == nil || $0.ref.size == filter } },
+            header: {
+                KakuroScreenTitle(title: "History", onBack: onBack)
+            },
+            chip: chip,
+            empty: {
+                HistoryEmptyState(accent: accent)
                 Spacer()
-            } else {
+            },
+            rows: { history in
                 ScrollView {
-                    LazyVStack(spacing: 0) {
-                        ForEach(history, id: \.id) { game in
-                            item(game)
-                            Divider()
-                        }
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
-                    .modifier(KakuroTileStyle(accent: accent, corner: 24))
+                    HistoryRows(history, id: \.id, row: item)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                        .modifier(KakuroTileStyle(accent: accent, corner: 24))
                 }
             }
-        }
+        )
         .padding(16)
     }
 
-    private var emptyState: some View {
-        VStack(spacing: 12) {
-            PuzzleIcon.image("clock.arrow.circlepath")
-                .foregroundStyle(accent)
-                .frame(width: 48, height: 48)
-                .background(accent.opacity(0.14), in: Circle())
-            Text("No games yet.").foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 40)
-        .overlay(RoundedRectangle(cornerRadius: 24).stroke(Color.primary.opacity(0.12), lineWidth: 1))
-    }
-
-    private func chip(_ label: String, value: Int?, tag: String?) -> some View {
-        let selected = filter == value
-        return Button {
-            filter = value
-        } label: {
-            Text(label)
+    private func chip(_ chip: HistoryFilterChip<Int>) -> some View {
+        let selected = chip.isSelected
+        return Button(action: chip.select) {
+            Text(chip.label)
                 .font(.subheadline.weight(.medium))
                 .foregroundStyle(selected ? Color(.systemBackground) : Color.primary)
                 .padding(.horizontal, 14)
@@ -104,7 +78,7 @@ struct KakuroHistoryView: View {
                 .overlay(Capsule().stroke(selected ? accent : Color.primary.opacity(0.12), lineWidth: 1))
         }
         .buttonStyle(.plain)
-        .accessibilityIdentifier(tag ?? label)
+        .accessibilityIdentifier(chip.value.map { "filter_\($0)" } ?? chip.label)
         .accessibilityAddTraits(selected ? .isSelected : [])
     }
 
@@ -120,30 +94,20 @@ struct KakuroHistoryView: View {
     }
 
     private func item(_ game: SavedGame) -> some View {
-        Button {
+        HistoryItemButton {
             if game.status == .inProgress {
                 navigator.open(game)
             } else {
                 navigator.start(game.ref)
             }
         } label: {
-            HStack {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(game.ref.title).font(.subheadline.weight(.medium))
-                    Text(Theme.historyDate(ms: game.startedAt))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                Spacer()
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text(formatDuration(game.elapsedMs))
-                    Text(statusText(game)).font(.caption).foregroundStyle(.secondary)
-                }
-            }
-            .padding(.vertical, 12)
-            .contentShape(Rectangle())
+            HistoryRowLabel(
+                title: game.ref.title,
+                date: Theme.historyDate(ms: game.startedAt),
+                elapsedMs: game.elapsedMs,
+                detail: statusText(game),
+                spacing: 2
+            )
         }
-        .buttonStyle(.plain)
-        .accessibilityIdentifier("history_item")
     }
 }
