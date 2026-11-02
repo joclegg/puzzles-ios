@@ -88,6 +88,10 @@ enum FiveLettersGame: GameDefinition {
         AnyView(FiveLettersHomeView())
     }
 
+    static func reloadAfterSync() {
+        FiveLettersStore.shared.refresh()
+    }
+
     @MainActor
     static func fixture(_ name: String) -> AnyView? {
         #if DEBUG

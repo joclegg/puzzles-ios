@@ -206,7 +206,7 @@ final class WordWheelStore {
         refresh()
     }
 
-    private func refresh() {
+    func refresh() {
         let descriptor = FetchDescriptor<WordWheelGameEntity>(
             sortBy: [SortDescriptor(\.startedAt, order: .reverse), SortDescriptor(\.id, order: .reverse)]
         )

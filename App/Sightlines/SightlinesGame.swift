@@ -42,6 +42,10 @@ enum SightlinesGame: GameDefinition {
         AnyView(SightlinesHomeView())
     }
 
+    static func reloadAfterSync() {
+        SightlinesStore.shared.reload()
+    }
+
     @MainActor
     static func fixture(_ name: String) -> AnyView? {
         #if DEBUG

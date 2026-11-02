@@ -164,7 +164,7 @@ final class FiveLettersStore {
         refresh()
     }
 
-    private func refresh() {
+    func refresh() {
         let descriptor = FetchDescriptor<FiveLettersGameRecord>(
             sortBy: [SortDescriptor(\.startedAt, order: .reverse)]
         )

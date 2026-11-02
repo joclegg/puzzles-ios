@@ -39,11 +39,13 @@ final class GameSyncSource<Record: SyncedRecord>: SyncSource {
     let game: String
     private let context: ModelContext
     private let bridge: SettingsBridge
+    private let reload: @MainActor () -> Void
 
-    init(game: String, context: ModelContext, bridge: SettingsBridge) {
+    init(game: String, context: ModelContext, bridge: SettingsBridge, reload: @escaping @MainActor () -> Void = {}) {
         self.game = game
         self.context = context
         self.bridge = bridge
+        self.reload = reload
     }
 
     private var all: [Record] {
@@ -94,6 +96,10 @@ final class GameSyncSource<Record: SyncedRecord>: SyncSource {
         bridge.write(settings.data)
         SettingsStamps.stamp(game, at: settings.updatedAt)
         SettingsStamps.remember(bridge)
+    }
+
+    func pulled() {
+        reload()
     }
 }
 

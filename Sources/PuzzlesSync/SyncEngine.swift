@@ -31,6 +31,11 @@ public protocol SyncSource {
     func apply(_ row: SyncRow)
     func settings() -> SyncSettings
     func applySettings(_ settings: SyncSettings)
+    func pulled()
+}
+
+extension SyncSource {
+    public func pulled() {}
 }
 
 @MainActor
@@ -149,6 +154,12 @@ public final class SyncEngine {
     }
 
     private func pull(_ source: any SyncSource, saved: [[String: Any]], settings: [[String: Any]]) {
+        var received = false
+        defer {
+            if received {
+                source.pulled()
+            }
+        }
         for row in saved where row["game"] as? String == source.game {
             guard let id = row["id"] as? String, let data = row["data"] as? [String: Any],
                 let stamp = row["updated_at"] as? String, let at = parseTimestamp(stamp)
@@ -156,6 +167,7 @@ public final class SyncEngine {
                 continue
             }
             source.apply(SyncRow(id: id, data: data, updatedAt: at, deleted: row["deleted"] as? Bool ?? false))
+            received = true
         }
         guard let remote = settings.first(where: { $0["game"] as? String == source.game }),
             let stamp = remote["updated_at"] as? String, let at = parseTimestamp(stamp),

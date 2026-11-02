@@ -170,7 +170,7 @@ final class SightlinesStore {
         reload()
     }
 
-    private func reload() {
+    func reload() {
         let order = [
             SortDescriptor(\SightlinesGameRecord.startedAt, order: .reverse), SortDescriptor(\SightlinesGameRecord.id, order: .reverse),
         ]

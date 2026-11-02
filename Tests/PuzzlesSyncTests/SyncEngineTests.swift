@@ -52,11 +52,13 @@ private final class FakeSource: SyncSource {
     var applied: [SyncRow] = []
     var local = SyncSettings(data: [:], updatedAt: 0)
     var appliedSettings: SyncSettings?
+    var pulledCount = 0
 
     func changed(since: Int64) -> [SyncRow] { rows.filter { $0.updatedAt > since } }
     func apply(_ row: SyncRow) { applied.append(row) }
     func settings() -> SyncSettings { local }
     func applySettings(_ settings: SyncSettings) { appliedSettings = settings }
+    func pulled() { pulledCount += 1 }
 }
 
 @MainActor
@@ -102,6 +104,35 @@ struct SyncEngineTests {
         // Assert
         #expect(source.applied.map(\.id) == ["u2"])
         #expect(store.pulled == "2026-10-31T12:00:01Z")
+    }
+
+    @Test("given a remote row for the game when it syncs then the source is told to reload once")
+    func reloadsAfterPull() async {
+        // Arrange
+        let (engine, http, _, source, _) = make(session: valid)
+        http.savedGames =
+            #"[{"game":"kakuro","id":"u2","data":{"id":"u2"},"updated_at":"2026-10-31T12:00:00Z","deleted":false,"synced_at":"2026-10-31T12:00:01Z"},"#
+            + #"{"game":"kakuro","id":"u4","data":{"id":"u4"},"updated_at":"2026-10-31T12:00:00Z","deleted":true,"synced_at":"2026-10-31T12:00:01Z"}]"#
+
+        // Act
+        await engine.sync()
+
+        // Assert
+        #expect(source.pulledCount == 1)
+    }
+
+    @Test("given only rows for other games when it syncs then the source is not told to reload")
+    func noReloadWithoutRows() async {
+        // Arrange
+        let (engine, http, _, source, _) = make(session: valid)
+        http.savedGames =
+            #"[{"game":"other","id":"u3","data":{},"updated_at":"2026-10-31T12:00:00Z","deleted":false,"synced_at":"2026-10-31T12:00:00Z"}]"#
+
+        // Act
+        await engine.sync()
+
+        // Assert
+        #expect(source.pulledCount == 0)
     }
 
     @Test("given newer remote settings when it syncs then they apply, and older ones do not")

@@ -47,6 +47,10 @@ enum SolitaireGame: GameDefinition {
         AnyView(SolitaireHomeView())
     }
 
+    static func reloadAfterSync() {
+        SolitaireStore.shared.reload()
+    }
+
     @MainActor
     static func fixture(_ name: String) -> AnyView? {
         #if DEBUG

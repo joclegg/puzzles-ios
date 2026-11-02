@@ -36,6 +36,10 @@ enum WordWheelGame: GameDefinition {
         AnyView(WordWheelHomeView())
     }
 
+    static func reloadAfterSync() {
+        WordWheelStore.shared.refresh()
+    }
+
     @MainActor
     static func fixture(_ name: String) -> AnyView? {
         #if DEBUG
