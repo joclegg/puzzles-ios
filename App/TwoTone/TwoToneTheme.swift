@@ -13,16 +13,7 @@ enum TwoToneColors {
     static let accent = dynamic(0xE0603F, 0xEC7F62)
 
     private static func dynamic(_ light: UInt32, _ dark: UInt32) -> Color {
-        Color(
-            uiColor: UIColor { traits in
-                let value = traits.userInterfaceStyle == .dark ? dark : light
-                return UIColor(
-                    red: CGFloat(value >> 16 & 0xFF) / 255,
-                    green: CGFloat(value >> 8 & 0xFF) / 255,
-                    blue: CGFloat(value & 0xFF) / 255,
-                    alpha: 1
-                )
-            })
+        Color(light: light, dark: dark)
     }
 }
 

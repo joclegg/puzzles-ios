@@ -93,7 +93,7 @@ final class SolitaireStore {
     @ObservationIgnored let context: ModelContext
     @ObservationIgnored private let now: () -> Int64
 
-    init(now: @escaping () -> Int64 = { Int64(Date().timeIntervalSince1970 * 1000) }) {
+    init(now: @escaping () -> Int64 = { GameClock.nowMs() }) {
         self.now = now
         let folder = URL.applicationSupportDirectory.appending(path: "solitaire")
         try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
@@ -178,7 +178,7 @@ final class SolitaireStore {
     private func write(_ game: SavedGame) {
         let id = game.id
         let descriptor = FetchDescriptor<SolitaireGameRecord>(predicate: #Predicate { $0.id == id })
-        guard let record = try? context.fetch(descriptor).first else {
+        guard let record = context.fetchOrEmpty(descriptor).first else {
             return
         }
         record.updatedAt = now()
@@ -190,7 +190,7 @@ final class SolitaireStore {
     }
 
     private func commit() {
-        try? context.save()
+        context.saveOrReport()
         reload()
     }
 
@@ -198,7 +198,7 @@ final class SolitaireStore {
         let descriptor = FetchDescriptor<SolitaireGameRecord>(
             sortBy: [SortDescriptor(\.startedAt, order: .reverse), SortDescriptor(\.id, order: .reverse)]
         )
-        games = ((try? context.fetch(descriptor)) ?? []).compactMap(\.model)
+        games = (context.fetchOrEmpty(descriptor)).compactMap(\.model)
     }
 }
 
@@ -245,9 +245,21 @@ enum SolitaireDealer {
     }
 
     static func winnableSeeds(drawMode: DrawMode, order: BuildOrder, enabled: Bool) async -> [Int64]? {
-        guard enabled, let lines = try? await BankStore.shared.lines(WinnableDeals.bankPath(drawMode: drawMode, order: order)) else {
+        guard enabled,
+            let lines = await attempt(
+                "Solitaire winnable deals",
+                {
+                    try await BankStore.shared.lines(WinnableDeals.bankPath(drawMode: drawMode, order: order))
+                })
+        else {
             return nil
         }
         return WinnableDeals.seeds(lines: lines)
+    }
+}
+
+extension SolitaireGameRecord: SyncedRecord {
+    static func fromSync(_ fields: SyncFields, uuid: String, updatedAt: Int64, existing: [SolitaireGameRecord]) -> SolitaireGameRecord? {
+        SolitaireGameRecord(sync: fields, id: (existing.map(\.id).max() ?? 0) + 1, uuid: uuid, updatedAt: updatedAt)
     }
 }

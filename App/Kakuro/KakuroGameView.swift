@@ -135,7 +135,7 @@ struct KakuroGameView: View {
                     .accessibilityIdentifier("game_title")
                 HStack(spacing: 12) {
                     if settings.isOn(.showTimer) {
-                        Text(formatDuration(ms: model.elapsedMs)).accessibilityIdentifier("timer")
+                        Text(formatDuration(model.elapsedMs)).accessibilityIdentifier("timer")
                     }
                     if settings.isOn(.showMistakeCount) && game.mistakeCheck != .off {
                         Text("Mistakes \(game.mistakes)").accessibilityIdentifier("mistakes")
@@ -367,7 +367,7 @@ private struct KakuroSolvedDialog: View {
             accent: KakuroColors.of(scheme).accent,
             dailyGroup: "KAKURO",
             newBest: model.newBest,
-            stats: [WinStat(label: "Time", value: formatDuration(ms: model.elapsedMs), tag: "solved_time")],
+            stats: [WinStat(label: "Time", value: formatDuration(model.elapsedMs), tag: "solved_time")],
             tag: "solved_dialog",
             newLabel: sizeLabel(model.saved.ref.size),
             newTag: "solved_new_puzzle",

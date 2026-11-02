@@ -98,18 +98,13 @@ final class TwoToneStore {
     }
 
     static func nowMs() -> Int64 {
-        Int64(Date().timeIntervalSince1970 * 1000)
-    }
-
-    static func today() -> CalendarDay {
-        let parts = Calendar.current.dateComponents([.year, .month, .day], from: Date())
-        return CalendarDay(year: parts.year ?? 1970, month: parts.month ?? 1, day: parts.day ?? 1)
+        GameClock.nowMs()
     }
 
     var history: [TwoToneGameRecord] {
         _ = revision
         let order = [SortDescriptor(\TwoToneGameRecord.startedAt, order: .reverse), SortDescriptor(\TwoToneGameRecord.id, order: .reverse)]
-        return (try? context.fetch(FetchDescriptor(sortBy: order))) ?? []
+        return context.fetchOrEmpty(FetchDescriptor(sortBy: order))
     }
 
     var inProgress: [TwoToneGameRecord] {
@@ -189,7 +184,13 @@ final class TwoToneStore {
     }
 
     private func commit() {
-        try? context.save()
+        context.saveOrReport()
         revision += 1
+    }
+}
+
+extension TwoToneGameRecord: SyncedRecord {
+    static func fromSync(_ fields: SyncFields, uuid: String, updatedAt: Int64, existing: [TwoToneGameRecord]) -> TwoToneGameRecord? {
+        TwoToneGameRecord(sync: fields, id: (existing.map(\.id).max() ?? 0) + 1, uuid: uuid, updatedAt: updatedAt)
     }
 }

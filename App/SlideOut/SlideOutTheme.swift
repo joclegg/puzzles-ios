@@ -14,41 +14,31 @@ struct SlideColors {
     let accent: Color
 
     private static let light = SlideColors(
-        board: Color(slideHex: 0x263040),
-        slot: Color(slideHex: 0x353A42),
-        block: Color(slideHex: 0xD9B98A),
-        blockEdge: Color(slideHex: 0xB09068),
-        target: Color(slideHex: 0xE0603F),
-        targetEdge: Color(slideHex: 0xB54A30),
-        exit: Color(slideHex: 0xE0603F),
-        hint: Color(slideHex: 0x8EC0FA),
-        accent: Color(slideHex: 0xC27A2C)
+        board: Color(hex: 0x263040),
+        slot: Color(hex: 0x353A42),
+        block: Color(hex: 0xD9B98A),
+        blockEdge: Color(hex: 0xB09068),
+        target: Color(hex: 0xE0603F),
+        targetEdge: Color(hex: 0xB54A30),
+        exit: Color(hex: 0xE0603F),
+        hint: Color(hex: 0x8EC0FA),
+        accent: Color(hex: 0xC27A2C)
     )
 
     private static let dark = SlideColors(
-        board: Color(slideHex: 0x15191F),
-        slot: Color(slideHex: 0x22272E),
-        block: Color(slideHex: 0xB59A72),
-        blockEdge: Color(slideHex: 0x8C7354),
-        target: Color(slideHex: 0xD5583A),
-        targetEdge: Color(slideHex: 0xA6432C),
-        exit: Color(slideHex: 0xD5583A),
-        hint: Color(slideHex: 0x7DB5FF),
-        accent: Color(slideHex: 0xE3A85C)
+        board: Color(hex: 0x15191F),
+        slot: Color(hex: 0x22272E),
+        block: Color(hex: 0xB59A72),
+        blockEdge: Color(hex: 0x8C7354),
+        target: Color(hex: 0xD5583A),
+        targetEdge: Color(hex: 0xA6432C),
+        exit: Color(hex: 0xD5583A),
+        hint: Color(hex: 0x7DB5FF),
+        accent: Color(hex: 0xE3A85C)
     )
 
     static func of(_ scheme: ColorScheme) -> SlideColors {
         scheme == .dark ? dark : light
-    }
-}
-
-extension Color {
-    fileprivate init(slideHex hex: UInt32) {
-        self.init(
-            red: Double((hex >> 16) & 0xFF) / 255,
-            green: Double((hex >> 8) & 0xFF) / 255,
-            blue: Double(hex & 0xFF) / 255
-        )
     }
 }
 

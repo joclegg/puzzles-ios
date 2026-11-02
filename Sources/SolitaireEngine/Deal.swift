@@ -133,11 +133,7 @@ public struct DealRef: Hashable, Sendable {
     }
 
     public static func dayLabel(iso: String) -> String {
-        let parts = iso.split(separator: "-")
-        guard parts.count == 3, let month = Int(parts[1]), let day = Int(parts[2]), months.indices.contains(month - 1) else {
-            return iso
-        }
-        return "\(day) \(months[month - 1])"
+        dayMonthLabel(iso: iso)
     }
 
     public static func random(seed: Int64, drawMode: DrawMode, order: BuildOrder = .down, winnableSeeds: [Int64]? = nil) -> DealRef {
@@ -215,19 +211,6 @@ public struct DrawStats: Hashable, Sendable {
 
 public func isNewBest(elapsedMs: Int64, previousBestMs: Int64?) -> Bool {
     previousBestMs.map { elapsedMs < $0 } ?? true
-}
-
-public func formatDuration(_ ms: Int64) -> String {
-    let total = ms / 1000
-    let hours = total / 3600
-    let minutes = total % 3600 / 60
-    let seconds = total % 60
-    let paddedSeconds = seconds < 10 ? "0\(seconds)" : "\(seconds)"
-    if hours > 0 {
-        let paddedMinutes = minutes < 10 ? "0\(minutes)" : "\(minutes)"
-        return "\(hours):\(paddedMinutes):\(paddedSeconds)"
-    }
-    return "\(minutes):\(paddedSeconds)"
 }
 
 public func hintText(board: Board, selection: Selection, to: Pile) -> String {

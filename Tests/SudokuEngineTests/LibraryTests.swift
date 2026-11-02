@@ -74,14 +74,6 @@ import Testing
         #expect(PuzzleRef(id: "daily_classic:x", mode: .classic, difficulty: .easy, puzzle: puzzle).slot == "daily_classic:x")
     }
 
-    @Test(
-        "given a duration when formatted then hours only show when needed",
-        arguments: [(Int64(0), "0:00"), (65_000, "1:05"), (3_725_000, "1:02:05")])
-    func durations(ms: Int64, text: String) {
-        // Assert
-        #expect(formatDuration(ms) == text)
-    }
-
     @Test("given a game when titled then kind and level show")
     func titles() {
         // Assert

@@ -75,18 +75,6 @@ struct PuzzleRefTests {
     }
 
     @Test(
-        "given a duration when it is formatted then hours only show when needed",
-        arguments: [(Int64(0), "0:00"), (65_000, "1:05"), (3_661_000, "1:01:01")]
-    )
-    func duration(ms: Int64, expected: String) {
-        // Act
-        let text = formatDuration(ms)
-
-        // Assert
-        #expect(text == expected)
-    }
-
-    @Test(
         "given moves and par when the result is worded then par is called out",
         arguments: [(2, "2 moves, par!"), (3, "3 moves, par is 2")]
     )

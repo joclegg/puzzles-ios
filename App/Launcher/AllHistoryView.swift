@@ -1,5 +1,6 @@
 import FiveLettersEngine
 import KakuroEngine
+import PuzzlesCore
 import SightlinesEngine
 import SlideOutEngine
 import SolitaireEngine
@@ -26,7 +27,7 @@ enum AllHistory {
     }
 
     private static func time(_ ms: Int64) -> String {
-        SudokuEngine.formatDuration(ms)
+        formatDuration(ms)
     }
 
     private static func withHints(_ label: String, _ hints: Int) -> String {
@@ -96,7 +97,7 @@ enum AllHistory {
     }
 
     private static var slideOut: [HistoryEntry] {
-        let records = (try? SlideOutStore.context.fetch(FetchDescriptor<SlideOutGameRecord>())) ?? []
+        let records = SlideOutStore.context.fetchOrEmpty(FetchDescriptor<SlideOutGameRecord>())
         return records.map { game in
             HistoryEntry(
                 id: "slide_out_\(game.id)", tab: .slideOut, title: game.title, startedAt: game.startedAt, time: time(game.elapsedMs),
@@ -105,7 +106,7 @@ enum AllHistory {
     }
 
     private static var wordWheel: [HistoryEntry] {
-        WordWheelRepository.shared.history.map { game in
+        WordWheelStore.shared.history.map { game in
             HistoryEntry(
                 id: "word_wheel_\(game.id)", tab: .wordWheel, title: game.ref.title, startedAt: game.startedAt,
                 time: time(game.elapsedMs), result: "\(game.status.label) · \(game.found.count) words, \(game.bonus.count) bonus")

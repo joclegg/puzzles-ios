@@ -21,7 +21,13 @@ struct RootView: View {
             .preferredColorScheme(colorScheme)
             .task {
                 SyncCenter.shared.start()
-                Task.detached { try? await BankStore.shared.refresh() }
+                Task.detached {
+                    do {
+                        try await BankStore.shared.refresh()
+                    } catch {
+                        ErrorLog.report(error, "Bank refresh")
+                    }
+                }
             }
             .onOpenURL { SyncCenter.shared.handle(url: $0) }
             .onChange(of: scenePhase) { _, phase in

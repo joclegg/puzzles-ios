@@ -92,7 +92,7 @@ private struct CardDrag: Equatable {
     }
 }
 
-struct SolitaireTableView: View {
+struct SolitaireBoardView: View {
     let model: SolitaireGameModel
     let state: GameState
     @State private var drag: CardDrag?

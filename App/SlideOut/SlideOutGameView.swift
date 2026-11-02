@@ -2,7 +2,7 @@ import PuzzlesCore
 import SlideOutEngine
 import SwiftUI
 
-struct SlideOutGameScreen: View {
+struct SlideOutGameView: View {
     let gameId: Int64
     let onOpenGame: (Int64) -> Void
     let onHome: () -> Void

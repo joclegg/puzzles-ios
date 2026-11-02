@@ -96,7 +96,7 @@ struct KakuroHomeView: View {
                     .background(accent, in: Circle())
                 VStack(alignment: .leading) {
                     Text("Continue").font(.headline)
-                    Text("\(latest.ref.title) · \(formatDuration(ms: latest.elapsedMs))")
+                    Text("\(latest.ref.title) · \(formatDuration(latest.elapsedMs))")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
@@ -112,18 +112,7 @@ struct KakuroHomeView: View {
     }
 
     private func section<Content: View>(_ title: String, aside: String?, @ViewBuilder content: () -> Content) -> some View {
-        VStack(spacing: 8) {
-            HStack {
-                Text(title.uppercased()).font(.caption.weight(.semibold)).kerning(1.2)
-                Spacer()
-                if let aside {
-                    Text(aside).font(.caption)
-                }
-            }
-            .foregroundStyle(.secondary)
-            .padding(.horizontal, 4)
-            content()
-        }
+        HomeSection(title, aside: aside, style: .caps, content: content)
     }
 
     private func isDailySolved(_ size: Int) -> Bool {
@@ -180,7 +169,7 @@ struct KakuroHomeView: View {
                     if let saved {
                         HStack(spacing: 6) {
                             Circle().fill(accent).frame(width: 6, height: 6)
-                            Text("In progress · \(formatDuration(ms: saved.elapsedMs))")
+                            Text("In progress · \(formatDuration(saved.elapsedMs))")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                                 .lineLimit(1)
@@ -216,7 +205,7 @@ struct KakuroHomeView: View {
             ],
             onDismiss: { resumeChoice = nil }
         ) {
-            Text("You have a puzzle in progress (\(formatDuration(ms: saved.elapsedMs))).")
+            Text("You have a puzzle in progress (\(formatDuration(saved.elapsedMs))).")
         }
     }
 }

@@ -4,23 +4,6 @@ import Testing
 @testable import TwoToneEngine
 
 struct PuzzleRefTests {
-    @Test(
-        "given a duration when formatted then hours only show when needed",
-        arguments: [
-            (Int64(0), "0:00"),
-            (Int64(9_999), "0:09"),
-            (Int64(65_000), "1:05"),
-            (Int64(3_725_000), "1:02:05"),
-        ]
-    )
-    func duration(ms: Int64, text: String) {
-        // Act
-        let formatted = formatDuration(ms)
-
-        // Assert
-        #expect(formatted == text)
-    }
-
     @Test("given a date when a daily id is made then it carries the date and size")
     func dailyId() {
         // Arrange

@@ -77,15 +77,6 @@ struct DealTests {
         #expect(parsed == [-7_062_258_826_959_519_562, 12])
     }
 
-    @Test(
-        "given a time when it is formatted then it pads as a clock",
-        arguments: [(Int64(0), "0:00"), (Int64(65_000), "1:05"), (Int64(3_725_000), "1:02:05")]
-    )
-    func duration(ms: Int64, text: String) {
-        // Assert
-        #expect(formatDuration(ms) == text)
-    }
-
     @Test("given finished games when stats are made then abandoned count as played and only wins set the bests")
     func stats() {
         // Arrange

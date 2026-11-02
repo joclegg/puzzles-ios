@@ -1,6 +1,6 @@
 import Testing
 
-@testable import SudokuEngine
+@testable import PuzzlesCore
 
 struct GameTimerTests {
     @Test(

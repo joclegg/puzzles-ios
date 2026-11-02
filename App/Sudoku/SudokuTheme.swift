@@ -37,9 +37,7 @@ struct SudokuPalette {
         givenPeer: hex(0x283341))
 
     private static func hex(_ value: UInt32, _ alpha: Double = 1) -> Color {
-        Color(
-            red: Double((value >> 16) & 0xFF) / 255, green: Double((value >> 8) & 0xFF) / 255,
-            blue: Double(value & 0xFF) / 255, opacity: alpha)
+        Color(hex: value, opacity: alpha)
     }
 }
 

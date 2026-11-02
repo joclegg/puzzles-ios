@@ -35,47 +35,31 @@ func nullable(_ value: Int64?) -> Any {
 }
 
 @MainActor
-final class GameSyncSource<Record: PersistentModel>: SyncSource {
+final class GameSyncSource<Record: SyncedRecord>: SyncSource {
     let game: String
     private let context: ModelContext
     private let bridge: SettingsBridge
-    private let uuid: (Record) -> String
-    private let updatedAt: (Record) -> Int64
-    private let toJSON: (Record) -> [String: Any]
-    private let make: (SyncFields, String, Int64, [Record]) -> Record?
 
-    init(
-        game: String,
-        context: ModelContext,
-        bridge: SettingsBridge,
-        uuid: @escaping (Record) -> String,
-        updatedAt: @escaping (Record) -> Int64,
-        toJSON: @escaping (Record) -> [String: Any],
-        make: @escaping (SyncFields, String, Int64, [Record]) -> Record?
-    ) {
+    init(game: String, context: ModelContext, bridge: SettingsBridge) {
         self.game = game
         self.context = context
         self.bridge = bridge
-        self.uuid = uuid
-        self.updatedAt = updatedAt
-        self.toJSON = toJSON
-        self.make = make
     }
 
     private var all: [Record] {
-        (try? context.fetch(FetchDescriptor<Record>())) ?? []
+        context.fetchOrEmpty(FetchDescriptor<Record>())
     }
 
     func changed(since: Int64) -> [SyncRow] {
-        all.filter { updatedAt($0) > since }.map { record in
-            SyncRow(id: uuid(record), data: toJSON(record), updatedAt: updatedAt(record))
+        all.filter { $0.updatedAt > since }.map { record in
+            SyncRow(id: record.uuid, data: record.syncJSON, updatedAt: record.updatedAt)
         }
     }
 
     func apply(_ row: SyncRow) {
         let records = all
-        let local = records.first { uuid($0) == row.id }
-        if let local, updatedAt(local) >= row.updatedAt {
+        let local = records.first { $0.uuid == row.id }
+        if let local, local.updatedAt >= row.updatedAt {
             return
         }
         let center = SyncCenter.shared
@@ -84,18 +68,18 @@ final class GameSyncSource<Record: PersistentModel>: SyncSource {
         if row.deleted {
             if let local {
                 context.delete(local)
-                try? context.save()
+                context.saveOrReport()
             }
             return
         }
-        guard let record = make(SyncFields(json: row.data), row.id, row.updatedAt, records) else {
+        guard let record = Record.fromSync(SyncFields(json: row.data), uuid: row.id, updatedAt: row.updatedAt, existing: records) else {
             return
         }
         if let local {
             context.delete(local)
         }
         context.insert(record)
-        try? context.save()
+        context.saveOrReport()
     }
 
     func settings() -> SyncSettings {
@@ -231,7 +215,7 @@ enum GameSyncSources {
             nested: [("classic", group(.classic)), ("killer", group(.killer))],
             extraRead: { json in
                 let context = SudokuStore.shared.context
-                let bests = (try? context.fetch(FetchDescriptor<SudokuPastBestRecord>())) ?? []
+                let bests = context.fetchOrEmpty(FetchDescriptor<SudokuPastBestRecord>())
                 json["pastBests"] = bests.map { best -> [String: Any] in
                     [
                         "mode": jsonName(fromEnum: best.mode), "difficulty": jsonName(fromEnum: best.difficulty),
@@ -256,7 +240,7 @@ enum GameSyncSources {
                     return
                 }
                 let context = SudokuStore.shared.context
-                let existing = (try? context.fetch(FetchDescriptor<SudokuPastBestRecord>())) ?? []
+                let existing = context.fetchOrEmpty(FetchDescriptor<SudokuPastBestRecord>())
                 for item in incoming {
                     let fields = SyncFields(json: item)
                     guard let mode = fields.enumValue("mode"), let difficulty = fields.enumValue("difficulty"),
@@ -270,61 +254,14 @@ enum GameSyncSources {
                         context.insert(SudokuPastBestRecord(mode: mode, difficulty: difficulty, bestMs: bestMs))
                     }
                 }
-                try? context.save()
+                context.saveOrReport()
             }
         )
     }
 
-    private static func bridge(_ game: String) -> SettingsBridge {
+    static func bridge(_ game: String) -> SettingsBridge {
         bridges.first { $0.game == game } ?? SettingsBridge(game: game)
     }
 
-    static let all: [any SyncSource] = [
-        GameSyncSource<SudokuGameRecord>(
-            game: "sudoku", context: SudokuStore.shared.context, bridge: bridge("sudoku"), uuid: \.uuid, updatedAt: \.updatedAt,
-            toJSON: { $0.syncJSON },
-            make: { fields, uuid, at, records in
-                SudokuGameRecord(sync: fields, id: (records.map(\.id).max() ?? 0) + 1, uuid: uuid, updatedAt: at)
-            }),
-        GameSyncSource<SolitaireGameRecord>(
-            game: "solitaire", context: SolitaireStore.shared.context, bridge: bridge("solitaire"), uuid: \.uuid, updatedAt: \.updatedAt,
-            toJSON: { $0.syncJSON },
-            make: { fields, uuid, at, records in
-                SolitaireGameRecord(sync: fields, id: (records.map(\.id).max() ?? 0) + 1, uuid: uuid, updatedAt: at)
-            }),
-        GameSyncSource<TwoToneGameRecord>(
-            game: "twoTone", context: TwoToneStore.shared.context, bridge: bridge("twoTone"), uuid: \.uuid, updatedAt: \.updatedAt,
-            toJSON: { $0.syncJSON },
-            make: { fields, uuid, at, records in
-                TwoToneGameRecord(sync: fields, id: (records.map(\.id).max() ?? 0) + 1, uuid: uuid, updatedAt: at)
-            }),
-        GameSyncSource<SightlinesGameRecord>(
-            game: "sightlines", context: SightlinesStore.shared.context, bridge: bridge("sightlines"), uuid: \.uuid, updatedAt: \.updatedAt,
-            toJSON: { $0.syncJSON },
-            make: { fields, uuid, at, records in
-                SightlinesGameRecord(sync: fields, id: (records.map(\.id).max() ?? 0) + 1, uuid: uuid, updatedAt: at)
-            }),
-        GameSyncSource<FiveLettersGameRecord>(
-            game: "fiveLetters", context: FiveLettersStore.shared.context, bridge: bridge("fiveLetters"), uuid: \.uuid,
-            updatedAt: \.updatedAt, toJSON: { $0.syncJSON },
-            make: { fields, uuid, at, _ in FiveLettersGameRecord(sync: fields, uuid: uuid, updatedAt: at) }),
-        GameSyncSource<KakuroGameEntity>(
-            game: "kakuro", context: KakuroStore.shared.context, bridge: bridge("kakuro"), uuid: \.uuid, updatedAt: \.updatedAt,
-            toJSON: { $0.syncJSON },
-            make: { fields, uuid, at, records in
-                KakuroGameEntity(sync: fields, id: (records.map(\.id).max() ?? 0) + 1, uuid: uuid, updatedAt: at)
-            }),
-        GameSyncSource<SlideOutGameRecord>(
-            game: "slideOut", context: SlideOutStore.context, bridge: bridge("slideOut"), uuid: \.uuid, updatedAt: \.updatedAt,
-            toJSON: { $0.syncJSON },
-            make: { fields, uuid, at, records in
-                SlideOutGameRecord(sync: fields, id: (records.map(\.id).max() ?? 0) + 1, uuid: uuid, updatedAt: at)
-            }),
-        GameSyncSource<WordWheelGameEntity>(
-            game: "wordWheel", context: WordWheelRepository.shared.context, bridge: bridge("wordWheel"), uuid: \.uuid,
-            updatedAt: \.updatedAt, toJSON: { $0.syncJSON },
-            make: { fields, uuid, at, records in
-                WordWheelGameEntity(sync: fields, id: (records.map(\.id).max() ?? 0) + 1, uuid: uuid, updatedAt: at)
-            }),
-    ]
+    static let all: [any SyncSource] = Games.all.map { $0.syncSource }
 }

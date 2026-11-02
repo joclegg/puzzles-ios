@@ -1,7 +1,35 @@
+import PuzzlesCore
+import SwiftData
 import SwiftUI
 import TwoToneEngine
 
-enum TwoToneGame {
+enum TwoToneGame: GameDefinition {
+    typealias Record = TwoToneGameRecord
+
+    static let tab = SettingsTab.twoTone
+    static let syncKey = "twoTone"
+
+    static var context: ModelContext {
+        TwoToneStore.shared.context
+    }
+
+    @MainActor
+    static let dailies = DailyProvider<Int>(
+        tab: .twoTone, group: { _ in "TWO_TONE" }, options: sizes, label: sizeLabel, tag: { "daily_play_two_tone_\($0)" },
+        results: {
+            TwoToneStore.shared.history.filter { $0.gameStatus == .solved }.compactMap {
+                dailyResult(id: $0.puzzleId, finishedAt: $0.finishedAt)
+            }
+        },
+        solved: { date in
+            let solved = TwoToneStore.shared.dailySolved(date: date)
+            return { solved.contains($0) }
+        },
+        open: { date, size in
+            String(await TwoToneStore.shared.openDaily(date: date, size: size))
+        }
+    )
+
     @MainActor
     static func home() -> AnyView {
         AnyView(TwoToneHomeView())

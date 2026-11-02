@@ -1,5 +1,6 @@
 #if DEBUG
     import Foundation
+    import PuzzlesCore
     import SudokuEngine
 
     enum SudokuFixtures {
@@ -60,6 +61,6 @@
     }
 
     struct CalendarDayToday {
-        let day = sudokuToday()
+        let day = CalendarDay.today
     }
 #endif

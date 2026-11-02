@@ -11,16 +11,11 @@ struct FiveLettersHomeView: View {
 
     private let theme = FiveLettersTheme()
     private let store = FiveLettersStore.shared
-    @State private var dailyNumber = Words.dayNumber(Self.today)
+    @State private var dailyNumber = Words.dayNumber(CalendarDay.today)
     @State private var starting = false
     @State private var daily2Unavailable = false
     @State private var openGame: FiveLettersGameRoute?
     @State private var fixtureStarted = false
-
-    private static var today: CalendarDay {
-        let parts = Calendar.current.dateComponents([.year, .month, .day], from: .now)
-        return CalendarDay(year: parts.year ?? 1970, month: parts.month ?? 1, day: parts.day ?? 1)
-    }
 
     private static var todayLabel: String {
         Date.now.formatted(Date.FormatStyle(locale: Locale(identifier: "en_GB")).day().month(.abbreviated))
@@ -69,7 +64,7 @@ struct FiveLettersHomeView: View {
             FiveLettersGameView(uuid: route.id)
         }
         .onAppear {
-            dailyNumber = Words.dayNumber(Self.today)
+            dailyNumber = Words.dayNumber(CalendarDay.today)
             if let id = DailyRouter.shared.take(.fiveLetters) {
                 openGame = FiveLettersGameRoute(id: id)
             }
@@ -105,7 +100,7 @@ struct FiveLettersHomeView: View {
     }
 
     private var today: some View {
-        let date = Self.today
+        let date = CalendarDay.today
         let daily = store.existing(wordId: WordRef.dailyId(date))?.status
         let daily2 = store.existing(wordId: WordRef.daily2Id(date))?.status
         return section("Today", aside: Self.todayLabel) {
@@ -246,7 +241,7 @@ struct FiveLettersHomeView: View {
         }
         starting = true
         Task {
-            try? await start()
+            await attempt("Five Letters start") { try await start() }
             starting = false
         }
     }

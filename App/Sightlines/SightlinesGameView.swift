@@ -108,7 +108,7 @@ struct SightlinesGameView: View {
                 Text(model.title).font(.headline).lineLimit(1).minimumScaleFactor(0.7).accessibilityIdentifier("game_title")
                 HStack(spacing: 12) {
                     if showTimer {
-                        Text(formatDuration(ms: model.elapsedMs)).monospacedDigit().accessibilityIdentifier("timer")
+                        Text(formatDuration(model.elapsedMs)).monospacedDigit().accessibilityIdentifier("timer")
                     }
                     if showProgress {
                         Text("\(model.game?.progressPercent ?? 0)%").accessibilityIdentifier("progress")
@@ -218,7 +218,7 @@ struct SightlinesGameView: View {
     }
 
     private var solvedStats: [WinStat] {
-        var stats = [WinStat(label: "Time", value: formatDuration(ms: model.elapsedMs), tag: "solved_time")]
+        var stats = [WinStat(label: "Time", value: formatDuration(model.elapsedMs), tag: "solved_time")]
         if model.hints > 0 {
             stats.append(WinStat(label: "Hints", value: "\(model.hints)"))
         }

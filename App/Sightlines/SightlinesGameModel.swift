@@ -1,4 +1,5 @@
 import Foundation
+import PuzzlesCore
 import SightlinesEngine
 
 @MainActor
