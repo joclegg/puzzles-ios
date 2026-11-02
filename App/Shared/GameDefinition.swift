@@ -14,6 +14,7 @@ protocol GameDefinition {
     static var dailies: DailyProvider<DailyOption> { get }
     static func home() -> AnyView
     static func fixture(_ name: String) -> AnyView?
+    static func reloadAfterSync()
 }
 
 extension GameDefinition {
@@ -22,8 +23,10 @@ extension GameDefinition {
     }
 
     static var syncSource: any SyncSource {
-        GameSyncSource<Record>(game: syncKey, context: context, bridge: GameSyncSources.bridge(syncKey))
+        GameSyncSource<Record>(game: syncKey, context: context, bridge: GameSyncSources.bridge(syncKey), reload: reloadAfterSync)
     }
+
+    static func reloadAfterSync() {}
 }
 
 @MainActor

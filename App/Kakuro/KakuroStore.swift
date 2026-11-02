@@ -180,7 +180,7 @@ final class KakuroStore {
         context.saveOrReport()
     }
 
-    private func reload() {
+    func reload() {
         let descriptor = FetchDescriptor<KakuroGameEntity>(
             sortBy: [SortDescriptor(\.startedAt, order: .reverse), SortDescriptor(\.id, order: .reverse)]
         )

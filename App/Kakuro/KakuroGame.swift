@@ -50,6 +50,10 @@ enum KakuroGame: GameDefinition {
         AnyView(KakuroRootView(fixture: nil))
     }
 
+    static func reloadAfterSync() {
+        KakuroStore.shared.reload()
+    }
+
     @MainActor
     static func fixture(_ name: String) -> AnyView? {
         #if DEBUG

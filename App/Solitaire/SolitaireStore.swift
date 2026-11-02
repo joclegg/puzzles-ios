@@ -194,7 +194,7 @@ final class SolitaireStore {
         reload()
     }
 
-    private func reload() {
+    func reload() {
         let descriptor = FetchDescriptor<SolitaireGameRecord>(
             sortBy: [SortDescriptor(\.startedAt, order: .reverse), SortDescriptor(\.id, order: .reverse)]
         )
