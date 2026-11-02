@@ -62,11 +62,11 @@ struct DailyCalendarView: View {
 
     @State private var firstOfMonth = CalendarDay.today.firstOfMonth
     @State private var chosen: CalendarDay?
+    @State private var days: [CalendarDay: DailyDay] = [:]
 
     private let today = CalendarDay.today
 
     var body: some View {
-        let days = tab.dailyDayMap
         ZStack {
             ScrollView {
                 VStack(spacing: 12) {
@@ -91,6 +91,7 @@ struct DailyCalendarView: View {
                 choices(chosen)
             }
         }
+        .onAppear { days = tab.dailyDayMap }
         .tint(tab.accent)
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
