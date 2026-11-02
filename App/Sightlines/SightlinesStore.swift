@@ -137,8 +137,9 @@ final class SightlinesStore {
     }
 
     func save(_ game: SavedGame) {
-        write(game)
-        commit()
+        let record = write(game)
+        context.saveOrReport()
+        replace(record)
     }
 
     func reveal(_ game: SavedGame) {
@@ -156,13 +157,24 @@ final class SightlinesStore {
         return games.isNewBest(finished)
     }
 
-    private func write(_ game: SavedGame) {
+    @discardableResult
+    private func write(_ game: SavedGame) -> SightlinesGameRecord? {
         let id = game.id
-        let descriptor = FetchDescriptor<SightlinesGameRecord>(predicate: #Predicate { $0.id == id })
+        var descriptor = FetchDescriptor<SightlinesGameRecord>(predicate: #Predicate { $0.id == id })
+        descriptor.fetchLimit = 1
         guard let record = context.fetchOrEmpty(descriptor).first else {
-            return
+            return nil
         }
         record.apply(game, updatedAt: Self.nowMs)
+        return record
+    }
+
+    private func replace(_ record: SightlinesGameRecord?) {
+        guard let saved = record?.model, let index = games.firstIndex(where: { $0.id == saved.id }) else {
+            reload()
+            return
+        }
+        games[index] = saved
     }
 
     private func commit() {

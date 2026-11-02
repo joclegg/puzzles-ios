@@ -166,8 +166,9 @@ final class WordWheelStore {
     }
 
     func save(_ game: SavedGame) {
-        write(game, time: now)
-        commit()
+        let entity = write(game, time: now)
+        context.saveOrReport()
+        replace(entity)
     }
 
     func reveal(_ game: SavedGame) {
@@ -197,8 +198,19 @@ final class WordWheelStore {
         GameClock.nowMs()
     }
 
-    private func write(_ game: SavedGame, time: Int64) {
-        entities.first { $0.id == game.id }?.apply(game, updatedAt: time)
+    @discardableResult
+    private func write(_ game: SavedGame, time: Int64) -> WordWheelGameEntity? {
+        let entity = entities.first { $0.id == game.id }
+        entity?.apply(game, updatedAt: time)
+        return entity
+    }
+
+    private func replace(_ record: WordWheelGameEntity?) {
+        guard let saved = record?.model, let index = history.firstIndex(where: { $0.id == saved.id }) else {
+            refresh()
+            return
+        }
+        history[index] = saved
     }
 
     private func commit() {

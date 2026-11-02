@@ -151,8 +151,9 @@ final class SolitaireStore {
     }
 
     func save(_ game: SavedGame) {
-        write(game)
-        commit()
+        let record = write(game)
+        context.saveOrReport()
+        replace(record)
     }
 
     func lose(_ game: SavedGame) {
@@ -175,11 +176,13 @@ final class SolitaireStore {
         return isNewBest(elapsedMs: game.elapsedMs, previousBestMs: previous)
     }
 
-    private func write(_ game: SavedGame) {
+    @discardableResult
+    private func write(_ game: SavedGame) -> SolitaireGameRecord? {
         let id = game.id
-        let descriptor = FetchDescriptor<SolitaireGameRecord>(predicate: #Predicate { $0.id == id })
+        var descriptor = FetchDescriptor<SolitaireGameRecord>(predicate: #Predicate { $0.id == id })
+        descriptor.fetchLimit = 1
         guard let record = context.fetchOrEmpty(descriptor).first else {
-            return
+            return nil
         }
         record.updatedAt = now()
         record.moves = MoveCodec.encode(game.moves)
@@ -187,6 +190,15 @@ final class SolitaireStore {
         record.elapsedMs = game.elapsedMs
         record.status = game.status.rawValue
         record.finishedAt = game.finishedAt
+        return record
+    }
+
+    private func replace(_ record: SolitaireGameRecord?) {
+        guard let saved = record?.model, let index = games.firstIndex(where: { $0.id == saved.id }) else {
+            reload()
+            return
+        }
+        games[index] = saved
     }
 
     private func commit() {
