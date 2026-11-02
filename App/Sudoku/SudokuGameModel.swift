@@ -17,6 +17,7 @@ final class SudokuGameModel {
     private var timer = GameTimer()
     private var visible = false
     private var ticker: Task<Void, Never>?
+    private var pendingSave: Task<Void, Never>?
     private let store = SudokuStore.shared
 
     private static let tick = Duration.milliseconds(500)
@@ -98,13 +99,14 @@ final class SudokuGameModel {
         if !before.isComplete && after.isComplete {
             finish()
         } else if after.values != before.values || after.notes != before.notes || after.mistakes != before.mistakes {
-            persist()
+            persistSoon()
         }
     }
 
     private func finish() {
         timer = timer.pause(nowMs: Self.nowMs())
         ticker?.cancel()
+        pendingSave?.cancel()
         elapsedMs = timer.elapsedMs(nowMs: Self.nowMs())
         guard let finished = snapshot() else {
             return
@@ -148,6 +150,7 @@ final class SudokuGameModel {
         }
         timer = timer.pause(nowMs: Self.nowMs())
         ticker?.cancel()
+        pendingSave?.cancel()
         state = current.revealSolution()
         revealed = true
         if let snapshot = snapshot() {
@@ -155,11 +158,23 @@ final class SudokuGameModel {
         }
     }
 
-    private func persist() {
+    private func persistSoon() {
+        pendingSave?.cancel()
+        pendingSave = Task { [weak self] in
+            try? await Task.sleep(for: .milliseconds(400))
+            guard !Task.isCancelled, let self else {
+                return
+            }
+            self.persist(notify: false)
+        }
+    }
+
+    private func persist(notify: Bool = true) {
+        pendingSave?.cancel()
         guard let state, !state.isComplete, !revealed, let snapshot = snapshot() else {
             return
         }
-        store.save(snapshot)
+        store.save(snapshot, notify: notify)
     }
 
     private func snapshot() -> SudokuSavedGame? {
