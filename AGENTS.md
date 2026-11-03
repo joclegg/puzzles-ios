@@ -23,6 +23,7 @@ Puzzles for iOS: eight games (Sudoku, Solitaire, Two Tone, Sightlines, Five Lett
 - `scripts/verify-no-comments.sh`: the no-comments check.
 - `Puzzles.xcodeproj`: the app target, using a synchronised `App` folder, so new files in `App/` need no project change.
 - `Puzzles-Info.plist`: only the `com.joclegg.puzzles://` URL scheme and `ITSAppUsesNonExemptEncryption`; the rest is generated.
+- Build numbers: `release.yml` sets `CURRENT_PROJECT_VERSION` to the commit count on `main`, so every release has a higher build number than the last; the `1` in the project is only for local builds.
 - `App/PrivacyInfo.xcprivacy`: the privacy manifest: no tracking, the required-reason APIs the app uses (`UserDefaults` for `@AppStorage`, `systemUptime` for game timers) and the data sync collects. MUST update it when adding a required-reason API or collecting new data.
 
 ## Conventions
@@ -33,7 +34,7 @@ Puzzles for iOS: eight games (Sudoku, Solitaire, Two Tone, Sightlines, Five Lett
 - MUST write commits in Conventional Commits style. MUST NOT create `v*` tags by hand: every merge to `main` publishes a release.
 - MUST NOT commit secrets. The Supabase publishable key is public, as it is on Android; settings and Actions secrets are managed in joclegg-infra.
 - MUST NOT run more than one simulator or build at a time on a laptop, and MUST pass `-jobs 4` to `xcodebuild`.
-- MUST NOT trust a local build alone: GitHub's `macos-26` runner can be on an older Xcode than yours.
+- MUST NOT trust a local build alone: CI and release pin Xcode 26.6 on GitHub's `macos-26` runner with `DEVELOPER_DIR`, which can be older than yours. Change the pin in both workflows when moving to a newer Xcode the runner has.
 - MUST have the same eight games as puzzles-android and puzzles-web, behaving the same; a change to one usually needs the same change in the others.
 - MUST read Android from `origin/main` of puzzles-android, not a local checkout that may be behind.
 - MUST put every game rule in that game's engine under `Sources/` as a pure function with tests. MUST NOT depend on one game's engine from another; shared rules go in `PuzzlesCore`.
