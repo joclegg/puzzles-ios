@@ -22,7 +22,8 @@ Puzzles for iOS: eight games (Sudoku, Solitaire, Two Tone, Sightlines, Five Lett
 - `e2e/flows/`: Maestro flows, one behaviour per file, named `<game>_<behaviour>.yaml`. `e2e/run.sh` builds, installs and runs them on one simulator (`--fast`, `--part I/N`, a flow path, `E2E_DEVICE`, `E2E_APP_PATH`). `e2e/partition.sh` splits flows by the seconds in `e2e/flow-times.txt`; `e2e/fetch-banks.sh` puts the banks in `/tmp/puzzles-e2e-banks` for debug simulator builds.
 - `scripts/verify-no-comments.sh`: the no-comments check.
 - `Puzzles.xcodeproj`: the app target, using a synchronised `App` folder, so new files in `App/` need no project change.
-- `Puzzles-Info.plist`: only the `com.joclegg.puzzles://` URL scheme; the rest is generated.
+- `Puzzles-Info.plist`: only the `com.joclegg.puzzles://` URL scheme and `ITSAppUsesNonExemptEncryption`; the rest is generated.
+- `App/PrivacyInfo.xcprivacy`: the privacy manifest: no tracking, the required-reason APIs the app uses (`UserDefaults` for `@AppStorage`, `systemUptime` for game timers) and the data sync collects. MUST update it when adding a required-reason API or collecting new data.
 
 ## Conventions
 

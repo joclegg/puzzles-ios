@@ -152,6 +152,7 @@ struct SettingsHubView: View {
                 VStack(spacing: 0) {
                     SudokuGeneralSettings()
                     AccountSettings()
+                    PrivacyPolicyLink()
                 }
             }
         case .sudoku:
