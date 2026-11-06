@@ -13,10 +13,8 @@ struct SlideOutBoardView: View {
         GeometryReader { proxy in
             let cell = proxy.size.width / CGFloat(boardSize)
             ZStack(alignment: .topLeading) {
-                Rectangle()
-                    .fill(colors.exit)
-                    .frame(width: 6, height: cell - 6)
-                    .offset(x: proxy.size.width - 3, y: cell * CGFloat(exitRow) + 3)
+                SlideOutExitGap(colors: colors, height: cell + Self.tipLength * 2)
+                    .offset(x: proxy.size.width, y: cell * CGFloat(exitRow) - Self.tipLength)
                 ForEach(0..<boardSize * boardSize, id: \.self) { index in
                     RoundedRectangle(cornerRadius: 8)
                         .fill(colors.slot)
@@ -41,8 +39,49 @@ struct SlideOutBoardView: View {
             }
         }
         .aspectRatio(1, contentMode: .fit)
-        .padding(6)
-        .background(colors.board, in: RoundedRectangle(cornerRadius: 12))
+        .padding(Self.padding - Self.frameWidth)
+        .background(colors.board, in: RoundedRectangle(cornerRadius: 12 - Self.frameWidth))
+        .padding(Self.frameWidth)
+        .background(colors.block, in: RoundedRectangle(cornerRadius: 12))
+    }
+
+    static let padding: CGFloat = 6
+    static let frameWidth: CGFloat = 3
+    static let tipLength: CGFloat = 4
+}
+
+private struct SlideOutExitGap: View {
+    let colors: SlideColors
+    let height: CGFloat
+
+    var body: some View {
+        ZStack(alignment: .trailing) {
+            Rectangle().fill(Color(uiColor: .systemBackground))
+            VStack {
+                UnevenRoundedRectangle(bottomLeadingRadius: 2, bottomTrailingRadius: 2)
+                    .fill(colors.exit)
+                    .frame(width: SlideOutBoardView.frameWidth, height: SlideOutBoardView.tipLength)
+                Spacer()
+                UnevenRoundedRectangle(topLeadingRadius: 2, topTrailingRadius: 2)
+                    .fill(colors.exit)
+                    .frame(width: SlideOutBoardView.frameWidth, height: SlideOutBoardView.tipLength)
+            }
+            SlideOutExitArrow()
+                .stroke(colors.exit, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+                .frame(width: 16, height: 16)
+                .offset(x: 16)
+        }
+        .frame(width: SlideOutBoardView.padding, height: height)
+    }
+}
+
+private struct SlideOutExitArrow: Shape {
+    func path(in rect: CGRect) -> Path {
+        Path { path in
+            path.move(to: CGPoint(x: rect.width * 0.375, y: rect.height * 0.25))
+            path.addLine(to: CGPoint(x: rect.width * 0.625, y: rect.height * 0.5))
+            path.addLine(to: CGPoint(x: rect.width * 0.375, y: rect.height * 0.75))
+        }
     }
 }
 
