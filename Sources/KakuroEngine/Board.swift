@@ -119,32 +119,3 @@ public struct Puzzle: Sendable, Equatable {
         return found
     }
 }
-
-public enum Combinations {
-    private static let sumsPerLength = 100
-
-    private static let byRun: [Int: [Int]] = {
-        var groups: [Int: [Int]] = [:]
-        for mask in 1..<(1 << maxDigit) {
-            let key = runKey(length: mask.nonzeroBitCount, sum: digitsOf(mask).reduce(0, +))
-            groups[key, default: []].append(mask)
-        }
-        return groups
-    }()
-
-    public static func masks(length: Int, sum: Int) -> [Int] {
-        byRun[runKey(length: length, sum: sum)] ?? []
-    }
-
-    public static func digitsOf(_ mask: Int) -> [Int] {
-        (1...maxDigit).filter { mask & bit($0) != 0 }
-    }
-
-    public static func bit(_ digit: Int) -> Int {
-        1 << (digit - 1)
-    }
-
-    private static func runKey(length: Int, sum: Int) -> Int {
-        length * sumsPerLength + sum
-    }
-}

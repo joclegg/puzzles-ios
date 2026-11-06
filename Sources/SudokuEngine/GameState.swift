@@ -505,3 +505,22 @@ public func conflicts(values: [Int], cages: [Cage] = []) -> Set<Int> {
     }
     return bad
 }
+
+extension GameState {
+    public func cageCombinationLine(order: CombinationOrder) -> CombinationLine? {
+        guard let selected, puzzle.cages.indices.contains(puzzle.cageIndexByCell[selected]) else {
+            return nil
+        }
+        let cage = puzzle.cages[puzzle.cageIndexByCell[selected]]
+        let placedDigits = Set(cage.cells.map { values[$0] }.filter { $0 != 0 })
+        let placed = placedDigits.reduce(0) { $0 | Combinations.bit($1) }
+        let masks = Combinations.masks(length: cage.cells.count, sum: cage.sum).filter { mask in
+            mask & placed == placed && Combinations.digitsOf(mask).allSatisfy { $0 <= puzzle.grid.size }
+        }
+        let sets = masks.map { mask in
+            Combinations.digitsOf(mask).map { CombinationDigit(digit: $0, placed: placedDigits.contains($0)) }
+        }
+        return CombinationLine(
+            header: "Cage \(cage.sum) in \(cage.cells.count): ", sets: Combinations.ordered(sets, order))
+    }
+}

@@ -268,6 +268,9 @@ struct WordWheelLetterWheel: View {
 
     @State private var finger: CGPoint?
     @State private var swiping = false
+    @State private var swipeStart: Int?
+    @State private var wordBefore: [Int] = []
+    @State private var leftStart = false
 
     private static let tapSlop: CGFloat = 10
 
@@ -338,21 +341,30 @@ struct WordWheelLetterWheel: View {
                 if !swiping, hypot(value.translation.width, value.translation.height) >= Self.tapSlop {
                     swiping = true
                     let start = letter(at: value.startLocation, centres: centres, hit: hit)
+                    swipeStart = start
+                    wordBefore = chosen
+                    leftStart = false
                     onChosenChange(start.map { [$0] } ?? [])
                 }
                 guard swiping else {
                     return
                 }
                 finger = value.location
-                onChosenChange(
-                    WordWheelSwipe.path(chosen, entering: letter(at: value.location, centres: centres, hit: hit))
-                )
+                let entering = letter(at: value.location, centres: centres, hit: hit)
+                if let entering, entering != swipeStart {
+                    leftStart = true
+                }
+                onChosenChange(WordWheelSwipe.path(chosen, entering: entering))
             }
             .onEnded { value in
                 if swiping {
                     swiping = false
                     finger = nil
-                    onSwipeEnd()
+                    if leftStart {
+                        onSwipeEnd()
+                    } else {
+                        onChosenChange(WordWheelSwipe.tap(wordBefore, letter: swipeStart))
+                    }
                 } else if let index = letter(at: value.location, centres: centres, hit: hit),
                     !chosen.contains(index)
                 {
@@ -375,6 +387,13 @@ enum WordWheelSwipe {
             return Array(path.dropLast())
         }
         return path.contains(index) ? path : path + [index]
+    }
+
+    static func tap(_ path: [Int], letter index: Int?) -> [Int] {
+        guard let index, !path.contains(index) else {
+            return path
+        }
+        return path + [index]
     }
 }
 

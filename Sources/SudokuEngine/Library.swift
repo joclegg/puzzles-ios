@@ -201,6 +201,7 @@ public enum SettingToggle: String, Sendable, CaseIterable {
     case showHints = "show_hints"
     case showTutorial = "show_tutorial"
     case allowReveal = "allow_reveal"
+    case showCombinations = "show_combinations"
 
     public func defaultFor(_ mode: GameMode) -> Bool {
         switch self {
@@ -209,7 +210,7 @@ public enum SettingToggle: String, Sendable, CaseIterable {
         case .greyGivenCells:
             mode != .killer
         case .showMistakeCount, .highlightHouses, .highlightCage, .autoRemoveNotes, .disableCompletedDigits,
-            .highlightLastPlaced, .showHints, .allowReveal:
+            .highlightLastPlaced, .showHints, .allowReveal, .showCombinations:
             false
         }
     }
@@ -243,6 +244,10 @@ public enum SettingKeys {
     public static func hintStyle(_ mode: GameMode) -> String {
         "sudoku_hint_style_\(mode.slug)"
     }
+
+    public static func combinationOrder(_ mode: GameMode) -> String {
+        "sudoku_combination_order_\(mode.slug)"
+    }
 }
 
 public struct ModeSettings: Sendable, Equatable {
@@ -255,6 +260,7 @@ public struct ModeSettings: Sendable, Equatable {
     public var notesStyle: HighlightStyle = Self.defaultHighlightStyle
     public var digitCounts: DigitCounts = Self.defaultDigitCounts
     public var hintStyle: HintStyle = .point
+    public var combinationOrder: CombinationOrder = .increasing
     public var toggles: [SettingToggle: Bool] = [:]
 
     public init() {}
@@ -265,6 +271,7 @@ public struct ModeSettings: Sendable, Equatable {
         notesStyle = string(SettingKeys.notes(mode)).flatMap(HighlightStyle.init(rawValue:)) ?? Self.defaultHighlightStyle
         digitCounts = string(SettingKeys.digitCounts(mode)).flatMap(DigitCounts.init(rawValue:)) ?? Self.defaultDigitCounts
         hintStyle = string(SettingKeys.hintStyle(mode)).flatMap(HintStyle.init(rawValue:)) ?? .point
+        combinationOrder = string(SettingKeys.combinationOrder(mode)).flatMap(CombinationOrder.init(rawValue:)) ?? .increasing
         for toggle in SettingToggle.allCases {
             toggles[toggle] = bool(toggle.key(mode)) ?? toggle.defaultFor(mode)
         }

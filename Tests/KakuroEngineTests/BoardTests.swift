@@ -1,3 +1,4 @@
+import PuzzlesCore
 import Testing
 
 @testable import KakuroEngine

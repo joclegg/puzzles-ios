@@ -1,3 +1,4 @@
+import PuzzlesCore
 import KakuroEngine
 import SwiftUI
 

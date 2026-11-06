@@ -106,7 +106,7 @@ extension GameState {
             line = Set(cells)
             targets = Set(deduction.cells)
             if let twinLine = deduction.twin {
-                twin = Set(grid.cellsOf(twinLine))
+                twin = Set(cells).union(grid.cellsOf(twinLine))
             }
         case nil:
             break

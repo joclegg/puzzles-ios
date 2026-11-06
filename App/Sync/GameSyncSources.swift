@@ -1,3 +1,4 @@
+import PuzzlesCore
 import FiveLettersEngine
 import Foundation
 import PuzzlesSync
@@ -236,6 +237,7 @@ enum GameSyncSources {
                 .upper("sameNumberStyle", SettingKeys.sameNumber(mode), ModeSettings.defaultHighlightStyle.rawValue),
                 .upper("notesStyle", SettingKeys.notes(mode), ModeSettings.defaultHighlightStyle.rawValue),
                 .upper("digitCounts", SettingKeys.digitCounts(mode), ModeSettings.defaultDigitCounts.rawValue),
+                .camel("combinationOrder", SettingKeys.combinationOrder(mode), CombinationOrder.increasing.rawValue),
             ]
         }
         let top: [SettingField] =

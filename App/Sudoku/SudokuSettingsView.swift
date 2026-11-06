@@ -1,3 +1,4 @@
+import PuzzlesCore
 import SudokuEngine
 import SwiftUI
 
@@ -127,6 +128,9 @@ private struct SudokuModeSettingsForm: View {
             row(.showTimer, "Show timer", detail: "Best times are still recorded")
             sudokuSection("Help")
             SudokuHintsRows(mode: mode)
+            if mode == .killer {
+                SudokuCombinationRows(mode: mode)
+            }
             row(.showTutorial, "How to play", detail: "Show the ? button with the rules and a walkthrough.")
             row(.allowReveal, "Show solution", detail: "Offer Show solution in the game menu.")
         }
@@ -235,5 +239,36 @@ private struct SudokuStoredChoice<Option: RawRepresentable & Hashable>: View whe
         SudokuSegments(
             options: options, selected: Option(rawValue: stored) ?? fallback, label: label, id: tag,
             onSelect: { stored = $0.rawValue })
+    }
+}
+
+private struct SudokuCombinationRows: View {
+    let mode: GameMode
+    @AppStorage private var combinations: Bool
+
+    init(mode: GameMode) {
+        self.mode = mode
+        _combinations = AppStorage(
+            wrappedValue: SettingToggle.showCombinations.defaultFor(mode), SettingToggle.showCombinations.key(mode))
+    }
+
+    var body: some View {
+        SudokuToggleRow(
+            key: SettingToggle.showCombinations.key(mode), fallback: SettingToggle.showCombinations.defaultFor(mode),
+            title: "Sum helper", detail: "List the digit combinations that still fit the selected cell's cage.",
+            id: "setting_show_combinations")
+        if combinations {
+            Text("Sum helper order")
+            SudokuStoredChoice(
+                key: SettingKeys.combinationOrder(mode), fallback: CombinationOrder.increasing, options: CombinationOrder.allCases,
+                label: { order in
+                    switch order {
+                    case .increasing:
+                        "Increasing"
+                    case .decreasing:
+                        "Decreasing"
+                    }
+                }, tag: { "setting_combination_order_\($0.rawValue)" })
+        }
     }
 }
