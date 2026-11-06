@@ -53,11 +53,19 @@ public enum Combinations {
     }
 
     public static func ordered(_ sets: [[CombinationDigit]], _ order: CombinationOrder) -> [[CombinationDigit]] {
+        let increasing = sets.sorted { first, second in
+            let firstDigits = first.map(\.digit)
+            let secondDigits = second.map(\.digit)
+            if let pair = zip(firstDigits, secondDigits).first(where: { $0 != $1 }) {
+                return pair.0 < pair.1
+            }
+            return firstDigits.count < secondDigits.count
+        }
         switch order {
         case .increasing:
-            sets
+            return increasing
         case .decreasing:
-            sets.map { Array($0.reversed()) }.reversed()
+            return increasing.map { Array($0.reversed()) }.reversed()
         }
     }
 }

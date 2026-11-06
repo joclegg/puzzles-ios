@@ -33,7 +33,7 @@ struct CageCombinationsTests {
         let line = game.cageCombinationLine(order: .increasing)
 
         // Assert
-        #expect(Set(digits(line) ?? []) == Set(expected))
+        #expect(digits(line) == expected)
         #expect(line?.header == "Cage \(sum) in \(length): ")
     }
 
@@ -71,5 +71,17 @@ struct CageCombinationsTests {
 
         // Assert
         #expect(line == nil)
+    }
+
+    @Test("given a cage when its combinations are listed decreasing then digits and combinations run high to low")
+    func decreasing() {
+        // Arrange
+        let game = killer(.standard, Cage(cells: [0, 1], sum: 10), selected: 0)
+
+        // Act
+        let line = game.cageCombinationLine(order: .decreasing)
+
+        // Assert
+        #expect(digits(line) == ["6 4", "7 3", "8 2", "9 1"])
     }
 }
