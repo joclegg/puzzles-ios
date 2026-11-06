@@ -88,7 +88,7 @@ struct TwoToneBoardView: View {
             return TwoToneColors.hintTarget
         }
         if marks.hintTwin.contains(cell) {
-            return TwoToneColors.hintTarget.opacity(0.5)
+            return TwoToneColors.hintTarget
         }
         if marks.broken.contains(cell) {
             return TwoToneColors.broken

@@ -94,4 +94,19 @@ struct PuzzleRefTests {
         #expect(marks.hintLine.contains(1))
         #expect(marks.hintLine.count == 4)
     }
+
+    @Test("given a duplicate-line hint when its marks are made then both lines are outlined")
+    func duplicateLineMarks() {
+        // Arrange
+        let givens = Grid.parse(size: 6, text: "RBBRBR ...... ...... ...... ...... R.BRB.")!
+        let solution = Grid.parse(size: 6, text: "RBBRBR RRRRRR RRRRRR RRRRRR RRRRRR RRBRBR")!
+        let puzzle = Puzzle(givens: givens, solution: solution)
+
+        // Act
+        let marks = GameState(puzzle: puzzle).withHint().boardMarks(markBrokenRules: false)
+
+        // Assert
+        #expect(marks.hintTargets == [31])
+        #expect(marks.hintTwin == Set(0..<6).union(30..<36))
+    }
 }
