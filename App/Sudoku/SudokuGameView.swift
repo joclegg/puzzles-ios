@@ -79,6 +79,13 @@ struct SudokuGameView: View {
                     .frame(maxWidth: .infinity, minHeight: 20, alignment: .leading)
                     .padding(.horizontal, 16)
                     .accessibilityIdentifier("hint_message")
+                if model.display.isOn(.showCombinations), let line = state.cageCombinationLine(order: model.display.combinationOrder) {
+                    combinationText(line)
+                        .font(.subheadline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 16)
+                        .accessibilityIdentifier("combinations")
+                }
                 pad(model, state, board)
                     .padding(.horizontal, 8)
                     .sudokuTourTarget("pad")

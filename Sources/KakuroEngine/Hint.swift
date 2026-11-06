@@ -1,3 +1,5 @@
+import PuzzlesCore
+
 public struct Hint: Sendable, Equatable {
     public let cell: Int
     public let digit: Int
