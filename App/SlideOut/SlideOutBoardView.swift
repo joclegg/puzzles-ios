@@ -66,12 +66,14 @@ private struct SlideOutExitGap: View {
                     .fill(colors.exit)
                     .frame(width: SlideOutBoardView.frameWidth, height: SlideOutBoardView.tipLength)
             }
+        }
+        .frame(width: SlideOutBoardView.padding, height: height)
+        .overlay(alignment: .trailing) {
             SlideOutExitArrow()
                 .stroke(colors.exit, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
                 .frame(width: 16, height: 16)
                 .offset(x: 16)
         }
-        .frame(width: SlideOutBoardView.padding, height: height)
     }
 }
 
