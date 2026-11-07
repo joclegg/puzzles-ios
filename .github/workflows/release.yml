@@ -52,6 +52,8 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             MARKETING_VERSION=${{ steps.gitversion.outputs.majorMinorPatch }} \
             CURRENT_PROJECT_VERSION=$(git rev-list --count HEAD)
+          codesign --force --sign - --entitlements Puzzles.entitlements \
+            "$RUNNER_TEMP/Puzzles.xcarchive/Products/Applications/Puzzles.app"
           /usr/libexec/PlistBuddy -c "Add :method string app-store-connect" \
             -c "Add :destination string upload" -c "Add :signingStyle string automatic" \
             -c "Add :teamID string $TEAM_ID" "$RUNNER_TEMP/ExportOptions.plist"
