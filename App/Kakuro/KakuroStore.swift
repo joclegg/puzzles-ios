@@ -148,6 +148,7 @@ final class KakuroStore {
         finished.status = .revealed
         finished.finishedAt = Self.nowMs()
         save(finished)
+        trimSteps()
     }
 
     func solve(_ game: SavedGame) -> Bool {
@@ -155,6 +156,7 @@ final class KakuroStore {
         finished.status = .solved
         finished.finishedAt = Self.nowMs()
         save(finished)
+        trimSteps()
         let previous =
             games
             .filter { $0.status == .solved && $0.ref.size == game.ref.size && $0.id != game.id }
@@ -171,6 +173,24 @@ final class KakuroStore {
     }
 
     @discardableResult
+    private func trimSteps() {
+        let trimmer = StepTrimmer(modelContainer: context.container)
+        Task.detached {
+            await trimmer.trim(
+                KakuroGameEntity.self,
+                group: { "\($0.size)_\($0.puzzleId.hasPrefix("daily_"))" },
+                isInProgress: { $0.status == GameStatus.inProgress.rawValue },
+                endedAt: { $0.finishedAt ?? $0.startedAt },
+                id: { Int64($0.id) },
+                hasSteps: { !$0.changes.isEmpty },
+                strip: { record, now in
+                    record.changes = ""
+                    record.updatedAt = now
+                }
+            )
+        }
+    }
+
     private func write(_ game: SavedGame, now: Int64) -> KakuroGameEntity? {
         let id = game.id
         var descriptor = FetchDescriptor<KakuroGameEntity>(predicate: #Predicate { $0.id == id })

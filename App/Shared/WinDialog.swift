@@ -32,17 +32,29 @@ struct WinDialog<Buttons: View>: View {
     var onDismiss: () -> Void = {}
     @ViewBuilder let buttons: () -> Buttons
 
+    @State private var dismissed = false
     @State private var dailies: [DailyLeft] = []
     @State private var popScale: CGFloat = 0.6
     @State private var allGolds = false
     @AppStorage("all_golds_celebrated_day") private var celebratedDay = ""
 
     var body: some View {
+        if !dismissed {
+            card
+        }
+    }
+
+    private func dismiss() {
+        dismissed = true
+        onDismiss()
+    }
+
+    private var card: some View {
         ZStack {
             Color.black.opacity(0.4)
                 .ignoresSafeArea()
                 .accessibilityHidden(true)
-                .onTapGesture(perform: onDismiss)
+                .onTapGesture(perform: dismiss)
             VStack(spacing: 0) {
                 header
                 if let message {
@@ -65,6 +77,8 @@ struct WinDialog<Buttons: View>: View {
                 playNext
                 HStack(spacing: 16) {
                     Spacer()
+                    Button("View board", action: dismiss)
+                        .accessibilityIdentifier("win_view_board")
                     buttons()
                 }
                 .padding(16)

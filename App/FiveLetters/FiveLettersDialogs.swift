@@ -101,8 +101,6 @@ struct FiveLettersResultDialog: View {
             onNew: isDated ? nil : onNewPractice,
             onDismiss: onClose
         ) {
-            Button("Close", action: onClose)
-                .accessibilityIdentifier("result_close")
             ShareLink("Share", item: shareText)
                 .labelStyle(.titleOnly)
                 .accessibilityIdentifier("result_share")

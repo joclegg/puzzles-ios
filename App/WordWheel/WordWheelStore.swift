@@ -176,6 +176,7 @@ final class WordWheelStore {
         finished.status = .revealed
         finished.finishedAt = now
         save(finished)
+        trimSteps()
     }
 
     func solve(_ game: SavedGame) -> Bool {
@@ -183,6 +184,7 @@ final class WordWheelStore {
         finished.status = .solved
         finished.finishedAt = now
         save(finished)
+        trimSteps()
         let previous =
             history
             .filter { $0.status == .solved && $0.ref.level == game.ref.level && $0.id != game.id }
@@ -199,6 +201,24 @@ final class WordWheelStore {
     }
 
     @discardableResult
+    private func trimSteps() {
+        let trimmer = StepTrimmer(modelContainer: context.container)
+        Task.detached {
+            await trimmer.trim(
+                WordWheelGameEntity.self,
+                group: { "\($0.level)_\($0.puzzleId.hasPrefix("daily_"))" },
+                isInProgress: { $0.status == GameStatus.inProgress.rawValue },
+                endedAt: { $0.finishedAt ?? $0.startedAt },
+                id: { Int64($0.id) },
+                hasSteps: { !$0.found.isEmpty },
+                strip: { record, now in
+                    record.found = ""
+                    record.updatedAt = now
+                }
+            )
+        }
+    }
+
     private func write(_ game: SavedGame, time: Int64) -> WordWheelGameEntity? {
         let entity = entities.first { $0.id == game.id }
         entity?.apply(game, updatedAt: time)

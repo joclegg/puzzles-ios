@@ -1,3 +1,4 @@
+import PuzzlesCore
 import PuzzlesSync
 import Foundation
 import Observation
@@ -161,6 +162,7 @@ final class SolitaireStore {
         lost.status = .lost
         lost.finishedAt = now()
         save(lost)
+        trimSteps()
     }
 
     func win(_ game: SavedGame) -> Bool {
@@ -168,6 +170,7 @@ final class SolitaireStore {
         won.status = .won
         won.finishedAt = now()
         save(won)
+        trimSteps()
         let previous =
             games
             .filter { $0.status == .won && $0.deal.drawMode == game.deal.drawMode && $0.id != game.id }
@@ -177,6 +180,24 @@ final class SolitaireStore {
     }
 
     @discardableResult
+    private func trimSteps() {
+        let trimmer = StepTrimmer(modelContainer: context.container)
+        Task.detached {
+            await trimmer.trim(
+                SolitaireGameRecord.self,
+                group: { "\($0.drawMode)_\($0.buildOrder)_\($0.dealId.hasPrefix("daily_"))" },
+                isInProgress: { $0.status == GameStatus.inProgress.rawValue },
+                endedAt: { $0.finishedAt ?? $0.startedAt },
+                id: { Int64($0.id) },
+                hasSteps: { !$0.moves.isEmpty },
+                strip: { record, now in
+                    record.moves = ""
+                    record.updatedAt = now
+                }
+            )
+        }
+    }
+
     private func write(_ game: SavedGame) -> SolitaireGameRecord? {
         let id = game.id
         var descriptor = FetchDescriptor<SolitaireGameRecord>(predicate: #Predicate { $0.id == id })
