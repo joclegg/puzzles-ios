@@ -140,7 +140,7 @@ final class SudokuStore {
         finished.status = .revealed
         finished.finishedAt = GameClock.nowMs()
         save(finished)
-        trimSteps()
+        Task { trimSteps() }
     }
 
     func complete(_ game: SudokuSavedGame) -> Bool {
@@ -148,7 +148,7 @@ final class SudokuStore {
         finished.status = .completed
         finished.finishedAt = GameClock.nowMs()
         save(finished)
-        trimSteps()
+        Task { trimSteps() }
         guard let difficulty = game.ref.difficulty, !game.ref.custom else {
             return false
         }

@@ -147,7 +147,7 @@ final class SightlinesStore {
         finished.status = .revealed
         finished.finishedAt = Self.nowMs
         save(finished)
-        trimSteps()
+        Task { trimSteps() }
     }
 
     func solve(_ game: SavedGame) -> Bool {
@@ -155,7 +155,7 @@ final class SightlinesStore {
         finished.status = .solved
         finished.finishedAt = Self.nowMs
         save(finished)
-        trimSteps()
+        Task { trimSteps() }
         return games.isNewBest(finished)
     }
 

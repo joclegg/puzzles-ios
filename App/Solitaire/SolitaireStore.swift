@@ -162,7 +162,7 @@ final class SolitaireStore {
         lost.status = .lost
         lost.finishedAt = now()
         save(lost)
-        trimSteps()
+        Task { trimSteps() }
     }
 
     func win(_ game: SavedGame) -> Bool {
@@ -170,7 +170,7 @@ final class SolitaireStore {
         won.status = .won
         won.finishedAt = now()
         save(won)
-        trimSteps()
+        Task { trimSteps() }
         let previous =
             games
             .filter { $0.status == .won && $0.deal.drawMode == game.deal.drawMode && $0.id != game.id }

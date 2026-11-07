@@ -151,7 +151,7 @@ enum SlideOutStore {
             return
         }
         write(game, moves: moves, elapsedMs: elapsedMs, hints: hints, status: .revealed)
-        trimSteps()
+        Task { trimSteps() }
     }
 
     static func solve(id: Int64, moves: [Move], elapsedMs: Int64, hints: Int) -> Bool {
@@ -159,7 +159,7 @@ enum SlideOutStore {
             return false
         }
         write(game, moves: moves, elapsedMs: elapsedMs, hints: hints, status: .solved)
-        trimSteps()
+        Task { trimSteps() }
         let solved = GameStatus.solved.rawValue
         let level = game.level
         let others = FetchDescriptor<SlideOutGameRecord>(

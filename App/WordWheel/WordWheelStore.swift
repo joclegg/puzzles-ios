@@ -176,7 +176,7 @@ final class WordWheelStore {
         finished.status = .revealed
         finished.finishedAt = now
         save(finished)
-        trimSteps()
+        Task { trimSteps() }
     }
 
     func solve(_ game: SavedGame) -> Bool {
@@ -184,7 +184,7 @@ final class WordWheelStore {
         finished.status = .solved
         finished.finishedAt = now
         save(finished)
-        trimSteps()
+        Task { trimSteps() }
         let previous =
             history
             .filter { $0.status == .solved && $0.ref.level == game.ref.level && $0.id != game.id }

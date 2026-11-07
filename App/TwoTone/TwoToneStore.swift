@@ -160,7 +160,7 @@ final class TwoToneStore {
         record.finishedAt = now
         record.updatedAt = now
         commit()
-        trimSteps()
+        Task { trimSteps() }
     }
 
     func isNewBest(_ record: TwoToneGameRecord) -> Bool {

@@ -148,7 +148,7 @@ final class KakuroStore {
         finished.status = .revealed
         finished.finishedAt = Self.nowMs()
         save(finished)
-        trimSteps()
+        Task { trimSteps() }
     }
 
     func solve(_ game: SavedGame) -> Bool {
@@ -156,7 +156,7 @@ final class KakuroStore {
         finished.status = .solved
         finished.finishedAt = Self.nowMs()
         save(finished)
-        trimSteps()
+        Task { trimSteps() }
         let previous =
             games
             .filter { $0.status == .solved && $0.ref.size == game.ref.size && $0.id != game.id }
