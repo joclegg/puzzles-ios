@@ -10,6 +10,7 @@ public enum SupabaseConfig {
 public enum SignInProvider: String, Sendable, CaseIterable {
     case google
     case microsoft = "azure"
+    case apple
 
     var scopes: String? {
         self == .microsoft ? "email" : nil
@@ -110,6 +111,14 @@ public enum AuthUrls {
         ["type": "email", "email": email.trimmingCharacters(in: .whitespacesAndNewlines), "token": code]
     }
 
+    public static func appleBody(idToken: String, nonce: String) -> [String: Any] {
+        ["provider": "apple", "id_token": idToken, "nonce": nonce]
+    }
+
+    public static func hashedNonce(_ nonce: String) -> String {
+        SHA256.hash(data: Data(nonce.utf8)).map { String(format: "%02x", $0) }.joined()
+    }
+
     public static func challenge(of verifier: String) -> String {
         base64URL(Data(SHA256.hash(data: Data(verifier.utf8))))
     }
@@ -175,6 +184,10 @@ public final class SupabaseAuth {
         }
         store.session = session
         return true
+    }
+
+    public func signInWithApple(idToken: String, nonce: String) async -> Bool {
+        await requestSession(grant: "id_token", body: AuthUrls.appleBody(idToken: idToken, nonce: nonce)) == .ok
     }
 
     public func complete(code: String) async -> Bool {

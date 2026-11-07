@@ -1,0 +1,176 @@
+appId: com.joclegg.puzzles
+name: App Store screenshots
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "game_sudoku"
+    timeout: 120000
+- waitForAnimationToEnd:
+    timeout: 3000
+- takeScreenshot: store/screenshots/01_home
+- launchApp:
+    stopApp: true
+- extendedWaitUntil:
+    visible:
+      id: "game_sudoku"
+    timeout: 60000
+- scrollUntilVisible:
+    element:
+      id: "game_sudoku"
+    centerElement: true
+- tapOn:
+    id: "game_sudoku"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "level_easy"
+- waitForAnimationToEnd:
+    timeout: 3000
+- takeScreenshot: store/screenshots/02_sudoku
+- launchApp:
+    stopApp: true
+- extendedWaitUntil:
+    visible:
+      id: "game_sudoku"
+    timeout: 60000
+- scrollUntilVisible:
+    element:
+      id: "game_solitaire"
+    centerElement: true
+- tapOn:
+    id: "game_solitaire"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "play"
+- waitForAnimationToEnd:
+    timeout: 3000
+- takeScreenshot: store/screenshots/03_solitaire
+- launchApp:
+    stopApp: true
+- extendedWaitUntil:
+    visible:
+      id: "game_sudoku"
+    timeout: 60000
+- scrollUntilVisible:
+    element:
+      id: "game_two_tone"
+    centerElement: true
+- tapOn:
+    id: "game_two_tone"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "size_6"
+- waitForAnimationToEnd:
+    timeout: 3000
+- takeScreenshot: store/screenshots/04_two_tone
+- launchApp:
+    stopApp: true
+- extendedWaitUntil:
+    visible:
+      id: "game_sudoku"
+    timeout: 60000
+- scrollUntilVisible:
+    element:
+      id: "game_sightlines"
+    centerElement: true
+- tapOn:
+    id: "game_sightlines"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "size_6"
+- waitForAnimationToEnd:
+    timeout: 3000
+- takeScreenshot: store/screenshots/05_sightlines
+- launchApp:
+    stopApp: true
+- extendedWaitUntil:
+    visible:
+      id: "game_sudoku"
+    timeout: 60000
+- scrollUntilVisible:
+    element:
+      id: "game_five_letters"
+    centerElement: true
+- tapOn:
+    id: "game_five_letters"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "daily"
+- tapOn:
+    id: "key_C"
+- tapOn:
+    id: "key_R"
+- tapOn:
+    id: "key_A"
+- tapOn:
+    id: "key_N"
+- tapOn:
+    id: "key_E"
+- tapOn:
+    id: "key_enter"
+- waitForAnimationToEnd:
+    timeout: 3000
+- takeScreenshot: store/screenshots/06_five_letters
+- launchApp:
+    stopApp: true
+- extendedWaitUntil:
+    visible:
+      id: "game_sudoku"
+    timeout: 60000
+- scrollUntilVisible:
+    element:
+      id: "game_kakuro"
+    centerElement: true
+- tapOn:
+    id: "game_kakuro"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "size_8"
+- waitForAnimationToEnd:
+    timeout: 3000
+- takeScreenshot: store/screenshots/07_kakuro
+- launchApp:
+    stopApp: true
+- extendedWaitUntil:
+    visible:
+      id: "game_sudoku"
+    timeout: 60000
+- scrollUntilVisible:
+    element:
+      id: "game_slide_out"
+    centerElement: true
+- tapOn:
+    id: "game_slide_out"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "daily_beginner"
+- waitForAnimationToEnd:
+    timeout: 3000
+- takeScreenshot: store/screenshots/08_slide_out
+- launchApp:
+    stopApp: true
+- extendedWaitUntil:
+    visible:
+      id: "game_sudoku"
+    timeout: 60000
+- scrollUntilVisible:
+    element:
+      id: "game_word_wheel"
+    centerElement: true
+- tapOn:
+    id: "game_word_wheel"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "level_6"
+- waitForAnimationToEnd:
+    timeout: 3000
+- takeScreenshot: store/screenshots/09_word_wheel

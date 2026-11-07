@@ -40,6 +40,7 @@ struct SignInView: View {
                 Text("Sync your games and settings with the website and other devices.")
                 provider("Sign in with Google", .google, tag: "sign_in_google")
                 provider("Sign in with Microsoft", .microsoft, tag: "sign_in_microsoft")
+                provider("Sign in with Apple", .apple, tag: "sign_in_apple")
             }
             Section("or") {
                 TextField("Email", text: $email)
@@ -87,12 +88,12 @@ struct SignInView: View {
         let google = provider == .google
         let background = Color(hex: google ? (dark ? 0x131314 : 0xFFFFFF) : (dark ? 0x2F2F2F : 0xFFFFFF))
         let border = Color(hex: google ? (dark ? 0x8E918F : 0x747775) : (dark ? 0x2F2F2F : 0x8C8C8C))
-        let text = Color(hex: google ? (dark ? 0xE3E3E3 : 0x1F1F1F) : (dark ? 0xFFFFFF : 0x5E5E5E))
+        let text = Color(hex: google ? (dark ? 0xE3E3E3 : 0x1F1F1F) : (dark ? 0xFFFFFF : provider == .apple ? 0x000000 : 0x5E5E5E))
         return Button {
             SyncCenter.shared.signIn(provider: provider)
         } label: {
             HStack(spacing: 12) {
-                SignInLogo(provider: provider).frame(width: 20, height: 20)
+                SignInLogo(provider: provider, dark: dark).frame(width: 20, height: 20)
                 Text(label).foregroundStyle(text)
             }
             .frame(maxWidth: .infinity, minHeight: 40)
@@ -132,9 +133,14 @@ struct SignInView: View {
 
 private struct SignInLogo: View {
     let provider: SignInProvider
+    let dark: Bool
 
     private var viewport: CGFloat {
-        provider == .google ? 48 : 21
+        switch provider {
+        case .google: 48
+        case .microsoft: 21
+        case .apple: 24
+        }
     }
 
     private var shapes: [(UInt32, String)] {
@@ -162,6 +168,16 @@ private struct SignInLogo: View {
             [
                 (0xF25022, "M1,1h9v9h-9z"), (0x7FBA00, "M11,1h9v9h-9z"),
                 (0x00A4EF, "M1,11h9v9h-9z"), (0xFFB900, "M11,11h9v9h-9z"),
+            ]
+        case .apple:
+            [
+                (
+                    dark ? 0xFFFFFF : 0x000000,
+                    "M17.05,20.28c-0.98,0.95 -2.05,0.8 -3.08,0.35 -1.09,-0.46 -2.09,-0.48 -3.24,0 -1.44,0.62 -2.2,0.44 -3.06,-0.35"
+                        + "C2.79,15.25 3.51,7.59 9.05,7.31c1.35,0.07 2.29,0.74 3.08,0.8 1.18,-0.24 2.31,-0.93 3.57,-0.84"
+                        + " 1.51,0.12 2.65,0.72 3.4,1.8 -3.12,1.87 -2.38,5.98 0.48,7.13 -0.57,1.5 -1.31,2.99 -2.54,4.09z"
+                        + "M12.03,7.25c-0.15,-2.23 1.66,-4.07 3.74,-4.25 0.29,2.58 -2.34,4.5 -3.74,4.25z"
+                )
             ]
         }
     }

@@ -68,6 +68,22 @@ struct AuthUrlTests {
         #expect(result == "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM")
     }
 
+    @Test("given an Apple ID token when the body is made then it carries the raw nonce Apple hashed")
+    func appleBody() {
+        // Arrange
+        let nonce = "abc"
+
+        // Act
+        let body = AuthUrls.appleBody(idToken: "token", nonce: nonce)
+        let hashed = AuthUrls.hashedNonce(nonce)
+
+        // Assert
+        #expect(body["provider"] as? String == "apple")
+        #expect(body["id_token"] as? String == "token")
+        #expect(body["nonce"] as? String == "abc")
+        #expect(hashed == "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad")
+    }
+
     @Test("given an email with spaces when the bodies are made then it is trimmed")
     func bodies() {
         // Act

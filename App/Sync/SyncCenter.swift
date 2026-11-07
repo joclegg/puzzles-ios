@@ -128,6 +128,7 @@ final class SyncCenter: NSObject {
     @ObservationIgnored private var defaultsObserver: NSObjectProtocol?
     @ObservationIgnored private var pending: Task<Void, Never>?
     @ObservationIgnored private var webSession: ASWebAuthenticationSession?
+    @ObservationIgnored private var appleNonce: String?
     @ObservationIgnored var applyingRemote = false
 
     nonisolated static func nowMs() -> Int64 {
@@ -163,6 +164,10 @@ final class SyncCenter: NSObject {
     }
 
     func signIn(provider: SignInProvider) {
+        if provider == .apple {
+            signInWithApple()
+            return
+        }
         guard let url = URL(string: auth.signInUrl(provider: provider)) else {
             return
         }
@@ -177,6 +182,18 @@ final class SyncCenter: NSObject {
         session.presentationContextProvider = self
         webSession = session
         session.start()
+    }
+
+    private func signInWithApple() {
+        let nonce = AuthUrls.randomVerifier()
+        appleNonce = nonce
+        let request = ASAuthorizationAppleIDProvider().createRequest()
+        request.requestedScopes = [.email]
+        request.nonce = AuthUrls.hashedNonce(nonce)
+        let controller = ASAuthorizationController(authorizationRequests: [request])
+        controller.delegate = self
+        controller.presentationContextProvider = self
+        controller.performRequests()
     }
 
     func handle(url: URL) {
@@ -235,6 +252,40 @@ final class SyncCenter: NSObject {
             try? await Task.sleep(for: .seconds(2))
             if !Task.isCancelled {
                 syncNow()
+            }
+        }
+    }
+}
+
+extension SyncCenter: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
+    nonisolated func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        MainActor.assumeIsolated {
+            UIApplication.shared.connectedScenes
+                .compactMap { ($0 as? UIWindowScene)?.keyWindow }
+                .first ?? ASPresentationAnchor()
+        }
+    }
+
+    nonisolated func authorizationController(
+        controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization
+    ) {
+        guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential,
+            let token = credential.identityToken
+        else {
+            return
+        }
+        let idToken = String(decoding: token, as: UTF8.self)
+        MainActor.assumeIsolated {
+            guard let nonce = appleNonce else {
+                return
+            }
+            appleNonce = nil
+            Task {
+                if await auth.signInWithApple(idToken: idToken, nonce: nonce) {
+                    signedInNow()
+                } else {
+                    ErrorLog.report(URLError(.userAuthenticationRequired), "Sign in with Apple")
+                }
             }
         }
     }

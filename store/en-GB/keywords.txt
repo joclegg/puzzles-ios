@@ -1,0 +1,1 @@
+sudoku,kakuro,solitaire,klondike,word,daily,puzzle,logic,brain,takuzu,binary,sliding,anagram,medal
