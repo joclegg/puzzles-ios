@@ -147,7 +147,7 @@ final class SightlinesStore {
         finished.status = .revealed
         finished.finishedAt = Self.nowMs
         save(finished)
-        Task { trimSteps() }
+        trimSteps()
     }
 
     func solve(_ game: SavedGame) -> Bool {
@@ -155,24 +155,26 @@ final class SightlinesStore {
         finished.status = .solved
         finished.finishedAt = Self.nowMs
         save(finished)
-        Task { trimSteps() }
+        trimSteps()
         return games.isNewBest(finished)
     }
 
     private func trimSteps() {
-        let now = GameClock.nowMs()
-        let stale = StepTrim.stale(
-            context.fetchOrEmpty(FetchDescriptor<SightlinesGameRecord>()),
-            group: { "\($0.size)_\($0.puzzleId.hasPrefix("daily_"))" },
-            isInProgress: { $0.status == GameStatus.inProgress.rawValue },
-            endedAt: { $0.finishedAt ?? $0.startedAt },
-            id: { Int64($0.id) }
-        )
-        for record in stale where !record.changes.isEmpty {
-            record.changes = ""
-            record.updatedAt = now
+        let trimmer = StepTrimmer(modelContainer: context.container)
+        Task.detached {
+            await trimmer.trim(
+                SightlinesGameRecord.self,
+                group: { "\($0.size)_\($0.puzzleId.hasPrefix("daily_"))" },
+                isInProgress: { $0.status == GameStatus.inProgress.rawValue },
+                endedAt: { $0.finishedAt ?? $0.startedAt },
+                id: { Int64($0.id) },
+                hasSteps: { !$0.changes.isEmpty },
+                strip: { record, now in
+                    record.changes = ""
+                    record.updatedAt = now
+                }
+            )
         }
-        context.saveOrReport()
     }
 
     @discardableResult

@@ -151,7 +151,7 @@ enum SlideOutStore {
             return
         }
         write(game, moves: moves, elapsedMs: elapsedMs, hints: hints, status: .revealed)
-        Task { trimSteps() }
+        trimSteps()
     }
 
     static func solve(id: Int64, moves: [Move], elapsedMs: Int64, hints: Int) -> Bool {
@@ -159,7 +159,7 @@ enum SlideOutStore {
             return false
         }
         write(game, moves: moves, elapsedMs: elapsedMs, hints: hints, status: .solved)
-        Task { trimSteps() }
+        trimSteps()
         let solved = GameStatus.solved.rawValue
         let level = game.level
         let others = FetchDescriptor<SlideOutGameRecord>(
@@ -188,19 +188,21 @@ enum SlideOutStore {
     }
 
     private static func trimSteps() {
-        let now = GameClock.nowMs()
-        let stale = StepTrim.stale(
-            context.fetchOrEmpty(FetchDescriptor<SlideOutGameRecord>()),
-            group: { "\($0.level)_\($0.puzzleId.hasPrefix("daily_"))" },
-            isInProgress: { $0.status == GameStatus.inProgress.rawValue },
-            endedAt: { $0.finishedAt ?? $0.startedAt },
-            id: { Int64($0.id) }
-        )
-        for record in stale where !record.moves.isEmpty {
-            record.moves = ""
-            record.updatedAt = now
+        let trimmer = StepTrimmer(modelContainer: context.container)
+        Task.detached {
+            await trimmer.trim(
+                SlideOutGameRecord.self,
+                group: { "\($0.level)_\($0.puzzleId.hasPrefix("daily_"))" },
+                isInProgress: { $0.status == GameStatus.inProgress.rawValue },
+                endedAt: { $0.finishedAt ?? $0.startedAt },
+                id: { Int64($0.id) },
+                hasSteps: { !$0.moves.isEmpty },
+                strip: { record, now in
+                    record.moves = ""
+                    record.updatedAt = now
+                }
+            )
         }
-        context.saveOrReport()
     }
 
     private static func write(

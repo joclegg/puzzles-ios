@@ -162,7 +162,7 @@ final class SolitaireStore {
         lost.status = .lost
         lost.finishedAt = now()
         save(lost)
-        Task { trimSteps() }
+        trimSteps()
     }
 
     func win(_ game: SavedGame) -> Bool {
@@ -170,7 +170,7 @@ final class SolitaireStore {
         won.status = .won
         won.finishedAt = now()
         save(won)
-        Task { trimSteps() }
+        trimSteps()
         let previous =
             games
             .filter { $0.status == .won && $0.deal.drawMode == game.deal.drawMode && $0.id != game.id }
@@ -181,19 +181,21 @@ final class SolitaireStore {
 
     @discardableResult
     private func trimSteps() {
-        let now = GameClock.nowMs()
-        let stale = StepTrim.stale(
-            context.fetchOrEmpty(FetchDescriptor<SolitaireGameRecord>()),
-            group: { "\($0.drawMode)_\($0.buildOrder)_\($0.dealId.hasPrefix("daily_"))" },
-            isInProgress: { $0.status == GameStatus.inProgress.rawValue },
-            endedAt: { $0.finishedAt ?? $0.startedAt },
-            id: { Int64($0.id) }
-        )
-        for record in stale where !record.moves.isEmpty {
-            record.moves = ""
-            record.updatedAt = now
+        let trimmer = StepTrimmer(modelContainer: context.container)
+        Task.detached {
+            await trimmer.trim(
+                SolitaireGameRecord.self,
+                group: { "\($0.drawMode)_\($0.buildOrder)_\($0.dealId.hasPrefix("daily_"))" },
+                isInProgress: { $0.status == GameStatus.inProgress.rawValue },
+                endedAt: { $0.finishedAt ?? $0.startedAt },
+                id: { Int64($0.id) },
+                hasSteps: { !$0.moves.isEmpty },
+                strip: { record, now in
+                    record.moves = ""
+                    record.updatedAt = now
+                }
+            )
         }
-        context.saveOrReport()
     }
 
     private func write(_ game: SavedGame) -> SolitaireGameRecord? {
