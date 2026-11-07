@@ -160,6 +160,7 @@ final class TwoToneStore {
         record.finishedAt = now
         record.updatedAt = now
         commit()
+        trimSteps()
     }
 
     func isNewBest(_ record: TwoToneGameRecord) -> Bool {
@@ -181,6 +182,22 @@ final class TwoToneStore {
         context.insert(TwoToneGameRecord(id: id, ref: ref, now: now))
         commit()
         return id
+    }
+
+    private func trimSteps() {
+        let now = GameClock.nowMs()
+        let stale = StepTrim.stale(
+            context.fetchOrEmpty(FetchDescriptor<TwoToneGameRecord>()),
+            group: { "\($0.size)_\($0.puzzleId.hasPrefix("daily_"))" },
+            isInProgress: { $0.status == GameStatus.inProgress.rawValue },
+            endedAt: { $0.finishedAt ?? $0.startedAt },
+            id: { Int64($0.id) }
+        )
+        for record in stale where !record.changes.isEmpty {
+            record.changes = ""
+            record.updatedAt = now
+        }
+        context.saveOrReport()
     }
 
     private func commit() {

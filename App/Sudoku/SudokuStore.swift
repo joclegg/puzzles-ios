@@ -43,6 +43,22 @@ final class SudokuStore {
         return context.fetchOrEmpty(descriptor).first
     }
 
+    private func trimSteps() {
+        let now = GameClock.nowMs()
+        let stale = StepTrim.stale(
+            context.fetchOrEmpty(FetchDescriptor<SudokuGameRecord>()),
+            group: { "\($0.custom)_\($0.mode)_\($0.difficulty ?? "")_\($0.puzzleId.hasPrefix("daily_"))" },
+            isInProgress: { $0.status == GameStatus.inProgress.rawValue },
+            endedAt: { $0.finishedAt ?? $0.startedAt },
+            id: { Int64($0.id) }
+        )
+        for record in stale where !record.undoHistory.isEmpty {
+            record.undoHistory = ""
+            record.updatedAt = now
+        }
+        context.saveOrReport()
+    }
+
     private func commit() {
         context.saveOrReport()
         revision += 1
@@ -124,6 +140,7 @@ final class SudokuStore {
         finished.status = .revealed
         finished.finishedAt = GameClock.nowMs()
         save(finished)
+        trimSteps()
     }
 
     func complete(_ game: SudokuSavedGame) -> Bool {
@@ -131,6 +148,7 @@ final class SudokuStore {
         finished.status = .completed
         finished.finishedAt = GameClock.nowMs()
         save(finished)
+        trimSteps()
         guard let difficulty = game.ref.difficulty, !game.ref.custom else {
             return false
         }
