@@ -331,8 +331,7 @@ private struct SudokuWinDialog: View {
             tag: "solved_screen",
             newLabel: saved.ref.difficulty.map { levelLabel($0) },
             newTag: "solved_new_puzzle",
-            onNew: newPuzzle,
-            onDismiss: navigator.home
+            onNew: newPuzzle
         ) {
             SudokuTextButton(title: "Home", id: "solved_home", action: navigator.home)
         }
