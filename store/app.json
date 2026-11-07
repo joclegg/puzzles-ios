@@ -1,0 +1,17 @@
+{
+  "bundleId": "com.joclegg.puzzles",
+  "primaryLocale": "en-GB",
+  "primaryCategory": "GAMES",
+  "primarySubcategoryOne": "GAMES_PUZZLE",
+  "primarySubcategoryTwo": "GAMES_WORD",
+  "copyright": "Jo Clegg",
+  "contentRightsDeclaration": "DOES_NOT_USE_THIRD_PARTY_CONTENT",
+  "reviewContact": {
+    "contactFirstName": "Jo",
+    "contactLastName": "Clegg",
+    "contactEmail": "jo_clegg@hotmail.com",
+    "contactPhone": "",
+    "demoAccountRequired": false,
+    "notes": "Signing in is optional: every game plays fully signed out. Sign-in only syncs saved games and settings between devices."
+  }
+}

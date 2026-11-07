@@ -1,0 +1,30 @@
+Eight puzzle games in one app, with a fresh daily puzzle in every game, no ads and no tracking.
+
+THE GAMES
+• Sudoku – classic and killer, from fast 6×6 grids to fiendish 9×9s
+• Kakuro – crossword-style sums with the digits 1 to 9
+• Solitaire – Klondike with winnable deals, draw one or draw three
+• Two Tone – fill the grid red and blue, following three simple rules
+• Sightlines – place blue dots so every number sees exactly the right count
+• Slide Out – slide the blocks aside and free the piece in the fewest moves
+• Five Letters – guess the hidden five-letter word in six tries
+• Word Wheel – find every word in the wheel, and earn bonus words along the way
+
+DAILY PUZZLES
+Every game has a daily puzzle, the same for everyone. Play it on the day for a medal: bronze, silver or gold. Keep track in each game's calendar, and aim for gold in every game.
+
+PLAY YOUR WAY
+• Works fully offline
+• Several sizes and difficulty levels in every game
+• Unlimited undo
+• Optional hints and helpers, all off by default, so you choose how much help you get
+• Stats, best times and a full history for every game
+• Light and dark themes
+
+SYNC, IF YOU WANT IT
+There's no need for an account. If you'd like your games on more than one device, sign in with Google, Microsoft or your email address. Your saved games and settings then sync between Android, iPhone and the web at joclegg.github.io/puzzles-web.
+
+PRIVACY
+No ads, no analytics and no tracking. If you sign in, only your email address, saved games and settings are stored, and only for sync. You can delete your account and data at any time, in the app or on the web.
+
+Privacy policy: https://joclegg.github.io/puzzles-web/#/privacy
