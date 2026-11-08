@@ -189,6 +189,7 @@ def main():
             "attributes": json.loads((STORE / "age-rating.json").read_text())}})
 
     review = dict(config["reviewContact"])
+    review["notes"] = text(locale, "review-notes")
     review["contactPhone"] = os.environ.get("REVIEW_CONTACT_PHONE") or review["contactPhone"]
     if review["contactPhone"]:
         detail = call("GET", f"/v1/appStoreVersions/{version_id}/appStoreReviewDetail").get("data")
