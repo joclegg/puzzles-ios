@@ -65,6 +65,8 @@ def editable(items, states):
     return next((item for item in items if item["attributes"][states] in EDITABLE), None)
 
 
+DONE = {"READY_FOR_SALE", "REPLACED_WITH_NEW_VERSION", "REMOVED_FROM_SALE", "DEVELOPER_REMOVED_FROM_SALE"}
+
 EDITABLE = {
     "PREPARE_FOR_SUBMISSION",
     "DEVELOPER_REJECTED",
@@ -81,7 +83,15 @@ def localization_id(version_id, locale):
 
 def upload_screenshots(localization):
     files = sorted((STORE / "screenshots").glob("*.png"))
+    wanted = [hashlib.md5(path.read_bytes()).hexdigest() for path in files]
     sets = call("GET", f"/v1/appStoreVersionLocalizations/{localization}/appScreenshotSets")["data"]
+    for old in sets:
+        if old["attributes"]["screenshotDisplayType"] != "APP_IPHONE_67":
+            continue
+        current = call("GET", f"/v1/appScreenshotSets/{old['id']}/appScreenshots?limit=10")["data"]
+        if [shot["attributes"]["sourceFileChecksum"] for shot in current] == wanted:
+            print("Screenshots are unchanged")
+            return
     for old in sets:
         if old["attributes"]["screenshotDisplayType"] == "APP_IPHONE_67":
             call("DELETE", f"/v1/appScreenshotSets/{old['id']}")
@@ -122,6 +132,9 @@ def main():
     released = any(v["attributes"]["appStoreState"] == "READY_FOR_SALE" for v in versions)
     version = editable(versions, "appStoreState")
     attributes = {"versionString": version_string, "copyright": f"{time.gmtime().tm_year} {config['copyright']}"}
+    if version is None and any(v["attributes"]["appStoreState"] not in DONE for v in versions):
+        print("A version is with App Review, so the listing is left as it is")
+        return
     if version is None:
         version = call("POST", "/v1/appStoreVersions", {"data": {
             "type": "appStoreVersions",
