@@ -49,16 +49,16 @@ final class GameSyncSource<Record: SyncedRecord>: SyncSource {
 
         init(records: [Record]) {
             self.records = records
-            byUUID = Dictionary(records.map { ($0.uuid, $0) }, uniquingKeysWith: { first, _ in first })
+            byUUID = Dictionary(records.map { ($0.uuid.lowercased(), $0) }, uniquingKeysWith: { first, _ in first })
         }
 
         mutating func add(_ record: Record) {
             records.append(record)
-            byUUID[record.uuid] = record
+            byUUID[record.uuid.lowercased()] = record
         }
 
         mutating func remove(_ record: Record) {
-            byUUID[record.uuid] = nil
+            byUUID[record.uuid.lowercased()] = nil
         }
     }
 
@@ -74,8 +74,8 @@ final class GameSyncSource<Record: SyncedRecord>: SyncSource {
     }
 
     func changed(since: Int64) -> [SyncRow] {
-        all.filter { $0.updatedAt > since }.map { record in
-            SyncRow(id: record.uuid, data: record.syncJSON, updatedAt: record.updatedAt)
+        all.filter { $0.updatedAt > since && !isFixture(record: $0.syncJSON) }.map { record in
+            SyncRow(id: record.uuid.lowercased(), data: record.syncJSON, updatedAt: record.updatedAt)
         }
     }
 
@@ -83,7 +83,10 @@ final class GameSyncSource<Record: SyncedRecord>: SyncSource {
         var batch = pending ?? Batch(records: all)
         pending = nil
         defer { pending = batch }
-        let local = batch.byUUID[row.id]
+        if isFixture(record: row.data) {
+            return
+        }
+        let local = batch.byUUID[row.id.lowercased()]
         if let local, local.updatedAt >= row.updatedAt {
             return
         }
