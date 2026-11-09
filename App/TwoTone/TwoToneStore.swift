@@ -50,7 +50,7 @@ final class TwoToneGameRecord {
     }
 
     init(id: Int64, ref: PuzzleRef, now: Int64) {
-        uuid = UUID().uuidString
+        uuid = UUID().uuidString.lowercased()
         self.id = id
         updatedAt = now
         puzzleId = ref.id

@@ -133,7 +133,7 @@ final class FiveLettersStore {
             abandoned.status = .abandoned
             write(abandoned)
         }
-        let game = SavedGame(uuid: UUID().uuidString, ref: ref, hardMode: hardMode, startedAt: Self.now())
+        let game = SavedGame(uuid: UUID().uuidString.lowercased(), ref: ref, hardMode: hardMode, startedAt: Self.now())
         context.insert(FiveLettersGameRecord(game: game, updatedAt: Self.now()))
         commit()
         return game
