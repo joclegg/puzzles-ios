@@ -14,6 +14,7 @@ protocol GameDefinition {
     static var dailies: DailyProvider<DailyOption> { get }
     static func home() -> AnyView
     static func fixture(_ name: String) -> AnyView?
+    static func fixtureBank(_ name: String) -> [String: [String]]?
     static func reloadAfterSync()
 }
 
