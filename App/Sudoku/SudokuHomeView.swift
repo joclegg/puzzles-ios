@@ -238,25 +238,29 @@ struct SudokuHomeView: View {
 struct SudokuGameIcon: View {
     @Environment(\.sudokuPalette) private var palette
 
+    private static let digits = ["5", "", "3", "", "7", "", "1", "", "9"]
+
     var body: some View {
         Canvas { context, size in
             let side = min(size.width, size.height)
             let cell = side / 3
-            context.fill(
-                Path(CGRect(x: 0, y: 0, width: cell, height: cell)), with: .color(palette.givenCell))
-            context.fill(
-                Path(CGRect(x: cell * 2, y: cell * 2, width: cell, height: cell)), with: .color(palette.givenCell))
-            context.fill(
-                Path(CGRect(x: cell, y: cell, width: cell, height: cell)), with: .color(palette.selected))
-            var lines = Path()
-            for line in 0...3 {
+            context.fill(Path(CGRect(x: 0, y: 0, width: side, height: side)), with: .color(palette.background))
+            var thin = Path()
+            for line in 1...2 {
                 let at = CGFloat(line) * cell
-                lines.move(to: CGPoint(x: at, y: 0))
-                lines.addLine(to: CGPoint(x: at, y: side))
-                lines.move(to: CGPoint(x: 0, y: at))
-                lines.addLine(to: CGPoint(x: side, y: at))
+                thin.move(to: CGPoint(x: at, y: 0))
+                thin.addLine(to: CGPoint(x: at, y: side))
+                thin.move(to: CGPoint(x: 0, y: at))
+                thin.addLine(to: CGPoint(x: side, y: at))
             }
-            context.stroke(lines, with: .color(palette.thickLine), lineWidth: 2)
+            context.stroke(thin, with: .color(palette.thinLine), lineWidth: 1)
+            context.stroke(
+                Path(CGRect(x: 1, y: 1, width: side - 2, height: side - 2)), with: .color(palette.thickLine), lineWidth: 2)
+            for (index, digit) in Self.digits.enumerated() where !digit.isEmpty {
+                context.draw(
+                    Text(digit).font(.system(size: 11, weight: .bold)).foregroundStyle(Color.primary),
+                    at: CGPoint(x: (CGFloat(index % 3) + 0.5) * cell, y: (CGFloat(index / 3) + 0.5) * cell))
+            }
         }
         .frame(width: 56, height: 56)
         .accessibilityHidden(true)
