@@ -1,3 +1,4 @@
+import CrosswordEngine
 import FiveLettersEngine
 import KakuroEngine
 import PuzzlesCore
@@ -22,7 +23,7 @@ struct HistoryEntry: Identifiable {
 @MainActor
 enum AllHistory {
     static var entries: [HistoryEntry] {
-        (sudoku + solitaire + twoTone + sightlines + fiveLetters + kakuro + slideOut + wordWheel)
+        (sudoku + solitaire + twoTone + sightlines + fiveLetters + kakuro + slideOut + wordWheel + crossword)
             .sorted { $0.startedAt > $1.startedAt }
     }
 
@@ -93,6 +94,21 @@ enum AllHistory {
             return HistoryEntry(
                 id: "kakuro_\(game.id)", tab: .kakuro, title: game.ref.title, startedAt: game.startedAt, time: time(game.elapsedMs),
                 result: withHints(status, game.hints))
+        }
+    }
+
+    private static var crossword: [HistoryEntry] {
+        CrosswordStore.shared.games.map { game in
+            let status =
+                switch game.status {
+                case .solved: "Solved"
+                case .inProgress: "In progress"
+                case .abandoned: "Abandoned"
+                case .revealed: "Solution shown"
+                }
+            return HistoryEntry(
+                id: "crossword_\(game.id)", tab: .crossword, title: game.ref.title, startedAt: game.startedAt,
+                time: time(game.elapsedMs), result: withHints(status, game.hints))
         }
     }
 

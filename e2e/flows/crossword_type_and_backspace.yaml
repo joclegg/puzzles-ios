@@ -1,0 +1,33 @@
+appId: com.joclegg.puzzles
+name: Crossword - typing fills the word and each backspace clears one letter
+tags:
+  - fast
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "crossword_empty"
+- waitForAnimationToEnd:
+    timeout: 1500
+- inputText: "cat"
+- assertVisible:
+    id: "cell_r1c1"
+    text: "C"
+- assertVisible:
+    id: "cell_r1c3"
+    text: "T"
+- eraseText: 1
+- assertNotVisible:
+    id: "cell_r1c3"
+    text: "T"
+- assertVisible:
+    id: "cell_r1c2"
+    text: "A"
+- eraseText: 2
+- assertNotVisible:
+    id: "cell_r1c1"
+    text: "C"
+- inputText: "C"
+- assertVisible:
+    id: "cell_r1c1"
+    text: "C"

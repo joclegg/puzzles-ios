@@ -33,7 +33,7 @@ extension GameDefinition {
 enum Games {
     static let all: [any GameDefinition.Type] = [
         SudokuGame.self, SolitaireGame.self, TwoToneGame.self, SightlinesGame.self, FiveLettersGame.self, KakuroGame.self,
-        SlideOutGame.self, WordWheelGame.self,
+        SlideOutGame.self, WordWheelGame.self, CrosswordGame.self,
     ]
 
     static func definition(for tab: SettingsTab) -> any GameDefinition.Type {

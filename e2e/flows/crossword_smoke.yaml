@@ -1,0 +1,29 @@
+appId: com.joclegg.puzzles
+name: Crossword - start a Small puzzle
+tags:
+  - fast
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "game_sudoku"
+    timeout: 120000
+- scrollUntilVisible:
+    element:
+      id: "game_crossword"
+- tapOn:
+    id: "game_crossword"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "size_11"
+- waitForAnimationToEnd:
+    timeout: 1500
+- assertVisible:
+    id: "game_title"
+    text: "Small"
+- assertVisible:
+    id: "clue_bar"
+- assertVisible:
+    id: "cell_r1c1"

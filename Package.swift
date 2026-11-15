@@ -15,6 +15,7 @@ let package = Package(
         .library(name: "KakuroEngine", targets: ["KakuroEngine"]),
         .library(name: "SlideOutEngine", targets: ["SlideOutEngine"]),
         .library(name: "WordWheelEngine", targets: ["WordWheelEngine"]),
+        .library(name: "CrosswordEngine", targets: ["CrosswordEngine"]),
     ],
     targets: [
         .target(name: "PuzzlesCore"),
@@ -37,5 +38,7 @@ let package = Package(
         .testTarget(name: "SlideOutEngineTests", dependencies: ["SlideOutEngine"]),
         .target(name: "WordWheelEngine", dependencies: ["PuzzlesCore"]),
         .testTarget(name: "WordWheelEngineTests", dependencies: ["WordWheelEngine"]),
+        .target(name: "CrosswordEngine", dependencies: ["PuzzlesCore"]),
+        .testTarget(name: "CrosswordEngineTests", dependencies: ["CrosswordEngine"]),
     ]
 )

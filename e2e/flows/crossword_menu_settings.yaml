@@ -1,0 +1,23 @@
+appId: com.joclegg.puzzles
+name: Crossword - Settings in the game menu opens Crossword's settings
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "crossword_empty"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "game_menu"
+- tapOn:
+    id: "menu_settings"
+- waitForAnimationToEnd:
+    timeout: 1500
+- assertVisible:
+    id: "setting_skip_filled_cells"
+- tapOn:
+    id: "back"
+- waitForAnimationToEnd:
+    timeout: 1500
+- assertVisible:
+    id: "game_menu"
