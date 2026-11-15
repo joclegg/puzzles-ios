@@ -3,6 +3,8 @@ name: Daily puzzle - starts one level's puzzle, and resumes it the same day
 ---
 - launchApp:
     clearState: true
+    arguments:
+      fixture: "sudoku_daily_medium"
 - waitForAnimationToEnd:
     timeout: 1500
 - scrollUntilVisible:

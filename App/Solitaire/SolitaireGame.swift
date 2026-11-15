@@ -52,6 +52,15 @@ enum SolitaireGame: GameDefinition {
     }
 
     @MainActor
+    static func fixtureBank(_ name: String) -> [String: [String]]? {
+        #if DEBUG
+            return SolitaireFixtures.bank(name)
+        #else
+            return nil
+        #endif
+    }
+
+    @MainActor
     static func fixture(_ name: String) -> AnyView? {
         #if DEBUG
             guard let deal = SolitaireFixtures.deal(name) else {
@@ -66,6 +75,21 @@ enum SolitaireGame: GameDefinition {
 
 #if DEBUG
     enum SolitaireFixtures {
+        static func bank(_ name: String) -> [String: [String]]? {
+            switch name {
+            case "simple", "one_move_to_win", "solitaire_home":
+                [:]
+            case "solitaire_draw_one":
+                ["solitaire/drawOne_down.txt": ["-7062258826959519562"]]
+            case "solitaire_draw_three":
+                ["solitaire/drawThree_down.txt": ["-6303393441761105619"]]
+            case "solitaire_reverse":
+                ["solitaire/drawOne_up.txt": ["9007593250609337349"]]
+            default:
+                nil
+            }
+        }
+
         static func deal(_ name: String) -> DealRef? {
             switch name {
             case "simple":

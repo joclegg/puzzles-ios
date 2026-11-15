@@ -5,6 +5,8 @@ tags:
 ---
 - launchApp:
     clearState: true
+    arguments:
+      fixture: "five_letters_daily"
 - extendedWaitUntil:
     visible:
       id: "game_five_letters"

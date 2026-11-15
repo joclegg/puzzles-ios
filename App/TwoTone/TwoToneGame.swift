@@ -36,6 +36,20 @@ enum TwoToneGame: GameDefinition {
     }
 
     @MainActor
+    static func fixtureBank(_ name: String) -> [String: [String]]? {
+        #if DEBUG
+            switch name {
+            case "two_tone_one_left", "two_tone_two_left", "two_tone_home":
+                return [:]
+            default:
+                return nil
+            }
+        #else
+            return nil
+        #endif
+    }
+
+    @MainActor
     static func fixture(_ name: String) -> AnyView? {
         #if DEBUG
             guard let ref = fixtureRef(name) else {

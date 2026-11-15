@@ -3,6 +3,8 @@ name: The daily deal opens and comes back to the same game
 ---
 - launchApp:
     clearState: true
+    arguments:
+      fixture: "solitaire_draw_one"
 - waitForAnimationToEnd:
     timeout: 1500
 - scrollUntilVisible:

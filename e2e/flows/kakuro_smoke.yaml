@@ -5,6 +5,8 @@ tags:
 ---
 - launchApp:
     clearState: true
+    arguments:
+      fixture: "kakuro_size_8"
 - extendedWaitUntil:
     visible:
       id: "game_kakuro"

@@ -1,0 +1,26 @@
+appId: com.joclegg.puzzles
+name: Crossword - with reveal allowed, Reveal word fills the current word
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fixture: "crossword_empty"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "game_menu"
+- tapOn:
+    id: "menu_settings"
+- tapOn:
+    id: "setting_allow_reveal"
+- tapOn:
+    id: "back"
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "game_menu"
+- tapOn:
+    id: "menu_reveal_word"
+- assertVisible:
+    id: "cell_r1c2"
+    text: "A"

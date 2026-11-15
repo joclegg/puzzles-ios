@@ -5,6 +5,8 @@ tags:
 ---
 - launchApp:
     clearState: true
+    arguments:
+      fixture: "sudoku_level_easy"
 - extendedWaitUntil:
     visible:
       id: "game_sudoku"

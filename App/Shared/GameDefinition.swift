@@ -14,6 +14,7 @@ protocol GameDefinition {
     static var dailies: DailyProvider<DailyOption> { get }
     static func home() -> AnyView
     static func fixture(_ name: String) -> AnyView?
+    static func fixtureBank(_ name: String) -> [String: [String]]?
     static func reloadAfterSync()
 }
 
@@ -33,7 +34,7 @@ extension GameDefinition {
 enum Games {
     static let all: [any GameDefinition.Type] = [
         SudokuGame.self, SolitaireGame.self, TwoToneGame.self, SightlinesGame.self, FiveLettersGame.self, KakuroGame.self,
-        SlideOutGame.self, WordWheelGame.self,
+        SlideOutGame.self, WordWheelGame.self, CrosswordGame.self,
     ]
 
     static func definition(for tab: SettingsTab) -> any GameDefinition.Type {

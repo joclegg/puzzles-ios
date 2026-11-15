@@ -5,6 +5,8 @@ tags:
 ---
 - launchApp:
     clearState: true
+    arguments:
+      fixture: "solitaire_draw_one"
 - waitForAnimationToEnd:
     timeout: 1500
 - scrollUntilVisible:

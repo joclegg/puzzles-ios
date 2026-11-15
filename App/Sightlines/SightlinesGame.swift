@@ -47,6 +47,20 @@ enum SightlinesGame: GameDefinition {
     }
 
     @MainActor
+    static func fixtureBank(_ name: String) -> [String: [String]]? {
+        #if DEBUG
+            switch name {
+            case "sightlines_one_left", "sightlines_two_left", "sightlines_home":
+                return [:]
+            default:
+                return nil
+            }
+        #else
+            return nil
+        #endif
+    }
+
+    @MainActor
     static func fixture(_ name: String) -> AnyView? {
         #if DEBUG
             guard let ref = fixtureRef(name) else {

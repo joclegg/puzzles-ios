@@ -4,6 +4,7 @@ name: Finishing a number by hand disables its button
 - launchApp:
     clearState: true
     arguments:
+      fixture: "sudoku_home"
       helpers: "on"
 - waitForAnimationToEnd:
     timeout: 1500

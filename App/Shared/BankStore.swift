@@ -18,7 +18,9 @@ actor BankStore {
     private var cache: [String: [String]] = [:]
     private var applied: Manifest?
 
-    init(directory: URL = URL.applicationSupportDirectory.appending(path: "puzzles-data")) {
+    static let defaultDirectory = URL.applicationSupportDirectory.appending(path: "puzzles-data")
+
+    init(directory: URL = BankStore.defaultDirectory) {
         self.directory = directory
     }
 
@@ -27,7 +29,6 @@ actor BankStore {
     }
 
     func isReady(prefixes: [String]) -> Bool {
-        seedFromHost()
         guard let manifest = appliedManifest() else {
             return false
         }
@@ -44,7 +45,11 @@ actor BankStore {
     }
 
     func refresh() async throws {
-        seedFromHost()
+        #if DEBUG
+            if UserDefaults.standard.bool(forKey: Self.fixtureBanksKey) {
+                return
+            }
+        #endif
         if let updating {
             return try await updating.value
         }
@@ -103,25 +108,12 @@ actor BankStore {
         if let cached = cache[path] {
             return cached
         }
-        seedFromHost()
         let text = try String(contentsOf: directory.appending(path: path), encoding: .utf8)
         let lines = text.split(whereSeparator: \.isNewline).map(String.init)
         if retain {
             cache[path] = lines
         }
         return lines
-    }
-
-    private func seedFromHost() {
-        #if DEBUG && targetEnvironment(simulator)
-            let source = URL(filePath: "/tmp/puzzles-e2e-banks")
-            let manager = FileManager.default
-            guard Self.exists(source), !Self.exists(directory) else {
-                return
-            }
-            try? manager.createDirectory(at: directory.deletingLastPathComponent(), withIntermediateDirectories: true)
-            try? manager.copyItem(at: source, to: directory)
-        #endif
     }
 
     private static func download(path: String, sha256: String, into directory: URL) async throws {
@@ -145,3 +137,46 @@ actor BankStore {
         SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
     }
 }
+
+#if DEBUG
+    extension BankStore {
+        private struct FixtureEntry: Encodable {
+            let sha256: String
+            let lines: Int
+        }
+
+        static let fixtureBanksKey = "fixture_banks"
+
+        @MainActor
+        static func seedFixture(defaults: UserDefaults = .standard, directory: URL = BankStore.defaultDirectory) {
+            guard let name = defaults.string(forKey: "fixture") else {
+                return
+            }
+            let files = Games.all.lazy.compactMap { $0.fixtureBank(name) }.first ?? [:]
+            do {
+                try writeFixture(files, into: directory)
+                defaults.set(true, forKey: fixtureBanksKey)
+            } catch {
+                ErrorLog.report(error, "Fixture banks")
+            }
+        }
+
+        static func writeFixture(_ files: [String: [String]], into directory: URL) throws {
+            let manager = FileManager.default
+            if exists(directory) {
+                try manager.removeItem(at: directory)
+            }
+            var entries: [String: FixtureEntry] = [:]
+            for (path, lines) in files {
+                let data = Data(lines.map { $0 + "\n" }.joined().utf8)
+                let target = directory.appending(path: path)
+                try manager.createDirectory(at: target.deletingLastPathComponent(), withIntermediateDirectories: true)
+                try data.write(to: target, options: .atomic)
+                entries[path] = FixtureEntry(sha256: hash(data), lines: lines.count)
+            }
+            try manager.createDirectory(at: directory, withIntermediateDirectories: true)
+            let manifest = try JSONEncoder().encode(["files": entries])
+            try manifest.write(to: directory.appending(path: "manifest.json"), options: .atomic)
+        }
+    }
+#endif

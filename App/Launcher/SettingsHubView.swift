@@ -12,6 +12,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
     case kakuro = "Kakuro"
     case slideOut = "Slide Out"
     case wordWheel = "Word Wheel"
+    case crossword = "Crossword"
 
     var id: Self {
         self
@@ -37,6 +38,8 @@ enum SettingsTab: String, CaseIterable, Identifiable {
             "slide_out"
         case .wordWheel:
             "word_wheel"
+        case .crossword:
+            "crossword"
         }
     }
 
@@ -59,6 +62,8 @@ enum SettingsTab: String, CaseIterable, Identifiable {
                 (0xC27A2C, 0xE3A85C)
             case .wordWheel:
                 (0x4F5BD5, 0x939BFF)
+            case .crossword:
+                (0x2E7D9A, 0x6FB8D2)
             }
         return Color(
             uiColor: UIColor { traits in
@@ -171,6 +176,8 @@ struct SettingsHubView: View {
             SlideOutSettingsView {}
         case .wordWheel:
             WordWheelSettingsView()
+        case .crossword:
+            CrosswordSettingsView(onBack: {})
         }
     }
 }

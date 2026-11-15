@@ -225,6 +225,12 @@ enum GameSyncSources {
                     ("showTutorial", "show_tutorial", true), ("allowReveal", "allow_reveal", false),
                 ])
         ),
+        SettingsBridge(
+            game: "crossword",
+            fields: CrosswordToggle.allCases.map { SettingField.bool($0.jsonName, $0.key, $0.defaultValue) } + [
+                .hintFill(CrosswordKeys.hintFill)
+            ]
+        ),
     ]
 
     private static var sudokuBridge: SettingsBridge {

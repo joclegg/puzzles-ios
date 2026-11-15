@@ -4,6 +4,7 @@ name: Settings - dark theme, hiding the timer and mistake counter, and choosing 
 - launchApp:
     clearState: true
     arguments:
+      fixture: "sudoku_home"
       helpers: "on"
 - waitForAnimationToEnd:
     timeout: 1500

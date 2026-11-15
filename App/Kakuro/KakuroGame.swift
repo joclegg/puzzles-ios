@@ -55,6 +55,22 @@ enum KakuroGame: GameDefinition {
     }
 
     @MainActor
+    static func fixtureBank(_ name: String) -> [String: [String]]? {
+        #if DEBUG
+            switch name {
+            case "kakuro_empty", "kakuro_one_left", "kakuro_home":
+                return [:]
+            case "kakuro_size_8":
+                return ["kakuro/8.txt": ["8;0000000000796000079820000180490000041200000970130000537100003120;"]]
+            default:
+                return nil
+            }
+        #else
+            return nil
+        #endif
+    }
+
+    @MainActor
     static func fixture(_ name: String) -> AnyView? {
         #if DEBUG
             guard let ref = fixtureRef(name) else {

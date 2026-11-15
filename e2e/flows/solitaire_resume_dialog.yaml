@@ -3,6 +3,8 @@ name: Tapping New game with a game in progress offers Resume or New deal
 ---
 - launchApp:
     clearState: true
+    arguments:
+      fixture: "solitaire_draw_one"
 - waitForAnimationToEnd:
     timeout: 1500
 - scrollUntilVisible:

@@ -41,6 +41,15 @@ enum WordWheelGame: GameDefinition {
     }
 
     @MainActor
+    static func fixtureBank(_ name: String) -> [String: [String]]? {
+        #if DEBUG
+            return WordWheelFixtures.bank(name)
+        #else
+            return nil
+        #endif
+    }
+
+    @MainActor
     static func fixture(_ name: String) -> AnyView? {
         #if DEBUG
             guard let ref = WordWheelFixtures.puzzle(name) else {
@@ -55,6 +64,27 @@ enum WordWheelGame: GameDefinition {
 
 #if DEBUG
     enum WordWheelFixtures {
+        static func bank(_ name: String) -> [String: [String]]? {
+            switch name {
+            case "word_wheel_two_words":
+                ["wordwheel/valid.txt": ["CAT"]]
+            case "word_wheel_five_letters":
+                [
+                    "wordwheel/five.txt": ["ERYEV;EVERY@2,0,A|VERY@1,0,D|EVER@2,2,D|YER@0,3,D|EVE@4,2,A|EYE@0,2,A"],
+                    "wordwheel/valid.txt": [],
+                ]
+            case "word_wheel_six_letters":
+                [
+                    "wordwheel/six.txt": [
+                        "EDPARA;PARADE@3,3,A|DRAPE@0,3,D|DARE@1,5,D|AREA@1,8,D|DEAR@1,0,A|READ@2,8,A|PER@0,1,D|ARE@4,1,A"
+                    ],
+                    "wordwheel/valid.txt": [],
+                ]
+            default:
+                nil
+            }
+        }
+
         static func puzzle(_ name: String) -> PuzzleRef? {
             switch name {
             case "word_wheel_two_words":

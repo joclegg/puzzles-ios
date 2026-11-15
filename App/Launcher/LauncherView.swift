@@ -68,6 +68,12 @@ struct LauncherView: View {
             light: 0x4F5BD5, dark: 0x939BFF,
             home: WordWheelGame.home, fixture: WordWheelGame.fixture, banks: ["wordwheel/"]
         ),
+        Entry(
+            id: "crossword", name: "Crossword", detail: "A British quick crossword, a new grid every day",
+            icon: AnyView(CrosswordGameIcon()),
+            light: 0x2E7D9A, dark: 0x6FB8D2,
+            home: CrosswordGame.home, fixture: CrosswordGame.fixture, banks: ["crossword/"]
+        ),
     ]
 
     @State private var router = DailyRouter.shared

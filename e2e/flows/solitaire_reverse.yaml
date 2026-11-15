@@ -4,6 +4,7 @@ name: Turning on Reverse deals reverse games
 - launchApp:
     clearState: true
     arguments:
+      fixture: "solitaire_reverse"
       helpers: "on"
 - waitForAnimationToEnd:
     timeout: 1500
