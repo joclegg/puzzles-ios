@@ -97,9 +97,9 @@ enum FiveLettersGame: GameDefinition {
         #if DEBUG
             switch name {
             case "five_letters_crane":
-                return ["words/answers.txt": ["CRANE"], "words/guesses.txt": ["TRACE"]]
+                return ["words/answers.txt": ["crane"], "words/guesses.txt": ["trace"]]
             case "five_letters_daily":
-                return ["words/answers.txt": ["CRANE"], "words/guesses.txt": ["ADIEU"]]
+                return ["words/answers.txt": ["crane"], "words/guesses.txt": ["adieu"]]
             case "five_letters_home":
                 return [:]
             default:

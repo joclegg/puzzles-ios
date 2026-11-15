@@ -26,6 +26,8 @@ tags:
 - assertVisible:
     id: "letter_r1c1"
     text: "T"
+- waitForAnimationToEnd:
+    timeout: 3000
 - tapOn:
     id: "key_C"
 - tapOn:
