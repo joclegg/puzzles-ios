@@ -20,6 +20,7 @@ tags:
 - launchApp:
     clearState: true
     arguments:
+      fixture: "sudoku_home"
       helpers: "on"
 - waitForAnimationToEnd:
     timeout: 1500

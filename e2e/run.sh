@@ -50,8 +50,6 @@ fi
 xcrun simctl boot "$UDID" 2>/dev/null || true
 xcrun simctl bootstatus "$UDID" -b >/dev/null
 
-e2e/fetch-banks.sh
-
 APP="${E2E_APP_PATH:-}"
 if [[ -z "$APP" ]]; then
   xcodebuild -project Puzzles.xcodeproj -scheme PuzzlesApp \

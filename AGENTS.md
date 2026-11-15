@@ -14,12 +14,12 @@ Puzzles for iOS: eight games (Sudoku, Solitaire, Two Tone, Sightlines, Five Lett
 - `App/Launcher/`: the launcher, the settings hub, the all-games history, today's dailies and the daily calendar.
 - `App/Sync/`: `SyncCenter`, sign-in, `GameSyncSource` and the settings bridges.
 - `App/<Game>/`: one game, with the same files in every game:
-  - `<Game>Game.swift`: its `GameDefinition` (tab, sync key, store context, dailies, home and debug fixtures)
+  - `<Game>Game.swift`: its `GameDefinition` (tab, sync key, store context, dailies, home, debug fixtures and their banks)
   - `<Game>Store.swift`: its SwiftData `@Model` record and `@Observable` store; Sudoku keeps its records in `SudokuRecords.swift`
   - `<Game>GameModel.swift`: the `@Observable` model behind one game in play
   - `<Game>GameView.swift`, `<Game>BoardView.swift`, `<Game>HomeView.swift`, `<Game>StatsView.swift` (stats and history), `<Game>SettingsView.swift`, `<Game>Theme.swift`
   - Extra files only for what one game alone has, such as `SudokuEntryView.swift` or `WordWheelHelp.swift`
-- `e2e/flows/`: Maestro flows, one behaviour per file, named `<game>_<behaviour>.yaml`. `e2e/run.sh` builds, installs and runs them on one simulator (`--fast`, `--part I/N`, a flow path, `E2E_DEVICE`, `E2E_APP_PATH`). `e2e/partition.sh` splits flows by the seconds in `e2e/flow-times.txt`; `e2e/fetch-banks.sh` puts the banks in `/tmp/puzzles-e2e-banks` for debug simulator builds.
+- `e2e/flows/`: Maestro flows, one behaviour per file, named `<game>_<behaviour>.yaml`. `e2e/run.sh` builds, installs and runs them on one simulator (`--fast`, `--part I/N`, a flow path, `E2E_DEVICE`, `E2E_APP_PATH`). `e2e/partition.sh` splits flows by the seconds in `e2e/flow-times.txt`.
 - `scripts/verify-no-comments.sh`: the no-comments check.
 - `Puzzles.xcodeproj`: the app target, using a synchronised `App` folder, so new files in `App/` need no project change.
 - `Puzzles-Info.plist`: only the `com.joclegg.puzzles://` URL scheme and `ITSAppUsesNonExemptEncryption`; the rest is generated.
@@ -47,6 +47,7 @@ Puzzles for iOS: eight games (Sudoku, Solitaire, Two Tone, Sightlines, Five Lett
 - MUST keep sign-in optional, so every game plays signed out.
 - MUST give every element a flow touches an `accessibilityIdentifier` using Android's test tag, and MUST NOT change an identifier a flow uses.
 - MUST keep fixtures debug-only, through the `fixture` launch argument.
+- MUST NOT let tests or flows download the published banks. Swift tests use inline puzzle lines. Every flow starts with a `fixture`, named `<game>_<purpose>` (older names stay), and each game's `fixtureBank` gives the exact bank lines (and Crossword clues) that fixture needs; `BankStore.seedFixture` writes them with a matching manifest, and debug builds launched with a fixture never download banks.
 - MUST run flows on a simulator kept for them; with Xcode 27.2 that means `DeviceHub.app` in `/Applications/Xcode.app/Contents/Applications/`, and Maestro needs Java 21.
 - MUST add new or much slower flows to `e2e/flow-times.txt` from a CI run's `[Passed]` lines.
 - MUST follow the Swift API Design Guidelines: clear names at the point of use, `UpperCamelCase` types, `lowerCamelCase` everything else, no abbreviations.

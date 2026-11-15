@@ -4,6 +4,7 @@ name: Turning off the timer in settings hides it in the game
 - launchApp:
     clearState: true
     arguments:
+      fixture: "solitaire_draw_one"
       helpers: "on"
 - waitForAnimationToEnd:
     timeout: 1500

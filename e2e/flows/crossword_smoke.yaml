@@ -5,6 +5,8 @@ tags:
 ---
 - launchApp:
     clearState: true
+    arguments:
+      fixture: "crossword_small"
 - extendedWaitUntil:
     visible:
       id: "game_sudoku"

@@ -3,6 +3,8 @@ name: Custom entry - clashes, multiple solutions, and a real puzzle
 ---
 - launchApp:
     clearState: true
+    arguments:
+      fixture: "sudoku_home"
 - waitForAnimationToEnd:
     timeout: 1500
 - scrollUntilVisible:

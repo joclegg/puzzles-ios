@@ -5,6 +5,8 @@ tags:
 ---
 - launchApp:
     clearState: true
+    arguments:
+      fixture: "sightlines_home"
 - extendedWaitUntil:
     visible:
       id: "game_sightlines"

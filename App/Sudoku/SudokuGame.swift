@@ -43,6 +43,15 @@ enum SudokuGame: GameDefinition {
     }
 
     @MainActor
+    static func fixtureBank(_ name: String) -> [String: [String]]? {
+        #if DEBUG
+            return SudokuFixtures.bank(name)
+        #else
+            return nil
+        #endif
+    }
+
+    @MainActor
     static func fixture(_ name: String) -> AnyView? {
         #if DEBUG
             guard SudokuFixtures.names.contains(name) else {

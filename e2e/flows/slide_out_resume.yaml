@@ -5,6 +5,8 @@ tags:
 ---
 - launchApp:
     clearState: true
+    arguments:
+      fixture: "slide_out_level_easy"
 - extendedWaitUntil:
     visible:
       id: "game_slide_out"

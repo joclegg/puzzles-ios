@@ -5,6 +5,8 @@ tags:
 ---
 - launchApp:
     clearState: true
+    arguments:
+      fixture: "two_tone_home"
 - waitForAnimationToEnd:
     timeout: 1500
 - scrollUntilVisible:

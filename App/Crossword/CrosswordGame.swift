@@ -55,6 +55,59 @@ enum CrosswordGame: GameDefinition {
     }
 
     @MainActor
+    static func fixtureBank(_ name: String) -> [String: [String]]? {
+        #if DEBUG
+            switch name {
+            case "crossword_empty", "crossword_one_left":
+                return [
+                    "crossword/clues.txt": [
+                        "BOW;Ribbon knot",
+                        "CAB;Taxi",
+                        "CAT;Feline pet",
+                        "TOW;Pull",
+                    ]
+                ]
+            case "crossword_small":
+                return [
+                    "crossword/small.txt": [
+                        "11;MISSTEP#DENE#I#O#Y#R#ORID#OUTCASTM#L#K#H#N##AGED#LOCKETI###S#N###HDEDUCT#ISLE##R#R#N#T#RCHATEAU#AHAO#W#A#T#I#PTEN#MASONRY"
+                    ],
+                    "crossword/clues.txt": [
+                        "AGED;Elderly",
+                        "AHA;Cry of discovery",
+                        "CHATEAU;French castle",
+                        "COT;Baby's bed",
+                        "DEDUCT;Subtract",
+                        "DEN;Lair",
+                        "DRANK;Swallowed liquid",
+                        "DRAWN;Haggard",
+                        "ISLE;Island",
+                        "LOCKET;Pendant",
+                        "MASONRY;Stonework",
+                        "MERMAID;Mythical sea maiden",
+                        "MISSTEP;Blunder",
+                        "NOT;In no way",
+                        "NUTS;Crazy",
+                        "OUTCAST;Pariah",
+                        "PYTHON;Large snake",
+                        "RID;Free",
+                        "SCREAM;Shriek",
+                        "SIDLE;Edge furtively",
+                        "STAIN;Mark",
+                        "TEN;Number of commandments",
+                        "THERAPY;Treatment",
+                        "TOOK;Grabbed",
+                    ],
+                ]
+            default:
+                return nil
+            }
+        #else
+            return nil
+        #endif
+    }
+
+    @MainActor
     static func fixture(_ name: String) -> AnyView? {
         #if DEBUG
             guard let ref = fixtureRef(name) else {

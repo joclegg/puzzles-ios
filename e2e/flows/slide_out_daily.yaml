@@ -3,6 +3,8 @@ name: Slide Out - a daily opens, and reopens the same game
 ---
 - launchApp:
     clearState: true
+    arguments:
+      fixture: "slide_out_daily_beginner"
 - extendedWaitUntil:
     visible:
       id: "game_slide_out"

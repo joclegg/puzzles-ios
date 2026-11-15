@@ -93,6 +93,24 @@ enum FiveLettersGame: GameDefinition {
     }
 
     @MainActor
+    static func fixtureBank(_ name: String) -> [String: [String]]? {
+        #if DEBUG
+            switch name {
+            case "five_letters_crane":
+                return ["words/answers.txt": ["CRANE"], "words/guesses.txt": ["TRACE"]]
+            case "five_letters_daily":
+                return ["words/answers.txt": ["CRANE"], "words/guesses.txt": ["ADIEU"]]
+            case "five_letters_home":
+                return [:]
+            default:
+                return nil
+            }
+        #else
+            return nil
+        #endif
+    }
+
+    @MainActor
     static func fixture(_ name: String) -> AnyView? {
         #if DEBUG
             switch name {

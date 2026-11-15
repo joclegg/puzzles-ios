@@ -4,6 +4,7 @@ name: Kakuro - with Number first on, picking a digit then a cell fills it
 - launchApp:
     clearState: true
     arguments:
+      fixture: "kakuro_home"
       helpers: "on"
 - extendedWaitUntil:
     visible:

@@ -44,6 +44,15 @@ enum SlideOutGame: GameDefinition {
     }
 
     @MainActor
+    static func fixtureBank(_ name: String) -> [String: [String]]? {
+        #if DEBUG
+            return SlideOutFixtures.bank(name)
+        #else
+            return nil
+        #endif
+    }
+
+    @MainActor
     static func fixture(_ name: String) -> AnyView? {
         #if DEBUG
             guard let ref = SlideOutFixtures.puzzle(name) else {

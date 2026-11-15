@@ -4,6 +4,7 @@ name: Daily calendar - choosing a level for today opens its game
 - launchApp:
     clearState: true
     arguments:
+      fixture: "sudoku_daily_fast"
       helpers: "on"
 - waitForAnimationToEnd:
     timeout: 1500

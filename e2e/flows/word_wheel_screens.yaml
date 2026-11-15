@@ -4,6 +4,7 @@ name: Word Wheel - rules, settings and the walkthrough
 - launchApp:
     clearState: true
     arguments:
+      fixture: "word_wheel_five_letters"
       helpers: "on"
 - extendedWaitUntil:
     visible:

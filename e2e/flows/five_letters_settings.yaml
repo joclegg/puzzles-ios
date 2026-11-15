@@ -3,6 +3,8 @@ name: Five Letters - hard mode and high contrast stay on, and hard mode marks ne
 ---
 - launchApp:
     clearState: true
+    arguments:
+      fixture: "five_letters_home"
 - waitForAnimationToEnd:
     timeout: 1500
 - scrollUntilVisible:
