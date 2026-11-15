@@ -59,6 +59,49 @@ struct GameStateTests {
         #expect(third.selected == 0)
     }
 
+    @Test("given a jump over a full clue when backspace follows then the letter just typed clears")
+    func backspaceAfterJumpOverFullClue() {
+        // Arrange
+        var state = GameState.start(puzzle: small)
+        state.entries = Array("CA.A#.BOW")
+        state = state.tapCell(2)
+
+        // Act
+        let jumped = state.type("T")
+        let cleared = jumped.backspace()
+        let again = cleared.backspace()
+
+        // Assert
+        #expect(jumped.currentWord?.label == "2 Down")
+        #expect(jumped.selected == 5)
+        #expect(cleared.selected == 2)
+        #expect(cleared.isAcross)
+        #expect(cleared.entries[2] == emptyMark)
+        #expect(cleared.jumpedFrom == nil)
+        #expect(again.selected == 1)
+        #expect(again.entries[1] == emptyMark)
+    }
+
+    @Test("given a jump when any other input comes before backspace then backspace follows the normal rules")
+    func otherInputForgetsJump() {
+        // Arrange
+        var state = GameState.start(puzzle: small)
+        state.entries = Array("CA.A#O..W")
+        let jumped = state.tapCell(2).type("T")
+
+        // Act
+        let afterTap = jumped.tapCell(7).backspace()
+        let afterArrow = jumped.arrow(.right).backspace()
+
+        // Assert
+        #expect(jumped.selected == 6)
+        #expect(jumped.jumpedFrom == 2)
+        #expect(afterTap.selected == 6)
+        #expect(afterTap.entries[2] == "T")
+        #expect(afterArrow.selected == 6)
+        #expect(afterArrow.entries[2] == "T")
+    }
+
     @Test("given a filled cell when backspace is pressed then it clears and the cursor stays")
     func backspaceClearsInPlace() {
         // Arrange

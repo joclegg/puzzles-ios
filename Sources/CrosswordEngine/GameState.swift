@@ -77,6 +77,8 @@ public struct GameState: Sendable, Equatable {
     public var showMistakes: Bool
     public var mistakes: Int
     public var hints: Int
+    public var jumpedFrom: Int?
+    public var jumpedAcross = true
 
     public init(
         puzzle: Puzzle,
@@ -151,12 +153,12 @@ public struct GameState: Sendable, Equatable {
         word.cells.allSatisfy { entries[$0] != emptyMark }
     }
 
-    public func tapCell(_ cell: Int) -> GameState {
+    private func tapCellMoving(_ cell: Int) -> GameState {
         guard puzzle.solution.indices.contains(cell), puzzle.isWhite[cell] else {
             return self
         }
         if selected == cell {
-            return toggleDirection()
+            return toggleDirectionMoving()
         }
         var next = self
         next.selected = cell
@@ -166,7 +168,7 @@ public struct GameState: Sendable, Equatable {
         return next
     }
 
-    public func toggleDirection() -> GameState {
+    private func toggleDirectionMoving() -> GameState {
         guard let selected, wordIndex(at: selected, across: !isAcross) != nil else {
             return self
         }
@@ -175,7 +177,7 @@ public struct GameState: Sendable, Equatable {
         return next
     }
 
-    public func arrow(_ arrow: Arrow) -> GameState {
+    private func arrowMoving(_ arrow: Arrow) -> GameState {
         guard let selected else {
             return self
         }
@@ -210,15 +212,15 @@ public struct GameState: Sendable, Equatable {
         }
     }
 
-    public func nextClue() -> GameState {
+    private func nextClueMoving() -> GameState {
         stepClue(by: 1)
     }
 
-    public func previousClue() -> GameState {
+    private func previousClueMoving() -> GameState {
         stepClue(by: -1)
     }
 
-    public func selectWord(_ index: Int) -> GameState {
+    private func selectWordMoving(_ index: Int) -> GameState {
         guard puzzle.words.indices.contains(index) else {
             return self
         }
@@ -231,6 +233,7 @@ public struct GameState: Sendable, Equatable {
             return self
         }
         var next = set(cell: selected, to: letter)
+        next.jumpedFrom = nil
         if next.showMistakes && letter != puzzle.solution[selected] && entries[selected] != letter {
             next.mistakes += 1
         }
@@ -246,7 +249,10 @@ public struct GameState: Sendable, Equatable {
         }
         if next.isComplete(word) {
             if let following = next.nextEmptyWord(after: wordIndex) {
-                return next.landOn(puzzle.words[following])
+                var landed = next.landOn(puzzle.words[following])
+                landed.jumpedFrom = selected
+                landed.jumpedAcross = word.isAcross
+                return landed
             }
             return next
         }
@@ -257,6 +263,13 @@ public struct GameState: Sendable, Equatable {
     public func backspace() -> GameState {
         guard let selected, !isSolved, let wordIndex = currentWordIndex else {
             return self
+        }
+        if let jumpedFrom {
+            var next = self
+            next.jumpedFrom = nil
+            next.selected = jumpedFrom
+            next.isAcross = jumpedAcross
+            return next.set(cell: jumpedFrom, to: emptyMark)
         }
         if entries[selected] != emptyMark {
             return set(cell: selected, to: emptyMark)
@@ -279,7 +292,7 @@ public struct GameState: Sendable, Equatable {
         return next.set(cell: last, to: emptyMark)
     }
 
-    public func undo() -> GameState {
+    private func undoMoving() -> GameState {
         guard let last = changes.last, !isSolved else {
             return self
         }
@@ -291,7 +304,7 @@ public struct GameState: Sendable, Equatable {
         return next.facingWord(at: last.cell)
     }
 
-    public func redo() -> GameState {
+    private func redoMoving() -> GameState {
         guard let change = undone.last, !isSolved else {
             return self
         }
@@ -303,7 +316,7 @@ public struct GameState: Sendable, Equatable {
         return next.facingWord(at: change.cell)
     }
 
-    public func revealLetter() -> GameState {
+    private func revealLetterMoving() -> GameState {
         guard let selected, !isSolved, entries[selected] != puzzle.solution[selected] else {
             return self
         }
@@ -312,7 +325,7 @@ public struct GameState: Sendable, Equatable {
         return next
     }
 
-    public func revealWord() -> GameState {
+    private func revealWordMoving() -> GameState {
         guard let word = currentWord, !isSolved else {
             return self
         }
@@ -328,7 +341,7 @@ public struct GameState: Sendable, Equatable {
         return next
     }
 
-    public func revealSolution() -> GameState {
+    private func revealSolutionMoving() -> GameState {
         var next = self
         next.entries = puzzle.solution
         next.selected = nil
@@ -339,6 +352,72 @@ public struct GameState: Sendable, Equatable {
         var next = GameState.start(puzzle: puzzle)
         next.skipFilledCells = skipFilledCells
         next.showMistakes = showMistakes
+        return next
+    }
+
+    public func tapCell(_ cell: Int) -> GameState {
+        var next = tapCellMoving(cell)
+        next.jumpedFrom = nil
+        return next
+    }
+
+    public func toggleDirection() -> GameState {
+        var next = toggleDirectionMoving()
+        next.jumpedFrom = nil
+        return next
+    }
+
+    public func arrow(_ arrow: Arrow) -> GameState {
+        var next = arrowMoving(arrow)
+        next.jumpedFrom = nil
+        return next
+    }
+
+    public func selectWord(_ index: Int) -> GameState {
+        var next = selectWordMoving(index)
+        next.jumpedFrom = nil
+        return next
+    }
+
+    public func undo() -> GameState {
+        var next = undoMoving()
+        next.jumpedFrom = nil
+        return next
+    }
+
+    public func redo() -> GameState {
+        var next = redoMoving()
+        next.jumpedFrom = nil
+        return next
+    }
+
+    public func revealLetter() -> GameState {
+        var next = revealLetterMoving()
+        next.jumpedFrom = nil
+        return next
+    }
+
+    public func revealWord() -> GameState {
+        var next = revealWordMoving()
+        next.jumpedFrom = nil
+        return next
+    }
+
+    public func revealSolution() -> GameState {
+        var next = revealSolutionMoving()
+        next.jumpedFrom = nil
+        return next
+    }
+
+    public func nextClue() -> GameState {
+        var next = nextClueMoving()
+        next.jumpedFrom = nil
+        return next
+    }
+
+    public func previousClue() -> GameState {
+        var next = previousClueMoving()
+        next.jumpedFrom = nil
         return next
     }
 
