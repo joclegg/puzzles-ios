@@ -147,7 +147,7 @@ struct CrosswordGameIcon: View {
             let cell = size.width / 3
             for (index, isBlock) in Self.pattern.enumerated() {
                 let rect = CGRect(x: CGFloat(index % 3) * cell, y: CGFloat(index / 3) * cell, width: cell, height: cell)
-                context.fill(Path(rect), with: .color(isBlock ? colors.block : colors.background))
+                context.fill(Path(rect), with: .color(isBlock ? colors.blockMark : colors.background))
             }
             var lines = Path()
             for line in 0...3 {

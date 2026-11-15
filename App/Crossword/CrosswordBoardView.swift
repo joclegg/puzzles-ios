@@ -26,7 +26,7 @@ struct CrosswordBoardView: View {
                                 if game.puzzle.isWhite[cell] {
                                     whiteCell(cell, row: row, col: col, side: side, wrong: wrong, word: word)
                                 } else {
-                                    colors.block
+                                    colors.blockMark
                                 }
                             }
                             .padding(0.5)

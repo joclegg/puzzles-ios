@@ -50,7 +50,7 @@ struct CrosswordHistoryView: View {
                 CrosswordScreenTitle(title: "History", onBack: onBack)
             },
             chip: chip,
-            emptyMark: {
+            empty: {
                 HistoryEmptyState(accent: accent)
                 Spacer()
             },
