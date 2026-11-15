@@ -34,6 +34,9 @@ struct CrosswordSettingsView: View {
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .contentShape(Rectangle())
+                            .onTapGesture { hintFill.toggle() }
                         }
                         .tint(accent)
                         .accessibilityIdentifier("setting_hint_fill")
