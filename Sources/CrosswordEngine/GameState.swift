@@ -425,7 +425,7 @@ public struct GameState: Sendable, Equatable {
         across ? puzzle.acrossWord[cell] : puzzle.downWord[cell]
     }
 
-    private func facingWord(at cell: Int) -> GameState {
+    func facingWord(at cell: Int) -> GameState {
         guard wordIndex(at: cell, across: isAcross) == nil else {
             return self
         }
@@ -462,7 +462,7 @@ public struct GameState: Sendable, Equatable {
         return next
     }
 
-    private func set(cell: Int, to value: Character) -> GameState {
+    func set(cell: Int, to value: Character) -> GameState {
         guard entries[cell] != value else {
             return self
         }

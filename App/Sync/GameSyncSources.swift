@@ -227,7 +227,9 @@ enum GameSyncSources {
         ),
         SettingsBridge(
             game: "crossword",
-            fields: CrosswordToggle.allCases.map { SettingField.bool($0.jsonName, $0.key, $0.defaultValue) }
+            fields: CrosswordToggle.allCases.map { SettingField.bool($0.jsonName, $0.key, $0.defaultValue) } + [
+                .hintFill(CrosswordKeys.hintFill)
+            ]
         ),
     ]
 

@@ -4,6 +4,8 @@ struct CrosswordSettingsView: View {
     let onBack: () -> Void
 
     @Environment(\.colorScheme) private var scheme
+    @AppStorage(CrosswordKeys.hintFill) private var hintFill = false
+    @AppStorage(CrosswordToggle.showHints.key) private var showHints = CrosswordToggle.showHints.defaultValue
 
     private var accent: Color {
         CrosswordColors.of(scheme).accent
@@ -20,9 +22,22 @@ struct CrosswordSettingsView: View {
                     Text("Helpers").font(.headline)
                     CrosswordToggleRow(toggle: .showMistakes, title: "Show mistakes", detail: "Colour wrong letters red.")
                     CrosswordToggleRow(toggle: .showTimer, title: "Show the timer")
+                    CrosswordToggleRow(toggle: .showHints, title: "Hints", detail: "Show the hint button.")
                     CrosswordToggleRow(
                         toggle: .allowReveal, title: "Reveal",
                         detail: "Offer Reveal letter, Reveal word and Reveal puzzle in the game menu.")
+                    if showHints {
+                        Toggle(isOn: $hintFill) {
+                            VStack(alignment: .leading) {
+                                Text("Hints fill the answer in")
+                                Text("Off: a hint points at the next letter and says why.")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        .tint(accent)
+                        .accessibilityIdentifier("setting_hint_fill")
+                    }
                 }
                 .padding(16)
                 .modifier(CrosswordTileStyle(accent: accent, corner: 12, fill: .clear))

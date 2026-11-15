@@ -38,6 +38,7 @@ struct CrosswordGameView: View {
                     VStack(spacing: 8) {
                         board
                         clueBar
+                        hintMessage
                     }
                     clueLists
                 }
@@ -46,6 +47,7 @@ struct CrosswordGameView: View {
             } else {
                 board.padding(.horizontal, 8).padding(.top, 8).layoutPriority(1)
                 clueBar.padding(.horizontal, 8).padding(.top, 8)
+                hintMessage
                 if keyboardShown {
                     Spacer(minLength: 0)
                 } else {
@@ -143,6 +145,11 @@ struct CrosswordGameView: View {
             CrosswordIconButton(
                 symbol: "arrow.uturn.forward", description: "Redo the letter you undid", tag: "redo",
                 enabled: !game.undone.isEmpty && !solved, action: model.redo)
+            if settings.isOn(.showHints) {
+                CrosswordIconButton(
+                    symbol: "lightbulb", description: "Show a hint", tag: "hint", enabled: !solved && !model.revealed,
+                    action: model.hint)
+            }
             CrosswordIconButton(symbol: "ellipsis", description: "More", tag: "game_menu") { menuOpen = true }
         }
         .padding(.horizontal, 4)
@@ -170,6 +177,14 @@ struct CrosswordGameView: View {
         }
         .padding(.horizontal, 4)
         .background(colors.word, in: RoundedRectangle(cornerRadius: 12))
+    }
+
+    private var hintMessage: some View {
+        Text(model.hintMessage ?? "")
+            .font(.subheadline.weight(.medium))
+            .padding(.horizontal, 16)
+            .padding(.top, 4)
+            .accessibilityIdentifier("hint_message")
     }
 
     private var clueLists: some View {

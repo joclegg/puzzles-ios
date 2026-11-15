@@ -13,6 +13,7 @@ final class CrosswordGameModel {
     private(set) var revealed = false
     private(set) var clues: [String: String] = [:]
     private(set) var settings = CrosswordSettings()
+    private(set) var hintMessage: String?
 
     private var timer: GameTimer
     private var ticker: Task<Void, Never>?
@@ -60,6 +61,18 @@ final class CrosswordGameModel {
     func revealLetter() { move { $0.revealLetter() } }
     func revealWord() { move { $0.revealWord() } }
 
+    func hint() {
+        guard !game.isSolved, !revealed, let hint = game.findHint() else {
+            return
+        }
+        if settings.hintFill {
+            move { $0.placeHint(hint) }
+            return
+        }
+        move { $0.pointHint(hint) }
+        hintMessage = hint.message
+    }
+
     func revealSolution() {
         guard !game.isSolved, !revealed else {
             return
@@ -76,6 +89,7 @@ final class CrosswordGameModel {
             return
         }
         game = game.restart()
+        hintMessage = nil
         timer = GameTimer()
         elapsedMs = 0
         ticker?.cancel()
@@ -117,9 +131,12 @@ final class CrosswordGameModel {
             return
         }
         game = after
+        hintMessage = nil
         if !before.isSolved && after.isSolved {
             finish()
-        } else if after.entries != before.entries || after.mistakes != before.mistakes {
+        } else if after.entries != before.entries || after.mistakes != before.mistakes
+            || after.hints != before.hints
+        {
             persistSoon()
         }
     }
