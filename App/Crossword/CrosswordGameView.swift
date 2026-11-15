@@ -9,6 +9,7 @@ struct CrosswordGameView: View {
     @Environment(\.colorScheme) private var scheme
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.horizontalSizeClass) private var sizeClass
+    @State private var keyboardShown = false
     @State private var menuOpen = false
     @State private var revealing = false
 
@@ -43,10 +44,20 @@ struct CrosswordGameView: View {
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
             } else {
-                board.padding(.horizontal, 8).padding(.top, 8)
+                board.padding(.horizontal, 8).padding(.top, 8).layoutPriority(1)
                 clueBar.padding(.horizontal, 8).padding(.top, 8)
-                clueLists.padding(.horizontal, 8)
+                if keyboardShown {
+                    Spacer(minLength: 0)
+                } else {
+                    clueLists.padding(.horizontal, 8)
+                }
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
+            keyboardShown = true
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+            keyboardShown = false
         }
         .background(
             CrosswordKeyInput(active: !solved && !model.revealed, onKey: handle)
