@@ -61,7 +61,7 @@ import Testing
         #expect(text == "Kakuro records 🏆\n6 x 6 1:35\n\n14 solved · 🔥 3 · longest 🔥 9\njoclegg.github.io/puzzles-web")
     }
 
-    @Test("given solitaire records when summarised then wins and percent are shown")
+    @Test("given solitaire records when summarised then wins and the rounded down percent are shown")
     func solitaire() {
         // Act
         let lines = solitaireRecordLines(fastestMs: 200_000, fewestMoves: 90)
@@ -69,7 +69,7 @@ import Testing
 
         // Assert
         #expect(lines == ["Fastest win 3:20", "Fewest moves 90"])
-        #expect(summary == "2 wins · 67% · 🔥 0 · longest 🔥 1")
+        #expect(summary == "2 wins · 66% · 🔥 0 · longest 🔥 1")
     }
 
     @Test("given guess counts when charted then the largest bucket has eight squares")

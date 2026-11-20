@@ -114,7 +114,7 @@ public func solvedSummary(count: Int, noun: String = "solved", streak: DailyStre
 }
 
 public func solitaireSummary(wins: Int, played: Int, streak: DailyStreak) -> String {
-    let percent = played == 0 ? 0 : Int((Double(wins) * 100 / Double(played)).rounded())
+    let percent = played == 0 ? 0 : wins * 100 / played
     return "\(wins) wins · \(percent)% · \(streakSummary(streak))"
 }
 

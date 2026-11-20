@@ -164,8 +164,7 @@ struct FiveLettersGameView: View {
             FiveLettersResultDialog(
                 game: game,
                 isDated: model.isDated,
-                shareText: model.shareText,
-                dailiesShareText: model.dailiesShareText
+                shareText: model.shareText
             ) {
                 model.resultClosed = true
             } onNewPractice: {
