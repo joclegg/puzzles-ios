@@ -54,7 +54,8 @@ enum FiveLettersGame: GameDefinition {
         shareBody: { date in
             let store = FiveLettersStore.shared
             let puzzles = store.existing(wordId: Daily.word.id(date)).flatMap(finishedShareText)
-            let daily2 = store.existing(wordId: Daily.daily2.id(date)).flatMap(finishedShareText)
+            let daily2 = store.existing(wordId: Daily.daily2.id(date)).filter { finishedDay($0.finishedAt) == date }
+                .flatMap(finishedShareText)
             return fiveLettersDailiesBody(
                 puzzles: puzzles ?? dailyShareLine(DailyShareEntry(label: Daily.word.calendarLabel, timeMs: nil)),
                 daily2: daily2)
