@@ -28,6 +28,7 @@ struct WinDialog<Buttons: View>: View {
     var lost = false
     var newLabel: String?
     var newTag = "win_new"
+    var shareText: String?
     var onNew: (() -> Void)?
     var onDismiss: () -> Void = {}
     @ViewBuilder let buttons: () -> Buttons
@@ -76,6 +77,10 @@ struct WinDialog<Buttons: View>: View {
                 }
                 playNext
                 HStack(spacing: 16) {
+                    if let shareText {
+                        ShareLink("Share", item: shareText)
+                            .accessibilityIdentifier("win_share")
+                    }
                     Spacer()
                     Button("View board", action: dismiss)
                         .accessibilityIdentifier("win_view_board")

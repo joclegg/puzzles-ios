@@ -5,6 +5,7 @@ protocol DailySource {
     var rules: CalendarRules { get }
     var results: [DailyResult] { get }
     func on(_ date: CalendarDay) -> [GameDaily]
+    func shareBody(on date: CalendarDay) -> [String]?
 }
 
 struct DailyProvider<Option>: DailySource {
@@ -19,6 +20,7 @@ struct DailyProvider<Option>: DailySource {
     let solved: @MainActor (CalendarDay) -> (Option) -> Bool
     let offered: @MainActor (CalendarDay, Option, Bool) -> Bool
     let open: @MainActor (CalendarDay, Option) async -> String?
+    let share: (@MainActor (CalendarDay, Option) -> DailyShareEntry)?
 
     init(
         tab: SettingsTab,
@@ -31,7 +33,8 @@ struct DailyProvider<Option>: DailySource {
         results: @escaping @MainActor () -> [DailyResult],
         solved: @escaping @MainActor (CalendarDay) -> (Option) -> Bool,
         offered: (@MainActor (CalendarDay, Option, Bool) -> Bool)? = nil,
-        open: @escaping @MainActor (CalendarDay, Option) async -> String?
+        open: @escaping @MainActor (CalendarDay, Option) async -> String?,
+        share: (@MainActor (CalendarDay, Option) -> DailyShareEntry)? = nil
     ) {
         self.tab = tab
         self.options = options
@@ -44,6 +47,7 @@ struct DailyProvider<Option>: DailySource {
         self.solved = solved
         self.offered = offered ?? { _, _, done in !done }
         self.open = open
+        self.share = share
     }
 
     var rules: CalendarRules {
@@ -73,5 +77,13 @@ struct DailyProvider<Option>: DailySource {
                 await open(date, option)
             }
         }
+    }
+
+    @MainActor
+    func shareBody(on date: CalendarDay) -> [String]? {
+        guard let share else {
+            return nil
+        }
+        return options.map { dailyShareLine(share(date, $0)) }
     }
 }
