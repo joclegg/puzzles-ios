@@ -247,6 +247,7 @@ struct TwoToneGameView: View {
                 tag: "solved_dialog",
                 newLabel: TwoToneStore.shared.game(id: gameId).map { sizeLabel($0.size) },
                 newTag: "solved_new_puzzle",
+                shareText: SettingsTab.twoTone.winShareText(puzzleId: TwoToneStore.shared.game(id: gameId)?.puzzleId),
                 onNew: { newPuzzle(model) }
             ) {
                 Button("Home", action: onHome).accessibilityIdentifier("solved_home")

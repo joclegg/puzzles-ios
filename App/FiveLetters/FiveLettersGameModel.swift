@@ -40,6 +40,10 @@ final class FiveLettersGameModel {
         game?.shareText(title: title) ?? ""
     }
 
+    var dailiesShareText: String? {
+        SettingsTab.fiveLetters.winShareText(puzzleId: saved?.ref.id)
+    }
+
     var message: String {
         game?.rejection?.message ?? (game?.isOver == true ? nil : hint) ?? ""
     }

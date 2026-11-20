@@ -28,6 +28,15 @@ enum WordWheelGame: GameDefinition {
         },
         open: { date, level in
             await attempt("Word Wheel daily") { try await WordWheelStore.shared.openDaily(level, date: date) }.map(String.init)
+        },
+        share: { date, level in
+            let store = WordWheelStore.shared
+            let id = PuzzleRef.dailyId(date: date, level: level)
+            return DailyShareEntry(
+                label: level.label,
+                timeMs: store.history.filter { $0.ref.id == id && $0.status == .solved }.map(\.elapsedMs).min(),
+                bestMs: store.stats.first { $0.level == level }?.bestMs
+            )
         }
     )
 

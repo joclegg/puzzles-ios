@@ -209,6 +209,7 @@ private struct SlideOutGameContent: View {
             tag: "solved_dialog",
             newLabel: model.ref?.level.label,
             newTag: "solved_new_puzzle",
+            shareText: SettingsTab.slideOut.winShareText(puzzleId: model.ref?.id),
             onNew: newPuzzle
         ) {
             Button("Home", action: onHome).accessibilityIdentifier("solved_home")

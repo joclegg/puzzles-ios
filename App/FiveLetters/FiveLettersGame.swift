@@ -50,8 +50,24 @@ enum FiveLettersGame: GameDefinition {
         },
         solved: { date in { daily in won(daily.id(date)) } },
         offered: { date, daily, _ in daily == .word && !finished(daily.id(date)) },
-        open: { date, daily in await openDaily(daily, date: date) }
+        open: { date, daily in await openDaily(daily, date: date) },
+        shareBody: { date in
+            let store = FiveLettersStore.shared
+            let puzzles = store.existing(wordId: Daily.word.id(date)).flatMap(finishedShareText)
+            let daily2 = store.existing(wordId: Daily.daily2.id(date)).flatMap(finishedShareText)
+            return fiveLettersDailiesBody(
+                puzzles: puzzles ?? dailyShareLine(DailyShareEntry(label: Daily.word.calendarLabel, timeMs: nil)),
+                daily2: daily2)
+        }
     )
+
+    @MainActor
+    private static func finishedShareText(_ game: SavedGame) -> String? {
+        guard game.status == .won || game.status == .lost else {
+            return nil
+        }
+        return game.gameState.shareText(title: game.ref.title)
+    }
 
     @MainActor
     private static func won(_ id: String) -> Bool {

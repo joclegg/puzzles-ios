@@ -77,6 +77,7 @@ struct FiveLettersResultDialog: View {
     let game: GameState
     let isDated: Bool
     let shareText: String
+    let dailiesShareText: String?
     let onClose: () -> Void
     let onNewPractice: () -> Void
 
@@ -98,6 +99,8 @@ struct FiveLettersResultDialog: View {
             lost: !game.isWon,
             newLabel: "Word",
             newTag: "result_new_practice",
+            shareText: dailiesShareText,
+            shareLabel: "Share dailies",
             onNew: isDated ? nil : onNewPractice,
             onDismiss: onClose
         ) {

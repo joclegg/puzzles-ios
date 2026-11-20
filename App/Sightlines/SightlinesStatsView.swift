@@ -29,6 +29,17 @@ struct SightlinesStatsView: View {
         }
         .navigationTitle("Stats")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                ShareTextButton(
+                    text: SettingsTab.sightlines.sizeRecordsText(
+                        sizes.map { size in
+                            let stats = store.games.stats(size: size)
+                            return (label: sizeLabel(size), solved: stats.solved, bestMs: stats.bestMs)
+                        }),
+                    tag: "share_records", label: "Share records")
+            }
+        }
     }
 }
 

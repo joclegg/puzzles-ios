@@ -40,6 +40,14 @@ struct WordWheelStatsView: View {
         }
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Stats")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                ShareTextButton(
+                    text: SettingsTab.wordWheel.sizeRecordsText(
+                        store.stats.map { (label: $0.level.label, solved: $0.solved, bestMs: $0.bestMs) }),
+                    tag: "share_records", label: "Share records")
+            }
+        }
     }
 }
 

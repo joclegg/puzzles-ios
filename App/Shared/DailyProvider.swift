@@ -21,6 +21,7 @@ struct DailyProvider<Option>: DailySource {
     let offered: @MainActor (CalendarDay, Option, Bool) -> Bool
     let open: @MainActor (CalendarDay, Option) async -> String?
     let share: (@MainActor (CalendarDay, Option) -> DailyShareEntry)?
+    let customShareBody: (@MainActor (CalendarDay) -> [String])?
 
     init(
         tab: SettingsTab,
@@ -34,7 +35,8 @@ struct DailyProvider<Option>: DailySource {
         solved: @escaping @MainActor (CalendarDay) -> (Option) -> Bool,
         offered: (@MainActor (CalendarDay, Option, Bool) -> Bool)? = nil,
         open: @escaping @MainActor (CalendarDay, Option) async -> String?,
-        share: (@MainActor (CalendarDay, Option) -> DailyShareEntry)? = nil
+        share: (@MainActor (CalendarDay, Option) -> DailyShareEntry)? = nil,
+        shareBody: (@MainActor (CalendarDay) -> [String])? = nil
     ) {
         self.tab = tab
         self.options = options
@@ -48,6 +50,7 @@ struct DailyProvider<Option>: DailySource {
         self.offered = offered ?? { _, _, done in !done }
         self.open = open
         self.share = share
+        customShareBody = shareBody
     }
 
     var rules: CalendarRules {
@@ -81,6 +84,9 @@ struct DailyProvider<Option>: DailySource {
 
     @MainActor
     func shareBody(on date: CalendarDay) -> [String]? {
+        if let customShareBody {
+            return customShareBody(date)
+        }
         guard let share else {
             return nil
         }

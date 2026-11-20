@@ -24,7 +24,14 @@ enum SlideOutGame: GameDefinition {
             let left = Set(SlideOutStore.dailiesLeft(today: date))
             return { !left.contains($0) }
         },
-        open: { date, level in await openDaily(level, date: date) }
+        open: { date, level in await openDaily(level, date: date) },
+        share: { date, level in
+            let solved = SlideOutStore.solvedGames().filter { $0.level == level.name }
+            let id = PuzzleRef.dailyId(date: date, level: level)
+            let daily = solved.filter { $0.puzzleId == id }.min { $0.elapsedMs < $1.elapsedMs }
+            return DailyShareEntry(
+                label: level.label, timeMs: daily?.elapsedMs, bestMs: solved.map(\.elapsedMs).min(), moves: daily?.moveCount)
+        }
     )
 
     @MainActor

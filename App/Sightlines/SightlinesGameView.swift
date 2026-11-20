@@ -211,6 +211,7 @@ struct SightlinesGameView: View {
             tag: "solved_dialog",
             newLabel: model.size.map { sizeLabel($0) },
             newTag: "solved_new_puzzle",
+            shareText: SettingsTab.sightlines.winShareText(puzzleId: model.puzzleId),
             onNew: newPuzzle
         ) {
             Button("Home", action: onHome).accessibilityIdentifier("solved_home")

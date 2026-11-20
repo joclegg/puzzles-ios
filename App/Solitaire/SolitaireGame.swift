@@ -26,7 +26,12 @@ enum SolitaireGame: GameDefinition {
             let won = SolitaireStore.shared.dailyWon(DealRef.dailyId(date))
             return { _ in won }
         },
-        open: { date, _ in await openDaily(date) }
+        open: { date, _ in await openDaily(date) },
+        shareBody: { date in
+            let id = DealRef.dailyId(date)
+            let won = SolitaireStore.shared.games.filter { $0.deal.id == id && $0.status == .won }
+            return [solitaireDailyLine(wonMs: won.map(\.elapsedMs).min())]
+        }
     )
 
     @MainActor

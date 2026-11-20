@@ -25,7 +25,16 @@ enum SightlinesGame: GameDefinition {
             let solved = SightlinesStore.shared.games.dailySolved(date: date)
             return { solved.contains($0) }
         },
-        open: { date, size in await openDaily(size: size, date: date) }
+        open: { date, size in await openDaily(size: size, date: date) },
+        share: { date, size in
+            let games = SightlinesStore.shared.games
+            let id = PuzzleRef.dailyId(date: date, size: size)
+            return DailyShareEntry(
+                label: sizeLabel(size),
+                timeMs: games.filter { $0.ref.id == id && $0.status == .solved }.map(\.elapsedMs).min(),
+                bestMs: games.stats(size: size).bestMs
+            )
+        }
     )
 
     @MainActor

@@ -14,6 +14,8 @@ struct SlideOutStatsView: View {
                 HStack(spacing: 0) {
                     SlideOutBackButton(action: onBack)
                     Text("Stats").font(.title)
+                    Spacer()
+                    ShareTextButton(text: recordsText, tag: "share_records", label: "Share records")
                 }
                 SlideOutPanel {
                     row("Level", "Solved", "At par", "Best", tag: nil).fontWeight(.semibold)
@@ -34,6 +36,20 @@ struct SlideOutStatsView: View {
             .padding(16)
         }
         .slideOutScreen()
+    }
+
+    private var recordsText: String {
+        let solved = games.filter { $0.status == GameStatus.solved.rawValue }
+        let lines = Level.allCases.compactMap { level -> String? in
+            let atLevel = solved.filter { $0.level == level.name }
+            guard let best = atLevel.map(\.elapsedMs).min() else {
+                return nil
+            }
+            return recordLine(label: level.label, bestMs: best, fewestMoves: atLevel.map(\.moveCount).min())
+        }
+        return recordsShareText(
+            game: SettingsTab.slideOut.rawValue, lines: lines,
+            summary: solvedSummary(count: solved.count, streak: SettingsTab.slideOut.dailyStreak))
     }
 
     private func row(_ level: String, _ solved: String, _ atPar: String, _ best: String, tag: String?) -> some View {

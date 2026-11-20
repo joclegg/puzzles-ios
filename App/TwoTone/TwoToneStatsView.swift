@@ -8,7 +8,14 @@ struct TwoToneStatsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Stats").font(.largeTitle.bold())
+                HStack {
+                    Text("Stats").font(.largeTitle.bold())
+                    Spacer()
+                    ShareTextButton(
+                        text: SettingsTab.twoTone.sizeRecordsText(
+                            store.stats.map { (label: sizeLabel($0.size), solved: $0.solved, bestMs: $0.bestMs) }),
+                        tag: "share_records", label: "Share records")
+                }
                 StatsTable(
                     header: ["Size", "Solved", "Best", "Average"],
                     rows: store.stats.map {

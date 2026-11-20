@@ -12,6 +12,8 @@ struct SolitaireStatsView: View {
                 HStack(spacing: 0) {
                     SolitaireBackButton(action: onBack)
                     Text("Stats").font(.largeTitle)
+                    Spacer()
+                    ShareTextButton(text: recordsText, tag: "share_records", label: "Share records")
                 }
                 ForEach(store.stats(), id: \.drawMode) { mode in
                     panel(mode)
@@ -23,6 +25,17 @@ struct SolitaireStatsView: View {
             .padding(16)
         }
         .solitaireScreen()
+    }
+
+    private var recordsText: String {
+        let modes = store.stats()
+        return recordsShareText(
+            game: SettingsTab.solitaire.rawValue,
+            lines: solitaireRecordLines(
+                fastestMs: modes.compactMap(\.bestMs).min(), fewestMoves: modes.compactMap(\.fewestMoves).min()),
+            summary: solitaireSummary(
+                wins: modes.reduce(0) { $0 + $1.won }, played: modes.reduce(0) { $0 + $1.played },
+                streak: SettingsTab.solitaire.dailyStreak))
     }
 
     private func panel(_ mode: DrawStats) -> some View {
