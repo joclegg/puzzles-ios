@@ -10,7 +10,11 @@ struct CrosswordStatsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 8) {
-                CrosswordScreenTitle(title: "Stats", onBack: onBack)
+                HStack {
+                    CrosswordScreenTitle(title: "Stats", onBack: onBack)
+                    Spacer()
+                    ShareTextButton(text: recordsText, tag: "share_records", label: "Share records")
+                }
                 StatsTable(
                     header: ["Size", "Solved", "Best", "Average"],
                     rows: CrosswordStore.shared.stats().map {
@@ -28,6 +32,11 @@ struct CrosswordStatsView: View {
             }
             .padding(16)
         }
+    }
+
+    private var recordsText: String {
+        SettingsTab.crossword.sizeRecordsText(
+            CrosswordStore.shared.stats().map { (label: sizeName($0.size), solved: $0.solved, bestMs: $0.bestMs) })
     }
 }
 

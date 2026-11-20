@@ -12,6 +12,8 @@ struct SudokuStatsView: View {
                 HStack(spacing: 0) {
                     SudokuBackButton(action: navigator.back)
                     Text("Best times").font(.title.weight(.regular))
+                    Spacer()
+                    ShareTextButton(text: recordsText(bests), tag: "share_records", label: "Share records")
                 }
                 ForEach(GameMode.allCases, id: \.self) { mode in
                     panel(mode, bests)
@@ -22,6 +24,19 @@ struct SudokuStatsView: View {
             }
             .padding(16)
         }
+    }
+
+    private func recordsText(_ bests: [BestTime]) -> String {
+        let lines = GameMode.allCases.flatMap { mode in
+            mode.levels.compactMap { level in
+                bests.first { $0.mode == mode && $0.difficulty == level && $0.completed > 0 }
+                    .map { recordLine(label: "\(mode.label) \(levelLabel(level))", bestMs: $0.bestMs) }
+            }
+        }
+        let solved = bests.reduce(0) { $0 + $1.completed }
+        return recordsShareText(
+            game: SettingsTab.sudoku.rawValue, lines: lines,
+            summary: solvedSummary(count: solved, streak: SettingsTab.sudoku.dailyStreak))
     }
 
     private func panel(_ mode: GameMode, _ bests: [BestTime]) -> some View {

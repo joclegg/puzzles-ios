@@ -331,6 +331,7 @@ private struct SudokuWinDialog: View {
             tag: "solved_screen",
             newLabel: saved.ref.difficulty.map { levelLabel($0) },
             newTag: "solved_new_puzzle",
+            shareText: DailyIds.parse(saved.ref.id).flatMap { SettingsTab.sudoku.dailiesShareText(on: $0.date) },
             onNew: newPuzzle
         ) {
             SudokuTextButton(title: "Home", id: "solved_home", action: navigator.home)

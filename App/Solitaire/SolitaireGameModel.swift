@@ -25,6 +25,10 @@ final class SolitaireGameModel {
 
     @ObservationIgnored private let store: SolitaireStore
     @ObservationIgnored private var saved: SavedGame?
+
+    var dealId: String? {
+        saved?.deal.id
+    }
     @ObservationIgnored private var timer = GameTimer()
     @ObservationIgnored private var visible = false
     @ObservationIgnored private var ended = false

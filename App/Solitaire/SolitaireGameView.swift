@@ -263,6 +263,7 @@ struct SolitaireGameView: View {
                 tag: "won_dialog",
                 newLabel: "Deal",
                 newTag: "won_new_deal",
+                shareText: SettingsTab.solitaire.winShareText(puzzleId: model.dealId),
                 onNew: { newDeal() }
             ) {
                 SolitaireTextButton(title: "Home", tag: "won_home", action: onHome)

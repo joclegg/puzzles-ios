@@ -27,6 +27,15 @@ enum TwoToneGame: GameDefinition {
         },
         open: { date, size in
             String(await TwoToneStore.shared.openDaily(date: date, size: size))
+        },
+        share: { date, size in
+            let store = TwoToneStore.shared
+            let id = PuzzleRef.dailyId(date: date, size: size)
+            return DailyShareEntry(
+                label: sizeLabel(size),
+                timeMs: store.history.filter { $0.puzzleId == id && $0.gameStatus == .solved }.map(\.elapsedMs).min(),
+                bestMs: store.stats.first { $0.size == size }?.bestMs
+            )
         }
     )
 

@@ -351,6 +351,7 @@ private struct KakuroSolvedDialog: View {
             tag: "solved_dialog",
             newLabel: sizeLabel(model.saved.ref.size),
             newTag: "solved_new_puzzle",
+            shareText: SettingsTab.kakuro.winShareText(puzzleId: model.saved.ref.id),
             onNew: { navigator.startRandom(size: model.saved.ref.size) }
         ) {
             Button("Home") { navigator.home() }.accessibilityIdentifier("solved_home")

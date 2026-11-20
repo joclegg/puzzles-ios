@@ -28,7 +28,16 @@ enum KakuroGame: GameDefinition {
                 return store.games.contains { $0.ref.id == id && $0.status == .solved }
             }
         },
-        open: { date, size in await openDaily(size: size, date: date) }
+        open: { date, size in await openDaily(size: size, date: date) },
+        share: { date, size in
+            let store = KakuroStore.shared
+            let id = PuzzleRef.dailyId(date: date, size: size)
+            return DailyShareEntry(
+                label: sizeLabel(size),
+                timeMs: store.games.filter { $0.ref.id == id && $0.status == .solved }.map(\.elapsedMs).min(),
+                bestMs: store.stats().first { $0.size == size }?.bestMs
+            )
+        }
     )
 
     @MainActor

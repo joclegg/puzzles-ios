@@ -80,6 +80,9 @@ struct DailyCalendarView: View {
                         .accessibilityIdentifier("back")
                         Text("Daily calendar").font(.title)
                         Spacer()
+                        if let text = tab.dailiesShareText(on: today) {
+                            ShareTextButton(text: text, tag: "share_dailies", label: "Share today's dailies")
+                        }
                     }
                     monthHeader
                     weekHeader

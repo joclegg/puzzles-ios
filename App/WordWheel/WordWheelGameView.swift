@@ -208,6 +208,7 @@ struct WordWheelGameView: View {
             tag: "solved_dialog",
             newLabel: WordWheelStore.shared.game(id: gameId)?.ref.level.label,
             newTag: "solved_new_puzzle",
+            shareText: SettingsTab.wordWheel.winShareText(puzzleId: WordWheelStore.shared.game(id: gameId)?.ref.id),
             onNew: {
                 Task { onOpenGame(await model.newPuzzle()) }
             }

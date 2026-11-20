@@ -34,6 +34,15 @@ enum SudokuGame: GameDefinition {
                 try await SudokuStore.shared.openDaily(mode: option.mode, difficulty: option.level, date: date)
             }
             return (id ?? nil).map(String.init)
+        },
+        share: { date, option in
+            let store = SudokuStore.shared
+            let best = store.bests.first { $0.mode == option.mode && $0.difficulty == option.level }
+            return DailyShareEntry(
+                label: "\(option.mode.label) \(levelLabel(option.level))",
+                timeMs: store.dailyTimes[DailyIds.of(mode: option.mode, difficulty: option.level, date: date)],
+                bestMs: best?.bestMs
+            )
         }
     )
 

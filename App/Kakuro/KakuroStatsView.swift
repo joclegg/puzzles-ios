@@ -10,7 +10,11 @@ struct KakuroStatsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 8) {
-                KakuroScreenTitle(title: "Stats", onBack: onBack)
+                HStack {
+                    KakuroScreenTitle(title: "Stats", onBack: onBack)
+                    Spacer()
+                    ShareTextButton(text: recordsText, tag: "share_records", label: "Share records")
+                }
                 StatsTable(
                     header: ["Size", "Solved", "Best", "Average"],
                     rows: KakuroStore.shared.stats().map {
@@ -28,6 +32,11 @@ struct KakuroStatsView: View {
             }
             .padding(16)
         }
+    }
+
+    private var recordsText: String {
+        SettingsTab.kakuro.sizeRecordsText(
+            KakuroStore.shared.stats().map { (label: sizeLabel($0.size), solved: $0.solved, bestMs: $0.bestMs) })
     }
 }
 

@@ -42,6 +42,10 @@ final class SightlinesGameModel {
         Int64(ProcessInfo.processInfo.systemUptime * 1000)
     }
 
+    var puzzleId: String? {
+        saved?.ref.id
+    }
+
     var size: Int? {
         saved?.ref.size
     }

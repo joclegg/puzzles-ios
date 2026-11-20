@@ -1,4 +1,5 @@
 import FiveLettersEngine
+import PuzzlesCore
 import SwiftUI
 
 struct FiveLettersStatsView: View {
@@ -29,6 +30,17 @@ struct FiveLettersStatsView: View {
             .padding(16)
         }
         .fiveLettersHeader("Stats")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                ShareTextButton(
+                    text: recordsShareText(
+                        game: SettingsTab.fiveLetters.rawValue, lines: guessChartLines(counts: stats.guessCounts),
+                        summary: fiveLettersSummary(
+                            won: stats.won, played: stats.played,
+                            streak: DailyStreak(current: stats.currentStreak, longest: stats.maxStreak))),
+                    tag: "share_records", label: "Share records")
+            }
+        }
     }
 
     private func figure(_ value: Int, label: String, id: String) -> some View {

@@ -82,6 +82,15 @@ final class SudokuStore {
             .map { ($0.puzzleId, $0.finishedAt) }
     }
 
+    var dailyTimes: [String: Int64] {
+        let status = GameStatus.completed.rawValue
+        let prefix = PuzzleRef.dailyPrefix
+        return records(#Predicate { $0.status == status && $0.puzzleId.starts(with: prefix) })
+            .reduce(into: [:]) { times, record in
+                times[record.puzzleId] = min(times[record.puzzleId] ?? record.elapsedMs, record.elapsedMs)
+            }
+    }
+
     var bests: [BestTime] {
         let finished = records().filter { $0.status == GameStatus.completed.rawValue && !$0.custom }
             .compactMap { record -> FinishedGame? in
