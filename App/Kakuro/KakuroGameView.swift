@@ -38,7 +38,7 @@ private func kakuroTutorial(digitFirst: Bool) -> [KakuroTourStep] {
                 : "Tap a cell, then a number to place it. The pencil puts numbers in as notes, the eraser clears a cell and Mark boxes it in red."
         ),
         KakuroTourStep(target: "hint", text: "Stuck? The bulb points at a cell you can work out and says why."),
-        KakuroTourStep(target: "menu", text: "Restart, a new puzzle, the solution and settings live in this menu."),
+        KakuroTourStep(target: "menu", text: "Restart, new puzzle, show the solution and settings live in this menu."),
     ]
 }
 

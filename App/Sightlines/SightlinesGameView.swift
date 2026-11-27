@@ -247,7 +247,7 @@ struct SightlinesGameView: View {
                     + " A number says how many blue dots it can see; red dots block the view."
             ),
             ("hint", "Stuck? The bulb points at the next step and explains it."),
-            ("menu", "Restart, a new puzzle, the solution and settings live in this menu."),
+            ("menu", "Restart, new puzzle, show the solution and settings live in this menu."),
         ]
     }
 

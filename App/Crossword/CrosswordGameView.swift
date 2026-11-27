@@ -34,12 +34,12 @@ private func crosswordTutorial(hints: Bool) -> [CrosswordTourStep] {
             text: "Tap a cell to pick it. Tap it again to switch between across and down. Type the answer with the keyboard."
         ),
         CrosswordTourStep(
-            target: "clue_bar", text: "This bar shows the clue for the highlighted word. The arrows move to the previous or next clue."),
+            target: "clue_bar", text: "This is the clue for the word you're on. The arrows move to the previous or next clue."),
     ]
     if hints {
-        steps.append(CrosswordTourStep(target: "hint", text: "Stuck? The bulb tells you one letter and where it goes."))
+        steps.append(CrosswordTourStep(target: "hint", text: "Stuck? The bulb points at the next step and explains it."))
     }
-    steps.append(CrosswordTourStep(target: "menu", text: "Restart, a new puzzle, reveal and settings live in this menu."))
+    steps.append(CrosswordTourStep(target: "menu", text: "Restart, new puzzle, reveal a letter, word or the puzzle, and settings live in this menu."))
     return steps
 }
 

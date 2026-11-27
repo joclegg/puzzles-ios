@@ -36,7 +36,7 @@ private let slideOutRules = [
 private let slideOutTour = [
     ("board", "Drag a block along its length to slide it. Free the red block through the gap on the right."),
     ("hint", "Stuck? The bulb highlights the block to move next."),
-    ("menu", "Restart, a new puzzle, the solution and settings live in this menu."),
+    ("menu", "Restart, new puzzle, show the solution and settings live in this menu."),
 ]
 
 private struct SlideOutGameContent: View {

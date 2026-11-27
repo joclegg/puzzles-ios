@@ -36,7 +36,7 @@ private func tutorial(pickColour: Bool) -> [TourStep] {
                 + " No three of a colour in a line, and each row and column is half red, half blue."
         ),
         TourStep(target: "hint", text: "Stuck? The bulb points at the next step and explains it."),
-        TourStep(target: "menu", text: "Restart, a new puzzle, the solution and settings live in this menu."),
+        TourStep(target: "menu", text: "Restart, new puzzle, show the solution and settings live in this menu."),
     ]
 }
 
