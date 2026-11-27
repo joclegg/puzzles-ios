@@ -37,9 +37,11 @@ private func crosswordTutorial(hints: Bool) -> [CrosswordTourStep] {
             target: "clue_bar", text: "This is the clue for the word you're on. The arrows move to the previous or next clue."),
     ]
     if hints {
-        steps.append(CrosswordTourStep(target: "hint", text: "Stuck? The bulb points at the next step and explains it."))
+        steps.append(CrosswordTourStep(target: "hint", text: "Stuck? The bulb tells you one letter and where it goes."))
     }
-    steps.append(CrosswordTourStep(target: "menu", text: "Restart, new puzzle, reveal a letter, word or the puzzle, and settings live in this menu."))
+    steps.append(
+        CrosswordTourStep(
+            target: "menu", text: "Restart, new puzzle, reveal a letter, word or the puzzle, and settings live in this menu."))
     return steps
 }
 
