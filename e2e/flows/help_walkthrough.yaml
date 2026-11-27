@@ -24,7 +24,7 @@ name: How to play walks through the screen one step at a time
           id: "walkthrough_next"
       - assertVisible:
           id: "walkthrough_text"
-          text: "Then tap a number.*"
+          text: "Tap a cell, then a number.*"
       - tapOn:
           id: "walkthrough_close"
       - assertNotVisible:

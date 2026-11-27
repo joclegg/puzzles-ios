@@ -41,7 +41,12 @@ extension GameState {
             return nil
         }
         let open = values.indices.filter { values[$0] == 0 && candidates[$0] != 0 }
-        let cell = open.min { candidates[$0].nonzeroBitCount < candidates[$1].nonzeroBitCount } ?? first
+        let fewest: (Int, Int) -> Bool = { candidates[$0].nonzeroBitCount < candidates[$1].nonzeroBitCount }
+        let useful = open.filter { notes[$0] == 0 || notes[$0] & ~candidates[$0] != 0 }
+        if useful.isEmpty, let cell = open.min(by: fewest) {
+            return Hint(cell: cell, digit: solution[cell], message: "This one is the \(solution[cell]).")
+        }
+        let cell = useful.min(by: fewest) ?? first
         let allowed = (1...grid.size).filter { candidates[cell] & digitBit($0) != 0 }.map(String.init)
         let list =
             allowed.count > 1 ? allowed.dropLast().joined(separator: ", ") + " or " + allowed[allowed.count - 1] : allowed.first ?? ""

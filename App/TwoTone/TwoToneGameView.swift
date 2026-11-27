@@ -15,21 +15,30 @@ private struct TourStep {
     let text: String
 }
 
-private let rules = [
-    "Fill every tile red or blue. Tap a tile to cycle it: red, blue, empty.",
-    "No three tiles of the same colour next to each other in a row or column.",
-    "Every row and column has as many red tiles as blue.",
-    "No two rows are the same, and no two columns are the same.",
-]
+private func rules(pickColour: Bool) -> [String] {
+    [
+        pickColour
+            ? "Fill every tile red or blue. Choose a colour under the board, then tap tiles to paint them."
+            : "Fill every tile red or blue. Tap a tile to cycle it: red, blue, empty.",
+        "No three tiles of the same colour next to each other in a row or column.",
+        "Every row and column has as many red tiles as blue.",
+        "No two rows are the same, and no two columns are the same.",
+    ]
+}
 
-private let tutorial = [
-    TourStep(
-        target: "board",
-        text: "Tap a tile to cycle it red, blue, empty. No three of a colour in a line, and each row and column is half red, half blue."
-    ),
-    TourStep(target: "hint", text: "Stuck? The bulb shows you the next step."),
-    TourStep(target: "menu", text: "Restart, show the solution and settings live in this menu."),
-]
+private func tutorial(pickColour: Bool) -> [TourStep] {
+    [
+        TourStep(
+            target: "board",
+            text: (pickColour
+                ? "Choose a colour under the board, then tap tiles to paint them."
+                : "Tap a tile to cycle it: red, blue, empty.")
+                + " No three of a colour in a line, and each row and column is half red, half blue."
+        ),
+        TourStep(target: "hint", text: "Stuck? The bulb points at the next step and explains it."),
+        TourStep(target: "menu", text: "Restart, a new puzzle, the solution and settings live in this menu."),
+    ]
+}
 
 struct TwoToneGameView: View {
     let gameId: Int64
@@ -115,11 +124,12 @@ struct TwoToneGameView: View {
         .overlayPreferenceValue(TourAnchors.self) { anchors in
             GeometryReader { proxy in
                 if let tourStep {
+                    let steps = tutorial(pickColour: pickColour)
                     TwoToneWalkthrough(
-                        step: tutorial[tourStep],
+                        step: steps[tourStep],
                         index: tourStep,
-                        count: tutorial.count,
-                        target: anchors[tutorial[tourStep].target].map { proxy[$0] },
+                        count: steps.count,
+                        target: anchors[steps[tourStep].target].map { proxy[$0] },
                         onStep: { self.tourStep = $0 },
                         onClose: { self.tourStep = nil }
                     )
@@ -225,7 +235,7 @@ struct TwoToneGameView: View {
         if rulesOpen {
             TwoToneDialog(title: "How to play", onDismiss: { rulesOpen = false }) {
                 VStack(alignment: .leading, spacing: 8) {
-                    ForEach(rules, id: \.self) { Text($0) }
+                    ForEach(rules(pickColour: pickColour), id: \.self) { Text($0) }
                 }
             } buttons: {
                 Button("Walk me through it") {
