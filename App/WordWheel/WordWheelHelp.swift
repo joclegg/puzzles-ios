@@ -60,6 +60,7 @@ struct WordWheelWalkthrough: View {
                 .padding(16)
                 .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16))
                 .padding(16)
+                .frame(maxHeight: .infinity, alignment: step.target == "wheel" ? .top : .bottom)
                 .accessibilityElement(children: .contain)
                 .accessibilityIdentifier("walkthrough")
             }

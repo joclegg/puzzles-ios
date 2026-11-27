@@ -27,12 +27,20 @@ private let kakuroRules = [
     "A digit can't repeat within a run.",
 ]
 
-private let kakuroTutorial = [
-    KakuroTourStep(
-        target: "board", text: "Each white cell takes a digit from 1 to 9. A clue is the sum of the run to its right or below it."),
-    KakuroTourStep(target: "hint", text: "Stuck? The bulb shows you the next step."),
-    KakuroTourStep(target: "menu", text: "Restart, show the solution and settings live in this menu."),
-]
+private func kakuroTutorial(digitFirst: Bool) -> [KakuroTourStep] {
+    [
+        KakuroTourStep(
+            target: "board", text: "Each white cell takes a digit from 1 to 9. A clue is the sum of the run to its right or below it."),
+        KakuroTourStep(
+            target: "pad",
+            text: digitFirst
+                ? "Pick a number, then tap cells to place it. The pencil puts numbers in as notes. The eraser and Mark are modes: tap cells to clear them or box them in red, tap the tool again to stop."
+                : "Tap a cell, then a number to place it. The pencil puts numbers in as notes, the eraser clears a cell and Mark boxes it in red."
+        ),
+        KakuroTourStep(target: "hint", text: "Stuck? The bulb points at a cell you can work out and says why."),
+        KakuroTourStep(target: "menu", text: "Restart, new puzzle, show the solution and settings live in this menu."),
+    ]
+}
 
 struct KakuroGameView: View {
     let model: KakuroGameModel
@@ -210,6 +218,7 @@ struct KakuroGameView: View {
             ],
             onDigit: model.tapDigit
         )
+        .kakuroTourTarget("pad")
         .padding(.horizontal, 8)
         .padding(.top, 8)
         .padding(.bottom, 16)
@@ -294,8 +303,9 @@ struct KakuroGameView: View {
     }
 
     private func tour(index: Int, anchors: [String: Anchor<CGRect>]) -> some View {
-        let step = kakuroTutorial[index]
-        let last = index == kakuroTutorial.count - 1
+        let steps = kakuroTutorial(digitFirst: digitFirst)
+        let step = steps[index]
+        let last = index == steps.count - 1
         return GeometryReader { proxy in
             ZStack(alignment: .bottom) {
                 Color.black.opacity(0.4)
@@ -311,7 +321,7 @@ struct KakuroGameView: View {
                         .allowsHitTesting(false)
                 }
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Step \(index + 1) of \(kakuroTutorial.count)").font(.caption2)
+                    Text("Step \(index + 1) of \(steps.count)").font(.caption2)
                     Text(step.text).accessibilityIdentifier("walkthrough_text")
                     HStack(spacing: 16) {
                         Spacer()
@@ -328,6 +338,7 @@ struct KakuroGameView: View {
                 .padding(16)
                 .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
                 .padding(16)
+                .frame(maxHeight: .infinity, alignment: step.target == "pad" ? .top : .bottom)
                 .accessibilityElement(children: .contain)
                 .accessibilityIdentifier("walkthrough")
             }

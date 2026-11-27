@@ -1,3 +1,4 @@
+import PuzzlesCore
 import Testing
 
 @testable import KakuroEngine
@@ -83,5 +84,63 @@ struct HintTests {
 
         // Assert
         #expect(revealed.values == small.solution)
+    }
+
+    @Test("given notes that match a cell's candidates when a hint is asked for then the fallback skips that cell")
+    func fallbackSkipsMatchingNotes() {
+        // Arrange
+        var notes = [Int](repeating: 0, count: 9)
+        notes[4] = Combinations.bit(1) | Combinations.bit(3)
+        let game = GameState(puzzle: puzzle(3, "000 013 031"), notes: notes)
+
+        // Act
+        let hint = game.findHint()
+
+        // Assert
+        #expect(hint?.cell == 5)
+        #expect(hint?.message.hasSuffix("only allow 1 or 3.") == true)
+    }
+
+    @Test("given notes tighter than a cell's candidates when a hint is asked for then the fallback skips that cell")
+    func fallbackSkipsTighterNotes() {
+        // Arrange
+        var notes = [Int](repeating: 0, count: 9)
+        notes[4] = Combinations.bit(1)
+        let game = GameState(puzzle: puzzle(3, "000 013 031"), notes: notes)
+
+        // Act
+        let hint = game.findHint()
+
+        // Assert
+        #expect(hint?.cell == 5)
+    }
+
+    @Test("given every empty cell noted within its candidates when a hint is asked for then it reveals a cell's answer")
+    func fallbackRevealsWhenAllNoted() {
+        // Arrange
+        let both = Combinations.bit(1) | Combinations.bit(3)
+        let notes = [0, 0, 0, 0, both, both, 0, both, both]
+        let game = GameState(puzzle: puzzle(3, "000 013 031"), notes: notes)
+
+        // Act
+        let hint = game.findHint()
+
+        // Assert
+        #expect(hint == Hint(cell: 4, digit: 1, message: "This one is the 1."))
+    }
+
+    @Test("given notes wider than a cell's candidates when a hint is asked for then the fallback still names that cell")
+    func fallbackKeepsWiderNotes() {
+        // Arrange
+        var notes = [Int](repeating: 0, count: 9)
+        notes[4] = Combinations.bit(1) | Combinations.bit(2) | Combinations.bit(3)
+        let game = GameState(puzzle: puzzle(3, "000 013 031"), notes: notes)
+
+        // Act
+        let hint = game.findHint()
+
+        // Assert
+        #expect(
+            hint == Hint(cell: 4, digit: 1, message: "This cell's across run (4 in 2) and down run (4 in 2) only allow 1 or 3."))
     }
 }

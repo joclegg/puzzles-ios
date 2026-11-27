@@ -22,21 +22,35 @@ extension View {
 }
 
 struct SolitaireGameView: View {
-    private static let rules = [
-        "Move every card up to the four foundations, Ace to King.",
-        "In the columns, build down in alternating colours. Any face-up run can move together.",
-        "Only a King can fill an empty column.",
-        "Tap a card to send it to the best place, or drag it.",
-    ]
-    private static let tutorial = [
-        TourStep(
-            target: "table",
-            text:
-                "Tap the stock to turn cards over. Build the columns down in alternating colours, and the foundations up from Ace to King."
-        ),
-        TourStep(target: "hint", text: "Stuck? The bulb suggests a move."),
-        TourStep(target: "menu", text: "Restart, deal again and settings live in this menu."),
-    ]
+    private var rules: [String] {
+        let reverse = model.game?.order == .up
+        return [
+            reverse
+                ? "Move every card up to the four foundations, King to Ace."
+                : "Move every card up to the four foundations, Ace to King.",
+            reverse
+                ? "In the columns, build up in alternating colours. Any face-up run can move together."
+                : "In the columns, build down in alternating colours. Any face-up run can move together.",
+            reverse ? "Only an Ace can fill an empty column." : "Only a King can fill an empty column.",
+            oneTapMove
+                ? "Tap a card to send it to the best place, or drag it."
+                : "Tap a card, then where it should go, or drag it.",
+        ]
+    }
+
+    private var tutorial: [TourStep] {
+        let reverse = model.game?.order == .up
+        return [
+            TourStep(
+                target: "table",
+                text: reverse
+                    ? "Tap the stock to turn cards over. Build the columns up in alternating colours, and the foundations down from King to Ace."
+                    : "Tap the stock to turn cards over. Build the columns down in alternating colours, and the foundations up from Ace to King."
+            ),
+            TourStep(target: "hint", text: "Stuck? The bulb suggests a move."),
+            TourStep(target: "menu", text: "Restart, deal again and settings live in this menu."),
+        ]
+    }
 
     let onOpenGame: (Int64) -> Void
     let onHome: () -> Void
@@ -221,7 +235,7 @@ struct SolitaireGameView: View {
         if rulesOpen {
             SolitaireDialog(tag: nil, onDismiss: { rulesOpen = false }) {
                 Text("How to play").font(.title2)
-                ForEach(Self.rules, id: \.self) { Text($0) }
+                ForEach(rules, id: \.self) { Text($0) }
                 HStack {
                     Spacer()
                     SolitaireTextButton(title: "Walk me through it", tag: "walkthrough_start") {
@@ -274,8 +288,9 @@ struct SolitaireGameView: View {
     @ViewBuilder
     private func tour(_ anchors: [String: Anchor<CGRect>]) -> some View {
         if let index = tourStep {
-            let step = Self.tutorial[index]
-            let last = index == Self.tutorial.count - 1
+            let steps = tutorial
+            let step = steps[index]
+            let last = index == steps.count - 1
             GeometryReader { proxy in
                 ZStack(alignment: .bottom) {
                     Color.black.opacity(0.4).ignoresSafeArea()
@@ -287,7 +302,7 @@ struct SolitaireGameView: View {
                             .position(x: rect.midX, y: rect.midY)
                     }
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Step \(index + 1) of \(Self.tutorial.count)").font(.caption)
+                        Text("Step \(index + 1) of \(steps.count)").font(.caption)
                         Text(step.text).accessibilityIdentifier("walkthrough_text")
                         HStack {
                             Spacer()

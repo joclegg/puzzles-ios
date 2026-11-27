@@ -119,7 +119,7 @@ struct FiveLettersWalkthrough: View {
             "board",
             "Guess the word in six tries. Green is the right letter in the right place, yellow is in the word but elsewhere, grey is not in it."
         ),
-        ("keyboard", "Type with these keys, then press Enter."),
+        ("keyboard", "Type with these keys, then press Enter. Delete is on the left."),
         ("hint", "Stuck? The bulb tells you one letter and where it goes."),
         ("menu", "Show the word and settings live in this menu."),
     ]
@@ -157,6 +157,7 @@ struct FiveLettersWalkthrough: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: 12))
             .padding(16)
+            .frame(maxHeight: .infinity, alignment: step.0 == "keyboard" ? .top : .bottom)
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("walkthrough")
         }

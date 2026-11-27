@@ -2,6 +2,49 @@ import CrosswordEngine
 import PuzzlesCore
 import SwiftUI
 
+private struct CrosswordTourStep {
+    let target: String
+    let text: String
+}
+
+private struct CrosswordTourKey: PreferenceKey {
+    static let defaultValue: [String: Anchor<CGRect>] = [:]
+
+    static func reduce(value: inout [String: Anchor<CGRect>], nextValue: () -> [String: Anchor<CGRect>]) {
+        value.merge(nextValue()) { $1 }
+    }
+}
+
+extension View {
+    fileprivate func crosswordTourTarget(_ key: String) -> some View {
+        anchorPreference(key: CrosswordTourKey.self, value: .bounds) { [key: $0] }
+    }
+}
+
+private let crosswordRules = [
+    "Fill the grid with the answers to the clues.",
+    "Tap a cell to pick it. Tap it again to switch between across and down.",
+    "Type the answer with the keyboard.",
+]
+
+private func crosswordTutorial(hints: Bool) -> [CrosswordTourStep] {
+    var steps = [
+        CrosswordTourStep(
+            target: "board",
+            text: "Tap a cell to pick it. Tap it again to switch between across and down. Type the answer with the keyboard."
+        ),
+        CrosswordTourStep(
+            target: "clue_bar", text: "This is the clue for the word you're on. The arrows move to the previous or next clue."),
+    ]
+    if hints {
+        steps.append(CrosswordTourStep(target: "hint", text: "Stuck? The bulb tells you one letter and where it goes."))
+    }
+    steps.append(
+        CrosswordTourStep(
+            target: "menu", text: "Restart, new puzzle, reveal a letter, word or the puzzle, and settings live in this menu."))
+    return steps
+}
+
 struct CrosswordGameView: View {
     let model: CrosswordGameModel
     let navigator: CrosswordNavigator
@@ -12,6 +55,8 @@ struct CrosswordGameView: View {
     @State private var keyboardShown = false
     @State private var menuOpen = false
     @State private var revealing = false
+    @State private var rulesOpen = false
+    @State private var tourStep: Int?
 
     private var game: GameState {
         model.game
@@ -62,7 +107,7 @@ struct CrosswordGameView: View {
             keyboardShown = false
         }
         .background(
-            CrosswordKeyInput(active: !solved && !model.revealed, onKey: handle)
+            CrosswordKeyInput(active: !solved && !model.revealed && !rulesOpen && tourStep == nil, onKey: handle)
                 .frame(width: 1, height: 1)
                 .allowsHitTesting(false)
         )
@@ -74,6 +119,16 @@ struct CrosswordGameView: View {
         .overlay {
             if revealing {
                 revealDialog
+            }
+        }
+        .overlay {
+            if rulesOpen {
+                rulesDialog
+            }
+        }
+        .overlayPreferenceValue(CrosswordTourKey.self) { anchors in
+            if let tourStep {
+                tour(index: tourStep, anchors: anchors)
             }
         }
         .overlay {
@@ -115,6 +170,7 @@ struct CrosswordGameView: View {
     private var board: some View {
         CrosswordBoardView(game: game, onCell: model.tapCell)
             .frame(maxWidth: 560)
+            .crosswordTourTarget("board")
     }
 
     private var header: some View {
@@ -148,9 +204,13 @@ struct CrosswordGameView: View {
             if settings.isOn(.showHints) {
                 CrosswordIconButton(
                     symbol: "lightbulb", description: "Show a hint", tag: "hint", enabled: !solved && !model.revealed,
-                    action: model.hint)
+                    action: model.hint
+                )
+                .crosswordTourTarget("hint")
             }
+            CrosswordIconButton(symbol: "questionmark.circle", description: "Show the rules", tag: "rules") { rulesOpen = true }
             CrosswordIconButton(symbol: "ellipsis", description: "More", tag: "game_menu") { menuOpen = true }
+                .crosswordTourTarget("menu")
         }
         .padding(.horizontal, 4)
     }
@@ -177,6 +237,7 @@ struct CrosswordGameView: View {
         }
         .padding(.horizontal, 4)
         .background(colors.word, in: RoundedRectangle(cornerRadius: 12))
+        .crosswordTourTarget("clue_bar")
     }
 
     private var hintMessage: some View {
@@ -294,6 +355,69 @@ struct CrosswordGameView: View {
             onDismiss: { revealing = false }
         ) {
             Text("This ends the puzzle. It won't count towards best times.")
+        }
+    }
+}
+
+extension CrosswordGameView {
+    fileprivate var rulesDialog: some View {
+        CrosswordDialog(
+            title: "How to play",
+            tag: "rules_dialog",
+            buttons: [
+                CrosswordDialogButton(title: "Walk me through it", tag: "walkthrough_start") {
+                    rulesOpen = false
+                    tourStep = 0
+                },
+                CrosswordDialogButton(title: "Got it", tag: "rules_close") { rulesOpen = false },
+            ],
+            onDismiss: { rulesOpen = false }
+        ) {
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(crosswordRules, id: \.self) { Text($0) }
+            }
+        }
+    }
+
+    fileprivate func tour(index: Int, anchors: [String: Anchor<CGRect>]) -> some View {
+        let steps = crosswordTutorial(hints: settings.isOn(.showHints))
+        let step = steps[min(index, steps.count - 1)]
+        let last = index >= steps.count - 1
+        return GeometryReader { proxy in
+            ZStack(alignment: .bottom) {
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
+                    .onTapGesture { tourStep = nil }
+                    .accessibilityHidden(true)
+                if let anchor = anchors[step.target] {
+                    let rect = proxy[anchor]
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(colors.accent, lineWidth: 4)
+                        .frame(width: rect.width + 12, height: rect.height + 12)
+                        .position(x: rect.midX, y: rect.midY)
+                        .allowsHitTesting(false)
+                }
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Step \(index + 1) of \(steps.count)").font(.caption2)
+                    Text(step.text).accessibilityIdentifier("walkthrough_text")
+                    HStack(spacing: 16) {
+                        Spacer()
+                        Button(last ? "Close" : "Skip") { tourStep = nil }.accessibilityIdentifier("walkthrough_close")
+                        if index > 0 {
+                            Button("Back") { tourStep = index - 1 }.accessibilityIdentifier("walkthrough_back")
+                        }
+                        if !last {
+                            Button("Next") { tourStep = index + 1 }.accessibilityIdentifier("walkthrough_next")
+                        }
+                    }
+                    .foregroundStyle(colors.accent)
+                }
+                .padding(16)
+                .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+                .padding(16)
+                .accessibilityElement(children: .contain)
+                .accessibilityIdentifier("walkthrough")
+            }
         }
     }
 }

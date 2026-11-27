@@ -40,12 +40,24 @@ struct SudokuGameView: View {
         "Fill the grid so every row, column and box has each number once.",
         "In killer sudoku the numbers in each dashed cage also add up to its total, with no number repeated in a cage.",
     ]
-    private static let tutorial = [
-        ("board", "Tap a cell to select it. Shaded cells are givens and can't change."),
-        ("pad", "Then tap a number to place it. The pencil puts numbers in as notes, the eraser clears a cell."),
-        ("hint", "Stuck? The bulb points at a cell you can fill next and says why."),
-        ("menu", "Restart, show the solution and settings live in this menu."),
-    ]
+    private static func tutorial(digitFirst: Bool) -> [(String, String)] {
+        [
+            (
+                "board",
+                digitFirst
+                    ? "Shaded cells are givens and can't change."
+                    : "Tap a cell to select it. Shaded cells are givens and can't change."
+            ),
+            (
+                "pad",
+                digitFirst
+                    ? "Pick a number, then tap cells to place it. The pencil puts numbers in as notes. The eraser and Mark are modes: tap cells to clear them or box them in red, tap the tool again to stop."
+                    : "Tap a cell, then a number to place it. The pencil puts numbers in as notes, the eraser clears a cell and Mark boxes it in red."
+            ),
+            ("hint", "Stuck? The bulb points at a cell you can fill next and says why."),
+            ("menu", "Restart, show the solution and settings live in this menu."),
+        ]
+    }
 
     var body: some View {
         if let model = navigator.model(id), let saved = model.saved, let state = model.state, let board = model.board {
@@ -101,7 +113,7 @@ struct SudokuGameView: View {
                 rulesDialog
             }
             if let tourStep {
-                walkthrough(tourStep)
+                walkthrough(tourStep, steps: Self.tutorial(digitFirst: state.inputMode == .digitFirst))
             }
             if model.resultSaved {
                 SudokuWinDialog(model: model, saved: saved)
@@ -279,9 +291,9 @@ struct SudokuGameView: View {
         }
     }
 
-    private func walkthrough(_ index: Int) -> some View {
-        let step = Self.tutorial[index]
-        let last = index == Self.tutorial.count - 1
+    private func walkthrough(_ index: Int, steps: [(String, String)]) -> some View {
+        let step = steps[index]
+        let last = index == steps.count - 1
         return ZStack(alignment: .bottom) {
             Color.black.opacity(0.4).ignoresSafeArea().accessibilityHidden(true)
                 .onTapGesture { tourStep = nil }
@@ -293,7 +305,7 @@ struct SudokuGameView: View {
                     .allowsHitTesting(false)
             }
             VStack(alignment: .leading, spacing: 8) {
-                Text("Step \(index + 1) of \(Self.tutorial.count)").font(.caption)
+                Text("Step \(index + 1) of \(steps.count)").font(.caption)
                 Text(step.1).accessibilityIdentifier("walkthrough_text")
                 HStack {
                     Spacer()
@@ -309,6 +321,7 @@ struct SudokuGameView: View {
             .padding(16)
             .background(palette.background, in: RoundedRectangle(cornerRadius: 16))
             .padding(16)
+            .frame(maxHeight: .infinity, alignment: step.0 == "pad" ? .top : .bottom)
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("walkthrough")
         }

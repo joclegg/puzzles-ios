@@ -226,23 +226,35 @@ struct SightlinesGameView: View {
         return stats
     }
 
-    private static let rules = [
-        "Fill every dot blue or red. Tap a dot to cycle it: blue, red, empty.",
-        "Blue dots can see other blue dots in their own row and column. Red dots block the view.",
-        "A number says how many blue dots that dot can see.",
-        "Every blue dot must see at least one other.",
-    ]
+    private var rules: [String] {
+        [
+            pickColour
+                ? "Fill every dot blue or red. Choose a colour under the board, then tap dots to paint them."
+                : "Fill every dot blue or red. Tap a dot to cycle it: blue, red, empty.",
+            "Blue dots can see other blue dots in their own row and column. Red dots block the view.",
+            "A number says how many blue dots that dot can see.",
+            "Every blue dot must see at least one other.",
+        ]
+    }
 
-    private static let tutorial = [
-        ("board", "Tap a dot to cycle it blue, red, empty. A number says how many blue dots it can see; red dots block the view."),
-        ("hint", "Stuck? The bulb shows you the next step."),
-        ("menu", "Restart, show the solution and settings live in this menu."),
-    ]
+    private var tutorial: [(String, String)] {
+        [
+            (
+                "board",
+                (pickColour
+                    ? "Choose a colour under the board, then tap dots to paint them."
+                    : "Tap a dot to cycle it: blue, red, empty.")
+                    + " A number says how many blue dots it can see; red dots block the view."
+            ),
+            ("hint", "Stuck? The bulb points at the next step and explains it."),
+            ("menu", "Restart, new puzzle, show the solution and settings live in this menu."),
+        ]
+    }
 
     private var rulesDialog: some View {
         SightlinesDialog(tag: "rules_dialog", dismiss: { rulesOpen = false }) {
             Text("How to play").font(.title3.weight(.semibold))
-            ForEach(Self.rules, id: \.self) { Text($0) }
+            ForEach(rules, id: \.self) { Text($0) }
             HStack(spacing: 16) {
                 Spacer()
                 Text("Walk me through it")
@@ -256,8 +268,9 @@ struct SightlinesGameView: View {
     }
 
     private func walkthrough(_ index: Int) -> some View {
-        let step = Self.tutorial[index]
-        let last = index == Self.tutorial.count - 1
+        let steps = tutorial
+        let step = steps[index]
+        let last = index == steps.count - 1
         return ZStack(alignment: .bottom) {
             Color.black.opacity(0.4).ignoresSafeArea().accessibilityHidden(true)
             if let target = bounds[step.0] {
@@ -268,7 +281,7 @@ struct SightlinesGameView: View {
                     .accessibilityHidden(true)
             }
             VStack(alignment: .leading, spacing: 8) {
-                Text("Step \(index + 1) of \(Self.tutorial.count)").font(.caption2)
+                Text("Step \(index + 1) of \(steps.count)").font(.caption2)
                 Text(step.1).accessibilityIdentifier("walkthrough_text")
                 HStack(spacing: 16) {
                     Spacer()

@@ -50,9 +50,12 @@ extension GameState {
 
     public func fewestCandidatesHint() -> Hint? {
         let empty = puzzle.runsOf.keys.filter { values[$0] == 0 }.sorted()
-        guard let cell = empty.min(by: { runCandidates(cell: $0).nonzeroBitCount < runCandidates(cell: $1).nonzeroBitCount })
-        else {
-            return nil
+        let fewest: (Int, Int) -> Bool = { runCandidates(cell: $0).nonzeroBitCount < runCandidates(cell: $1).nonzeroBitCount }
+        let useful = empty.filter { notes[$0] == 0 || notes[$0] & ~runCandidates(cell: $0) != 0 }
+        guard let cell = useful.min(by: fewest) else {
+            return empty.min(by: fewest).map {
+                Hint(cell: $0, digit: puzzle.solution[$0], message: "This one is the \(puzzle.solution[$0]).")
+            }
         }
         let allowed = Combinations.digitsOf(runCandidates(cell: cell))
         let runs = (puzzle.runsOf[cell] ?? []).sorted { $0.isAcross && !$1.isAcross }
