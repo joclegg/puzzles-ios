@@ -157,6 +157,7 @@ struct FiveLettersWalkthrough: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: 12))
             .padding(16)
+            .frame(maxHeight: .infinity, alignment: step.0 == "keyboard" ? .top : .bottom)
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("walkthrough")
         }

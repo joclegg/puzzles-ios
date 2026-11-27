@@ -321,6 +321,7 @@ struct SudokuGameView: View {
             .padding(16)
             .background(palette.background, in: RoundedRectangle(cornerRadius: 16))
             .padding(16)
+            .frame(maxHeight: .infinity, alignment: step.0 == "pad" ? .top : .bottom)
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("walkthrough")
         }

@@ -338,6 +338,7 @@ struct KakuroGameView: View {
                 .padding(16)
                 .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
                 .padding(16)
+                .frame(maxHeight: .infinity, alignment: step.target == "pad" ? .top : .bottom)
                 .accessibilityElement(children: .contain)
                 .accessibilityIdentifier("walkthrough")
             }
